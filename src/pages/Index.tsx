@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import ThemeToggle from '@/components/ThemeToggle';
 import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
@@ -33,8 +34,11 @@ const Index = () => {
           <motion.header
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="pb-4 text-center"
+            className="pb-4 text-center relative"
           >
+            <div className="absolute right-0 top-0">
+              <ThemeToggle />
+            </div>
             <h1 className="text-2xl font-normal tracking-wide text-foreground">
               Cromane
             </h1>
