@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Sun, Cloud, CloudRain, CloudDrizzle, CloudSnow, CloudLightning, CloudFog, CloudSun } from 'lucide-react';
 import { WindData, isBookingConditionsMet, Warning } from '@/lib/mock-data';
 
 interface Props {
@@ -66,6 +67,18 @@ const WindCompass = ({ degrees }: { degrees: number }) => {
   );
 };
 
+const getWeatherIcon = (code: number, cloudCover: number) => {
+  const props = { size: 20, className: 'text-muted-foreground' };
+  if (code >= 95) return <CloudLightning {...props} className="text-accent" />;
+  if (code >= 71) return <CloudSnow {...props} className="text-primary/60" />;
+  if (code >= 61) return <CloudRain {...props} className="text-primary" />;
+  if (code >= 51) return <CloudDrizzle {...props} className="text-primary/70" />;
+  if (code >= 45) return <CloudFog {...props} />;
+  if (code >= 3 || cloudCover > 70) return <Cloud {...props} />;
+  if (cloudCover > 30) return <CloudSun {...props} className="text-accent" />;
+  return <Sun {...props} className="text-accent" />;
+};
+
 const ConditionsCard = ({ wind, warnings }: Props) => {
   const canBook = isBookingConditionsMet(wind, warnings);
   const [unit, setUnit] = useState<'kts' | 'kmh'>('kmh');
@@ -106,6 +119,9 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
           </span>
         </div>
         <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-1">
+            {getWeatherIcon(wind.weather_code ?? 0, wind.cloud_cover ?? 0)}
+          </div>
           <WindCompass degrees={wind.direction_degrees} />
           <p className="text-2xl font-light text-foreground">{wind.temperature_c}°</p>
         </div>
