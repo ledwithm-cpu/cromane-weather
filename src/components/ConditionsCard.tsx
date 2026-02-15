@@ -123,7 +123,14 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
             {getWeatherIcon(wind.weather_code ?? 0, wind.cloud_cover ?? 0)}
           </div>
           <WindCompass degrees={wind.direction_degrees} />
-          <p className="text-2xl font-light text-foreground">{wind.temperature_c}°</p>
+          <div className="text-right">
+            <p className="text-2xl font-light text-foreground">{wind.temperature_c}°</p>
+            {wind.feels_like_c != null && wind.feels_like_c !== wind.temperature_c && (
+              <p className="text-[10px] text-muted-foreground/60 tracking-wider">
+                Feels {wind.feels_like_c}°
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

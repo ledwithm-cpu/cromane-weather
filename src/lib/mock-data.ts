@@ -12,6 +12,7 @@ export interface WindData {
   weather_code?: number;
   cloud_cover?: number;
   water_temperature_c?: number;
+  feels_like_c?: number;
 }
 
 export interface TideEvent {
@@ -46,6 +47,7 @@ export const mockWind: WindData = {
   weather_code: 3,
   cloud_cover: 75,
   water_temperature_c: 11,
+  feels_like_c: 9,
 };
 
 export const mockTides: TideEvent[] = [
