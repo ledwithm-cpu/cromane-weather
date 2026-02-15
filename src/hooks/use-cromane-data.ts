@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { WindData, TideData, TideEvent, Warning, MarineWarning, mockWind, mockTides, mockWarnings, mockMarine } from '@/lib/mock-data';
+import { WindData, TideData, TideEvent, Warning, MarineWarning, LightningData, mockWind, mockTides, mockWarnings, mockMarine, mockLightning } from '@/lib/mock-data';
 import { cacheGet, cacheSet } from '@/lib/offline-cache';
 import { useCallback } from 'react';
 
@@ -22,6 +22,13 @@ async function fetchWarnings(): Promise<{ warnings: Warning[]; marine: MarineWar
   const { data, error } = await supabase.functions.invoke('get-warnings');
   if (error) throw error;
   cacheSet('warnings', data);
+  return data;
+}
+
+async function fetchLightning(): Promise<LightningData> {
+  const { data, error } = await supabase.functions.invoke('get-lightning');
+  if (error) throw error;
+  cacheSet('lightning', data);
   return data;
 }
 
@@ -54,6 +61,17 @@ export function useWarnings() {
     refetchInterval: 15 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
     placeholderData: () => cacheGet<{ warnings: Warning[]; marine: MarineWarning }>('warnings') ?? { warnings: mockWarnings, marine: mockMarine },
+    retry: 2,
+  });
+}
+
+export function useLightning() {
+  return useQuery({
+    queryKey: ['lightning'],
+    queryFn: fetchLightning,
+    refetchInterval: 60 * 1000, // Poll every 60s for near-real-time
+    staleTime: 30 * 1000,
+    placeholderData: () => cacheGet<LightningData>('lightning') ?? mockLightning,
     retry: 2,
   });
 }

@@ -27,11 +27,6 @@ const MarineCard = ({ marine }: Props) => {
 
       <p className="text-xs text-muted-foreground leading-relaxed">{marine.description}</p>
 
-      {/* Lightning placeholder */}
-      <div className="flex items-center gap-2 pt-2 border-t border-border/50">
-        <div className="w-2 h-2 rounded-full bg-muted-foreground/20" />
-        <span className="text-xs text-muted-foreground/50">Lightning monitoring · coming soon</span>
-      </div>
     </motion.div>
   );
 };
