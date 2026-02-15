@@ -209,14 +209,14 @@ const LightningCard = ({ data }: Props) => {
         {/* Strike count */}
         {data.strike_count > 0 && effectiveLevel >= 1 && (
           <p className="text-xs text-muted-foreground mt-3">
-            {data.strike_count} strike{data.strike_count !== 1 ? 's' : ''} detected within 20km
+            {data.strike_count} strike{data.strike_count !== 1 ? 's' : ''} detected within 50km
           </p>
         )}
 
         {/* Safe state */}
         {effectiveLevel === 0 && (
           <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-            No lightning activity within 20km for the past 30 minutes. Blitzortung community network.
+            No lightning activity within 50km for the past 30 minutes. Blitzortung community network.
           </p>
         )}
       </div>
