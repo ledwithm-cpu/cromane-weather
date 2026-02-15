@@ -90,8 +90,7 @@ serve(async (req) => {
     console.error('Warnings fetch error:', error);
     return new Response(JSON.stringify({ 
       warnings: [],
-      marine: { type: 'Data unavailable', area: 'Southwest Coast', description: 'Unable to fetch warnings.', active: false },
-      error: error.message 
+      marine: { type: 'Data unavailable', area: 'Southwest Coast', description: 'Unable to fetch warnings. Check met.ie for updates.', active: false },
     }), {
       status: 200, // Return 200 with empty data so app still works
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -45,7 +45,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Tide error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: 'Unable to fetch tide data. Please try again later.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
