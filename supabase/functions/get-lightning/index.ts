@@ -10,7 +10,7 @@ const HOME_LAT = 52.1008;
 const HOME_LON = -9.8856;
 
 // Alert thresholds in km
-const THRESHOLD_AWARENESS = 20;
+const THRESHOLD_AWARENESS = 50;
 const THRESHOLD_WARNING = 10;
 const THRESHOLD_DANGER = 5;
 
@@ -112,7 +112,7 @@ serve(async (req) => {
     for (const block of blocks) {
       try {
         // Blitzortung public JSON archive (Container 1 = Europe)
-        const archiveUrl = `https://data.blitzortung.org/Data/Protected/last_strikes.php?north=${HOME_LAT + 0.3}&south=${HOME_LAT - 0.3}&west=${HOME_LON - 0.5}&east=${HOME_LON + 0.5}&number=100`;
+        const archiveUrl = `https://data.blitzortung.org/Data/Protected/last_strikes.php?north=${HOME_LAT + 0.6}&south=${HOME_LAT - 0.6}&west=${HOME_LON - 1.0}&east=${HOME_LON + 1.0}&number=500`;
         
         const res = await fetch(archiveUrl, {
           headers: { 'Accept': 'text/plain' },
@@ -120,7 +120,7 @@ serve(async (req) => {
 
         if (!res.ok) {
           // If protected endpoint fails, fall back to the archive
-          const fallbackUrl = `https://data.blitzortung.org/Data/Protected/strikes.php?north=${HOME_LAT + 0.3}&south=${HOME_LAT - 0.3}&west=${HOME_LON - 0.5}&east=${HOME_LON + 0.5}&number=100&sig=0`;
+          const fallbackUrl = `https://data.blitzortung.org/Data/Protected/strikes.php?north=${HOME_LAT + 0.6}&south=${HOME_LAT - 0.6}&west=${HOME_LON - 1.0}&east=${HOME_LON + 1.0}&number=500&sig=0`;
           const fallbackRes = await fetch(fallbackUrl);
           if (!fallbackRes.ok) {
             console.log(`Archive block unavailable: ${block}`);
