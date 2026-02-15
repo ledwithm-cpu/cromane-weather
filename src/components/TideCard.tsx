@@ -124,7 +124,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
           <circle cx="0" cy={state === 'rising' ? 28 : 12} r="3" fill="hsl(var(--primary))" />
         </svg>
 
-        <div className="relative flex -mt-10 h-10" style={{ paddingLeft: '0px' }}>
+        <div className="relative h-4 mt-1">
           {(() => {
             const now = new Date();
             const nowMs = now.getTime();
@@ -145,18 +145,13 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
             return tideTimestamps.map((t, i) => {
               const leftPct = ((t.ts - startMs) / rangeMs) * 100;
               return (
-                <div
+                <span
                   key={i}
-                  className={`absolute flex flex-col items-center ${t.type === 'high' ? 'justify-start' : 'justify-end'}`}
+                  className="absolute text-[10px] tabular-nums text-muted-foreground"
                   style={{ left: `${leftPct}%`, transform: 'translateX(-50%)' }}
                 >
-                  <div
-                    className={`w-2 h-2 rounded-full ${t.type === 'high' ? 'bg-primary' : 'bg-muted-foreground/40'}`}
-                  />
-                  <span className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
-                    {t.time}
-                  </span>
-                </div>
+                  {t.type === 'high' ? '▲' : '▼'} {t.time}
+                </span>
               );
             });
           })()}
