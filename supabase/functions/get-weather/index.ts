@@ -15,7 +15,7 @@ serve(async (req) => {
 
   try {
     // Fetch current weather + 3h history for trend
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weather_code,cloud_cover&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0`;
 
     const res = await fetch(url);
     if (!res.ok) {
@@ -60,6 +60,9 @@ serve(async (req) => {
       direction_degrees: dirDeg,
       temperature_c: Math.round(current.temperature_2m),
       trend,
+      precipitation_mm: current.precipitation ?? 0,
+      weather_code: current.weather_code ?? 0,
+      cloud_cover: current.cloud_cover ?? 0,
     };
 
     return new Response(JSON.stringify(result), {

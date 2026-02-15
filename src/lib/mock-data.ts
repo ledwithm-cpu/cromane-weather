@@ -8,6 +8,9 @@ export interface WindData {
   direction_degrees: number;
   temperature_c: number;
   trend: 'rising' | 'falling' | 'steady';
+  precipitation_mm?: number;
+  weather_code?: number;
+  cloud_cover?: number;
 }
 
 export interface TideEvent {
@@ -38,6 +41,9 @@ export const mockWind: WindData = {
   direction_degrees: 225,
   temperature_c: 12,
   trend: 'falling',
+  precipitation_mm: 0,
+  weather_code: 3,
+  cloud_cover: 75,
 };
 
 export const mockTides: TideEvent[] = [
