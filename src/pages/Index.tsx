@@ -3,14 +3,16 @@ import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
 import MarineCard from '@/components/MarineCard';
+import PullToRefresh from '@/components/PullToRefresh';
 import { hasActiveWarnings } from '@/lib/mock-data';
-import { useWeather, useTides, useWarnings } from '@/hooks/use-cromane-data';
+import { useWeather, useTides, useWarnings, useRefreshAll } from '@/hooks/use-cromane-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
   const { data: wind, isLoading: windLoading } = useWeather();
   const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
+  const refreshAll = useRefreshAll();
 
   const warnings = warningData?.warnings ?? [];
   const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
@@ -21,6 +23,7 @@ const Index = () => {
   return (
     <div className={`min-h-screen transition-colors duration-700 ${warningActive ? 'theme-warning' : ''}`}>
       <div className="bg-background min-h-screen">
+        <PullToRefresh onRefresh={refreshAll}>
         <div className="max-w-md mx-auto px-4 py-8 space-y-4">
           {/* Header */}
           <motion.header
@@ -59,6 +62,7 @@ const Index = () => {
             </p>
           </motion.footer>
         </div>
+        </PullToRefresh>
       </div>
     </div>
   );
