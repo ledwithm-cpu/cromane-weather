@@ -14,7 +14,7 @@ const MarineCard = ({ marine }: Props) => {
       className="glass-card rounded-lg p-6 space-y-3"
     >
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-        Marine · {marine.area}
+        Marine Warnings · {marine.area}
       </p>
 
       <div className="flex items-center gap-2">
