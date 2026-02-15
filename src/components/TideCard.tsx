@@ -30,13 +30,47 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
       </div>
 
 
-      {/* Upcoming tides */}
-      <div className="flex gap-4 text-xs text-muted-foreground">
-        {tides.slice(1).map((t, i) => (
-          <span key={i}>
-            {t.type === 'high' ? '▲' : '▼'} {t.time} · {t.height_m}m
-          </span>
-        ))}
+      {/* Tide timeline */}
+      <div className="relative pt-4 pb-2">
+        {/* Horizontal line */}
+        <div className="absolute left-0 right-0 top-1/2 h-px bg-border/60" />
+
+        {/* Sine wave hint */}
+        <svg className="w-full h-10" viewBox="0 0 400 40" preserveAspectRatio="none">
+          <path
+            d={(() => {
+              const points = tides.map((t, i) => {
+                const x = (i / (tides.length - 1)) * 400;
+                const y = t.type === 'high' ? 6 : 34;
+                return { x, y };
+              });
+              // Build smooth curve through points
+              let d = `M${points[0].x},${points[0].y}`;
+              for (let i = 0; i < points.length - 1; i++) {
+                const cx = (points[i].x + points[i + 1].x) / 2;
+                d += ` C${cx},${points[i].y} ${cx},${points[i + 1].y} ${points[i + 1].x},${points[i + 1].y}`;
+              }
+              return d;
+            })()}
+            fill="none"
+            stroke="hsl(var(--primary) / 0.3)"
+            strokeWidth="1.5"
+          />
+        </svg>
+
+        {/* Markers */}
+        <div className="relative flex justify-between -mt-10 h-10">
+          {tides.map((t, i) => (
+            <div key={i} className={`flex flex-col items-center ${t.type === 'high' ? 'justify-start' : 'justify-end'}`}>
+              <div
+                className={`w-2 h-2 rounded-full ${t.type === 'high' ? 'bg-primary' : 'bg-muted-foreground/40'}`}
+              />
+              <span className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
+                {t.time}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {calm && (
