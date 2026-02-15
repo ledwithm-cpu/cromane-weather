@@ -17,12 +17,20 @@ serve(async (req) => {
     // Fetch current weather + 3h history for trend
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weather_code,cloud_cover&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0`;
 
-    const res = await fetch(url);
+    // Fetch sea surface temperature from marine API
+    const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&current=sea_surface_temperature&timezone=Europe%2FDublin`;
+
+    const [res, marineRes] = await Promise.all([fetch(url), fetch(marineUrl)]);
     if (!res.ok) {
       throw new Error(`Open-Meteo API error [${res.status}]: ${await res.text()}`);
     }
 
     const data = await res.json();
+    let waterTemp: number | null = null;
+    if (marineRes.ok) {
+      const marineData = await marineRes.json();
+      waterTemp = marineData?.current?.sea_surface_temperature ?? null;
+    }
     const current = data.current;
 
     // Wind speed from km/h to knots
@@ -63,6 +71,7 @@ serve(async (req) => {
       precipitation_mm: current.precipitation ?? 0,
       weather_code: current.weather_code ?? 0,
       cloud_cover: current.cloud_cover ?? 0,
+      water_temperature_c: waterTemp !== null ? Math.round(waterTemp) : null,
     };
 
     return new Response(JSON.stringify(result), {
