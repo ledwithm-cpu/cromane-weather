@@ -9,9 +9,9 @@ import { useWeather, useTides, useWarnings, useRefreshAll } from '@/hooks/use-cr
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
-  const { data: wind, isLoading: windLoading } = useWeather();
-  const { data: tides, isLoading: tidesLoading } = useTides();
-  const { data: warningData, isLoading: warningsLoading } = useWarnings();
+  const { data: wind, isLoading: windLoading, dataUpdatedAt: windUpdatedAt } = useWeather();
+  const { data: tides, isLoading: tidesLoading, dataUpdatedAt: tidesUpdatedAt } = useTides();
+  const { data: warningData, isLoading: warningsLoading, dataUpdatedAt: warningsUpdatedAt } = useWarnings();
   const refreshAll = useRefreshAll();
 
   const warnings = warningData?.warnings ?? [];
@@ -19,6 +19,10 @@ const Index = () => {
   const warningActive = hasActiveWarnings(warnings);
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
+  const lastUpdated = Math.max(windUpdatedAt, tidesUpdatedAt, warningsUpdatedAt);
+  const lastUpdatedStr = lastUpdated
+    ? new Date(lastUpdated).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Dublin' })
+    : null;
 
   return (
     <div className={`min-h-screen transition-colors duration-700 ${warningActive ? 'theme-warning' : ''}`}>
@@ -29,7 +33,7 @@ const Index = () => {
           <motion.header
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="pb-4"
+            className="pb-4 text-center"
           >
             <h1 className="text-lg font-normal tracking-wide text-foreground">
               Cromane
@@ -37,11 +41,15 @@ const Index = () => {
             <p className="text-xs text-muted-foreground tracking-[0.15em] uppercase">
               Co. Kerry · 51.93°N
             </p>
-            {isLoading && (
+            {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
                 Fetching live data…
               </p>
-            )}
+            ) : lastUpdatedStr ? (
+              <p className="text-[10px] text-muted-foreground/40 mt-1 tracking-wider uppercase">
+                Updated {lastUpdatedStr}
+              </p>
+            ) : null}
           </motion.header>
 
           {/* Card Stack */}
