@@ -68,7 +68,7 @@ const WindCompass = ({ degrees }: { degrees: number }) => {
 
 const ConditionsCard = ({ wind, warnings }: Props) => {
   const canBook = isBookingConditionsMet(wind, warnings);
-  const [unit, setUnit] = useState<'kts' | 'kmh'>('kts');
+  const [unit, setUnit] = useState<'kts' | 'kmh'>('kmh');
 
   const displaySpeed = unit === 'kts'
     ? wind.speed_knots
