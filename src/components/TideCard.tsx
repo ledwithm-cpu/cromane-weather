@@ -29,22 +29,6 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
         <span className="text-sm text-muted-foreground">{next.height_m}m</span>
       </div>
 
-      {/* Minimal tide curve */}
-      <div className="h-12 flex items-end gap-[2px]">
-        {tides.map((t, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center gap-1">
-            <div
-              className="w-full rounded-sm transition-all"
-              style={{
-                height: `${(t.height_m / 5) * 100}%`,
-                backgroundColor: t.type === 'high'
-                  ? 'hsl(var(--tide-blue))'
-                  : 'hsl(var(--tide-blue) / 0.3)',
-              }}
-            />
-          </div>
-        ))}
-      </div>
 
       {/* Upcoming tides */}
       <div className="flex gap-4 text-xs text-muted-foreground">
