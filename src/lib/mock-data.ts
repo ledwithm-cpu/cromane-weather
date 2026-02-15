@@ -104,3 +104,29 @@ export function hasActiveWarnings(warnings: Warning[]): boolean {
 export function isBookingConditionsMet(wind: WindData, warnings: Warning[]): boolean {
   return wind.speed_knots < 25 && !hasActiveWarnings(warnings);
 }
+
+export interface LightningData {
+  alert_level: number;
+  strike_count: number;
+  last_strike_time_ms: number | null;
+  closest_strike: {
+    distance_km: number;
+    bearing_compass: string;
+    bearing_deg: number;
+  } | null;
+  strikes: Array<{
+    distance_km: number;
+    bearing_compass: string;
+    time_ms: number;
+  }>;
+  checked_at: number;
+}
+
+export const mockLightning: LightningData = {
+  alert_level: 0,
+  strike_count: 0,
+  last_strike_time_ms: null,
+  closest_strike: null,
+  strikes: [],
+  checked_at: Date.now(),
+};

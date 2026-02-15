@@ -4,20 +4,25 @@ import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
 import MarineCard from '@/components/MarineCard';
+import LightningCard from '@/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import { hasActiveWarnings } from '@/lib/mock-data';
-import { useWeather, useTides, useWarnings, useRefreshAll } from '@/hooks/use-cromane-data';
+import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
   const { data: wind, isLoading: windLoading, dataUpdatedAt: windUpdatedAt } = useWeather();
   const { data: tides, isLoading: tidesLoading, dataUpdatedAt: tidesUpdatedAt } = useTides();
   const { data: warningData, isLoading: warningsLoading, dataUpdatedAt: warningsUpdatedAt } = useWarnings();
+  const { data: lightning, isLoading: lightningLoading } = useLightning();
   const refreshAll = useRefreshAll();
 
   const warnings = warningData?.warnings ?? [];
   const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
   const warningActive = hasActiveWarnings(warnings);
+
+  // Lightning level 3 also triggers warning theme
+  const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
   const lastUpdated = Math.max(windUpdatedAt, tidesUpdatedAt, warningsUpdatedAt);
@@ -26,7 +31,7 @@ const Index = () => {
     : null;
 
   return (
-    <div className={`min-h-screen transition-colors duration-700 ${warningActive ? 'theme-warning' : ''}`}>
+    <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`}>
       <div className="bg-background min-h-screen">
         <PullToRefresh onRefresh={refreshAll}>
         <div className="max-w-md mx-auto px-4 py-8 space-y-4">
@@ -60,6 +65,8 @@ const Index = () => {
           {wind && <ConditionsCard wind={wind} warnings={warnings} />}
           <div className="border-t border-border/30" />
           {tides && <TideCard tideData={tides} wind={wind!} warnings={warnings} />}
+          <div className="border-t border-border/30" />
+          {lightning && <LightningCard data={lightning} />}
           <div className="border-t border-border/30" />
           <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
           <div className="border-t border-border/30" />
