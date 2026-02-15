@@ -15,7 +15,7 @@ serve(async (req) => {
 
   try {
     // Fetch current weather + 3h history for trend
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weather_code,cloud_cover&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,apparent_temperature,precipitation,weather_code,cloud_cover&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0`;
 
     // Fetch sea surface temperature from marine API
     const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&current=sea_surface_temperature&timezone=Europe%2FDublin`;
@@ -72,6 +72,7 @@ serve(async (req) => {
       weather_code: current.weather_code ?? 0,
       cloud_cover: current.cloud_cover ?? 0,
       water_temperature_c: waterTemp !== null ? Math.round(waterTemp) : null,
+      feels_like_c: Math.round(current.apparent_temperature),
     };
 
     return new Response(JSON.stringify(result), {
