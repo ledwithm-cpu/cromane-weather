@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { WindData, isBookingConditionsMet, Warning } from '@/lib/mock-data';
 
@@ -14,6 +15,13 @@ const trendArrow = (trend: string) => {
 
 const ConditionsCard = ({ wind, warnings }: Props) => {
   const canBook = isBookingConditionsMet(wind, warnings);
+  const [unit, setUnit] = useState<'kts' | 'kmh'>('kts');
+
+  const displaySpeed = unit === 'kts'
+    ? wind.speed_knots
+    : Math.round(wind.speed_knots * 1.852);
+
+  const unitLabel = unit === 'kts' ? 'kts' : 'km/h';
 
   return (
     <motion.div
@@ -22,16 +30,24 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
       transition={{ delay: 0.1 }}
       className="glass-card rounded-lg p-6 space-y-4"
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-        Current Conditions
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+          Current Conditions
+        </p>
+        <button
+          onClick={() => setUnit(u => u === 'kts' ? 'kmh' : 'kts')}
+          className="text-[10px] uppercase tracking-wider text-muted-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded border border-border/50"
+        >
+          {unit === 'kts' ? 'km/h' : 'kts'}
+        </button>
+      </div>
 
       <div className="flex items-baseline justify-between">
         <div className="flex items-baseline gap-2">
           <span className="text-5xl font-light tabular-nums text-foreground">
-            {wind.speed_knots}
+            {displaySpeed}
           </span>
-          <span className="text-lg text-muted-foreground">kts</span>
+          <span className="text-lg text-muted-foreground">{unitLabel}</span>
           <span className="text-lg text-muted-foreground ml-1">
             {trendArrow(wind.trend)}
           </span>
