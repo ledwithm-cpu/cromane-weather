@@ -72,11 +72,43 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         <svg className="w-full h-10" viewBox="0 0 400 40" preserveAspectRatio="none">
           <path
             d={(() => {
-              const points = tides.map((t, i) => {
-                const x = (i / (tides.length - 1)) * 400;
-                const y = t.type === 'high' ? 6 : 34;
-                return { x, y };
+              // Build timeline starting from "now" on the left
+              const now = new Date();
+              const nowMs = now.getTime();
+
+              // Parse tide event times into timestamps for today/tomorrow
+              const tideTimestamps = tides.map((t) => {
+                const [h, m] = t.time.split(':').map(Number);
+                const d = new Date(now);
+                d.setHours(h, m, 0, 0);
+                // If event is more than 2h in the past, assume it's tomorrow
+                if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) {
+                  d.setDate(d.getDate() + 1);
+                }
+                return { ...t, ts: d.getTime() };
               });
+
+              // Sort by timestamp
+              tideTimestamps.sort((a, b) => a.ts - b.ts);
+
+              // Timeline range: now to last event
+              const startMs = nowMs;
+              const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
+              const rangeMs = endMs - startMs || 1;
+
+              // Infer current state: "now" point y based on tide state
+              const nowY = state === 'rising'
+                ? 28 // mid-low, heading up
+                : 12; // mid-high, heading down
+
+              const points = [
+                { x: 0, y: nowY },
+                ...tideTimestamps.map((t) => ({
+                  x: ((t.ts - startMs) / rangeMs) * 400,
+                  y: t.type === 'high' ? 6 : 34,
+                })),
+              ];
+
               let d = `M${points[0].x},${points[0].y}`;
               for (let i = 0; i < points.length - 1; i++) {
                 const cx = (points[i].x + points[i + 1].x) / 2;
@@ -88,19 +120,46 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
             stroke="hsl(var(--primary) / 0.3)"
             strokeWidth="1.5"
           />
+          {/* "Now" marker */}
+          <circle cx="0" cy={state === 'rising' ? 28 : 12} r="3" fill="hsl(var(--primary))" />
         </svg>
 
-        <div className="relative flex justify-between -mt-10 h-10">
-          {tides.map((t, i) => (
-            <div key={i} className={`flex flex-col items-center ${t.type === 'high' ? 'justify-start' : 'justify-end'}`}>
-              <div
-                className={`w-2 h-2 rounded-full ${t.type === 'high' ? 'bg-primary' : 'bg-muted-foreground/40'}`}
-              />
-              <span className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
-                {t.time}
-              </span>
-            </div>
-          ))}
+        <div className="relative flex -mt-10 h-10" style={{ paddingLeft: '0px' }}>
+          {(() => {
+            const now = new Date();
+            const nowMs = now.getTime();
+            const tideTimestamps = tides.map((t) => {
+              const [h, m] = t.time.split(':').map(Number);
+              const d = new Date(now);
+              d.setHours(h, m, 0, 0);
+              if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) {
+                d.setDate(d.getDate() + 1);
+              }
+              return { ...t, ts: d.getTime() };
+            });
+            tideTimestamps.sort((a, b) => a.ts - b.ts);
+            const startMs = nowMs;
+            const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
+            const rangeMs = endMs - startMs || 1;
+
+            return tideTimestamps.map((t, i) => {
+              const leftPct = ((t.ts - startMs) / rangeMs) * 100;
+              return (
+                <div
+                  key={i}
+                  className={`absolute flex flex-col items-center ${t.type === 'high' ? 'justify-start' : 'justify-end'}`}
+                  style={{ left: `${leftPct}%`, transform: 'translateX(-50%)' }}
+                >
+                  <div
+                    className={`w-2 h-2 rounded-full ${t.type === 'high' ? 'bg-primary' : 'bg-muted-foreground/40'}`}
+                  />
+                  <span className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
+                    {t.time}
+                  </span>
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
 
