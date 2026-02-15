@@ -55,9 +55,11 @@ const LightningCard = ({ data }: Props) => {
       if (prevStrikeTime !== null) {
         setShowPulse(true);
         // Trigger vibration for level 2+ (Web Vibration API)
-        if (effectiveLevel >= 2 && navigator.vibrate) {
-          navigator.vibrate(effectiveLevel >= 3 ? [200, 100, 200] : [100]);
-        }
+        try {
+          if (effectiveLevel >= 2 && navigator.vibrate) {
+            navigator.vibrate(effectiveLevel >= 3 ? [200, 100, 200] : [100]);
+          }
+        } catch { /* vibration not supported in this context */ }
         setTimeout(() => setShowPulse(false), 2000);
       }
     }
@@ -82,22 +84,28 @@ const LightningCard = ({ data }: Props) => {
   }, [updateElapsed]);
 
   // Web Notification for level 3
+  const closestDistance = data.closest_strike?.distance_km ?? null;
+  const closestBearing = data.closest_strike?.bearing_compass ?? null;
   useEffect(() => {
-    if (effectiveLevel >= 3 && data.closest_strike) {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('⚡ Lightning Alert — Cromane', {
-          body: `Lightning Strike detected ${data.closest_strike.distance_km}km ${data.closest_strike.bearing_compass} of Cromane. Take cover.`,
-          tag: 'lightning-alert',
-        } as NotificationOptions);
-      }
+    if (effectiveLevel >= 3 && closestDistance !== null && closestBearing !== null) {
+      try {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('⚡ Lightning Alert — Cromane', {
+            body: `Lightning Strike detected ${closestDistance}km ${closestBearing} of Cromane. Take cover.`,
+            tag: 'lightning-alert',
+          } as NotificationOptions);
+        }
+      } catch { /* Notifications not supported in this context */ }
     }
-  }, [effectiveLevel, data.closest_strike?.distance_km]);
+  }, [effectiveLevel, closestDistance, closestBearing]);
 
   // Request notification permission once
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
+    try {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    } catch { /* Notifications not available */ }
   }, []);
 
   return (
