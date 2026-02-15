@@ -9,8 +9,12 @@ interface Props {
 }
 
 const TideCard = ({ tideData, wind, warnings }: Props) => {
-  const { events: tides, current_height_m, state } = tideData;
+  // Handle both new format ({events, current_height_m, state}) and legacy cached array format
+  const tides = Array.isArray(tideData) ? tideData : tideData?.events ?? [];
+  const current_height_m = Array.isArray(tideData) ? 0 : tideData?.current_height_m ?? 0;
+  const state = Array.isArray(tideData) ? 'falling' as const : tideData?.state ?? 'falling';
   const next = tides[0];
+  if (!next) return null;
   const calm = wind.speed_knots < 20 && !warnings.some(w => w.level === 'orange' || w.level === 'red');
   const stateArrow = state === 'rising' ? '↑' : '↓';
   const stateLabel = state === 'rising' ? 'Rising' : 'Falling';
