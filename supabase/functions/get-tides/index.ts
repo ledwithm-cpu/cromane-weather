@@ -13,8 +13,10 @@ serve(async (req) => {
   try {
     const now = new Date();
     const tides = generateTidalPredictions(now);
+    const currentHeight = getCurrentTideHeight(now);
+    const tideState = getTideState(now);
 
-    return new Response(JSON.stringify(tides), {
+    return new Response(JSON.stringify({ events: tides, current_height_m: currentHeight, state: tideState }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
@@ -60,6 +62,34 @@ function generateTidalPredictions(now: Date) {
 
   events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   return events.filter(e => new Date(e.timestamp).getTime() > now.getTime() - 3600000).slice(0, 4);
+}
+
+// Calculate current tide height using cosine interpolation
+function getCurrentTideHeight(now: Date): number {
+  const TIDAL_PERIOD_MS = 12 * 3600 * 1000 + 25 * 60 * 1000;
+  const MEAN_HIGH = 4.1;
+  const MEAN_LOW = 0.9;
+  const refHigh = new Date('2025-01-01T03:30:00Z').getTime();
+  const elapsed = now.getTime() - refHigh;
+  const phase = (elapsed % TIDAL_PERIOD_MS) / TIDAL_PERIOD_MS;
+  const dayOfMonth = now.getDate();
+  const springFactor = 1 + 0.15 * Math.cos((dayOfMonth / 14.76) * Math.PI * 2);
+  const high = MEAN_HIGH * springFactor;
+  const low = MEAN_LOW / springFactor;
+  const mid = (high + low) / 2;
+  const amp = (high - low) / 2;
+  // phase 0 = high, 0.5 = low, 1 = high
+  return parseFloat((mid + amp * Math.cos(phase * 2 * Math.PI)).toFixed(1));
+}
+
+// Determine if tide is rising or falling
+function getTideState(now: Date): 'rising' | 'falling' {
+  const TIDAL_PERIOD_MS = 12 * 3600 * 1000 + 25 * 60 * 1000;
+  const refHigh = new Date('2025-01-01T03:30:00Z').getTime();
+  const elapsed = now.getTime() - refHigh;
+  const phase = (elapsed % TIDAL_PERIOD_MS) / TIDAL_PERIOD_MS;
+  // 0-0.5 = falling (high to low), 0.5-1 = rising (low to high)
+  return phase < 0.5 ? 'falling' : 'rising';
 }
 
 function formatTime(date: Date): string {

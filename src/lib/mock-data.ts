@@ -21,6 +21,12 @@ export interface TideEvent {
   height_m: number;
 }
 
+export interface TideData {
+  events: TideEvent[];
+  current_height_m: number;
+  state: 'rising' | 'falling';
+}
+
 export interface Warning {
   level: 'yellow' | 'orange' | 'red';
   headline: string;
@@ -50,12 +56,16 @@ export const mockWind: WindData = {
   feels_like_c: 9,
 };
 
-export const mockTides: TideEvent[] = [
-  { type: 'high', time: '14:32', height_m: 4.2 },
-  { type: 'low', time: '20:48', height_m: 0.8 },
-  { type: 'high', time: '02:55', height_m: 4.0 },
-  { type: 'low', time: '09:12', height_m: 1.0 },
-];
+export const mockTides: TideData = {
+  events: [
+    { type: 'high', time: '14:32', height_m: 4.2 },
+    { type: 'low', time: '20:48', height_m: 0.8 },
+    { type: 'high', time: '02:55', height_m: 4.0 },
+    { type: 'low', time: '09:12', height_m: 1.0 },
+  ],
+  current_height_m: 2.5,
+  state: 'falling',
+};
 
 export const mockWarnings: Warning[] = [
   {

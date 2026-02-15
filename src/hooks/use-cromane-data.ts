@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { WindData, TideEvent, Warning, MarineWarning, mockWind, mockTides, mockWarnings, mockMarine } from '@/lib/mock-data';
+import { WindData, TideData, TideEvent, Warning, MarineWarning, mockWind, mockTides, mockWarnings, mockMarine } from '@/lib/mock-data';
 import { cacheGet, cacheSet } from '@/lib/offline-cache';
 import { useCallback } from 'react';
 
@@ -11,7 +11,7 @@ async function fetchWeather(): Promise<WindData> {
   return data;
 }
 
-async function fetchTides(): Promise<TideEvent[]> {
+async function fetchTides(): Promise<TideData> {
   const { data, error } = await supabase.functions.invoke('get-tides');
   if (error) throw error;
   cacheSet('tides', data);
@@ -42,7 +42,7 @@ export function useTides() {
     queryFn: fetchTides,
     refetchInterval: 60 * 60 * 1000,
     staleTime: 30 * 60 * 1000,
-    placeholderData: () => cacheGet<TideEvent[]>('tides') ?? mockTides,
+    placeholderData: () => cacheGet<TideData>('tides') ?? mockTides,
     retry: 2,
   });
 }
