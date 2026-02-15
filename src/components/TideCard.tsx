@@ -69,93 +69,82 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
 
       {/* Tide timeline */}
       <div className="relative pt-4 pb-2">
-        <svg className="w-full h-10" viewBox="0 0 400 40" preserveAspectRatio="none">
-          <path
-            d={(() => {
-              // Build timeline starting from "now" on the left
-              const now = new Date();
-              const nowMs = now.getTime();
+        {(() => {
+          const now = new Date();
+          const nowMs = now.getTime();
 
-              // Parse tide event times into timestamps for today/tomorrow
-              const tideTimestamps = tides.map((t) => {
-                const [h, m] = t.time.split(':').map(Number);
-                const d = new Date(now);
-                d.setHours(h, m, 0, 0);
-                // If event is more than 2h in the past, assume it's tomorrow
-                if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) {
-                  d.setDate(d.getDate() + 1);
-                }
-                return { ...t, ts: d.getTime() };
-              });
+          const tideTimestamps = tides.map((t) => {
+            const [h, m] = t.time.split(':').map(Number);
+            const d = new Date(now);
+            d.setHours(h, m, 0, 0);
+            if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) {
+              d.setDate(d.getDate() + 1);
+            }
+            return { ...t, ts: d.getTime() };
+          });
+          tideTimestamps.sort((a, b) => a.ts - b.ts);
 
-              // Sort by timestamp
-              tideTimestamps.sort((a, b) => a.ts - b.ts);
+          const startMs = nowMs;
+          const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
+          const rangeMs = endMs - startMs || 1;
 
-              // Timeline range: now to last event
-              const startMs = nowMs;
-              const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
-              const rangeMs = endMs - startMs || 1;
+          const nowY = state === 'rising' ? 28 : 12;
 
-              // Infer current state: "now" point y based on tide state
-              const nowY = state === 'rising'
-                ? 28 // mid-low, heading up
-                : 12; // mid-high, heading down
+          const eventPoints = tideTimestamps.map((t) => ({
+            x: ((t.ts - startMs) / rangeMs) * 400,
+            y: t.type === 'high' ? 6 : 34,
+            time: t.time,
+            type: t.type,
+          }));
 
-              const points = [
-                { x: 0, y: nowY },
-                ...tideTimestamps.map((t) => ({
-                  x: ((t.ts - startMs) / rangeMs) * 400,
-                  y: t.type === 'high' ? 6 : 34,
-                })),
-              ];
+          const allPoints = [{ x: 0, y: nowY }, ...eventPoints];
 
-              let d = `M${points[0].x},${points[0].y}`;
-              for (let i = 0; i < points.length - 1; i++) {
-                const cx = (points[i].x + points[i + 1].x) / 2;
-                d += ` C${cx},${points[i].y} ${cx},${points[i + 1].y} ${points[i + 1].x},${points[i + 1].y}`;
-              }
-              return d;
-            })()}
-            fill="none"
-            stroke="hsl(var(--primary) / 0.3)"
-            strokeWidth="1.5"
-          />
-          {/* "Now" marker */}
-          <circle cx="0" cy={state === 'rising' ? 28 : 12} r="3" fill="hsl(var(--primary))" />
-        </svg>
+          let pathD = `M${allPoints[0].x},${allPoints[0].y}`;
+          for (let i = 0; i < allPoints.length - 1; i++) {
+            const cx = (allPoints[i].x + allPoints[i + 1].x) / 2;
+            pathD += ` C${cx},${allPoints[i].y} ${cx},${allPoints[i + 1].y} ${allPoints[i + 1].x},${allPoints[i + 1].y}`;
+          }
 
-        <div className="relative h-4 mt-1">
-          {(() => {
-            const now = new Date();
-            const nowMs = now.getTime();
-            const tideTimestamps = tides.map((t) => {
-              const [h, m] = t.time.split(':').map(Number);
-              const d = new Date(now);
-              d.setHours(h, m, 0, 0);
-              if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) {
-                d.setDate(d.getDate() + 1);
-              }
-              return { ...t, ts: d.getTime() };
-            });
-            tideTimestamps.sort((a, b) => a.ts - b.ts);
-            const startMs = nowMs;
-            const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
-            const rangeMs = endMs - startMs || 1;
+          // SVG viewBox height expanded to fit labels above/below the wave
+          const svgHeight = 56;
+          const waveOffsetY = 14; // shift wave down to leave room for high-tide labels on top
 
-            return tideTimestamps.map((t, i) => {
-              const leftPct = ((t.ts - startMs) / rangeMs) * 100;
-              return (
-                <span
-                  key={i}
-                  className="absolute text-[10px] tabular-nums text-muted-foreground"
-                  style={{ left: `${leftPct}%`, transform: 'translateX(-50%)' }}
-                >
-                  {t.type === 'high' ? '▲' : '▼'} {t.time}
-                </span>
-              );
-            });
-          })()}
-        </div>
+          return (
+            <svg className="w-full" viewBox={`0 0 400 ${svgHeight}`} preserveAspectRatio="none" style={{ height: 56, overflow: 'visible' }}>
+              {/* Wave path - shifted down */}
+              <path
+                d={pathD}
+                fill="none"
+                stroke="hsl(var(--primary) / 0.3)"
+                strokeWidth="1.5"
+                transform={`translate(0, ${waveOffsetY})`}
+              />
+              {/* Now marker */}
+              <circle cx={0} cy={nowY + waveOffsetY} r="3" fill="hsl(var(--primary))" />
+              {/* Event dots and labels on the curve */}
+              {eventPoints.map((pt, i) => (
+                <g key={i}>
+                  <circle
+                    cx={pt.x}
+                    cy={pt.y + waveOffsetY}
+                    r="3"
+                    fill={pt.type === 'high' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground) / 0.4)'}
+                  />
+                  <text
+                    x={pt.x}
+                    y={pt.type === 'high' ? pt.y + waveOffsetY - 7 : pt.y + waveOffsetY + 13}
+                    textAnchor="middle"
+                    fill="hsl(var(--muted-foreground))"
+                    fontSize="9"
+                    fontFamily="inherit"
+                  >
+                    {pt.time}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          );
+        })()}
       </div>
 
       {calm && (
