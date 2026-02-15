@@ -35,10 +35,10 @@ const Index = () => {
             animate={{ opacity: 1 }}
             className="pb-4 text-center"
           >
-            <h1 className="text-lg font-normal tracking-wide text-foreground">
+            <h1 className="text-2xl font-normal tracking-wide text-foreground">
               Cromane
             </h1>
-            <p className="text-xs text-muted-foreground tracking-[0.15em] uppercase">
+            <p className="text-sm text-muted-foreground tracking-[0.15em] uppercase">
               Co. Kerry · 51.93°N
             </p>
             {isLoading ? (
