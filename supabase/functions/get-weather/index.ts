@@ -5,8 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const LAT = 51.9356;
-const LON = -9.9067;
+const LAT = 52.105818;
+const LON = -9.895735;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {

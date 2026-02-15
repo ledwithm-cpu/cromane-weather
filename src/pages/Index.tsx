@@ -39,7 +39,7 @@ const Index = () => {
               Cromane
             </h1>
             <p className="text-sm text-muted-foreground tracking-[0.15em] uppercase">
-              Co. Kerry · 51.93°N
+              Co. Kerry · 52.11°N
             </p>
             {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
