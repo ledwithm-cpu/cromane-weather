@@ -3,10 +3,20 @@ import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
 import MarineCard from '@/components/MarineCard';
-import { mockWind, mockTides, mockWarnings, mockMarine, hasActiveWarnings } from '@/lib/mock-data';
+import { hasActiveWarnings } from '@/lib/mock-data';
+import { useWeather, useTides, useWarnings } from '@/hooks/use-cromane-data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
-  const warningActive = hasActiveWarnings(mockWarnings);
+  const { data: wind, isLoading: windLoading } = useWeather();
+  const { data: tides, isLoading: tidesLoading } = useTides();
+  const { data: warningData, isLoading: warningsLoading } = useWarnings();
+
+  const warnings = warningData?.warnings ?? [];
+  const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
+  const warningActive = hasActiveWarnings(warnings);
+
+  const isLoading = windLoading || tidesLoading || warningsLoading;
 
   return (
     <div className={`min-h-screen transition-colors duration-700 ${warningActive ? 'theme-warning' : ''}`}>
@@ -24,13 +34,18 @@ const Index = () => {
             <p className="text-xs text-muted-foreground tracking-[0.15em] uppercase">
               Co. Kerry · 51.93°N
             </p>
+            {isLoading && (
+              <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
+                Fetching live data…
+              </p>
+            )}
           </motion.header>
 
           {/* Card Stack */}
-          <ConditionsCard wind={mockWind} warnings={mockWarnings} />
-          <WarningsCard warnings={mockWarnings} />
-          <TideCard tides={mockTides} wind={mockWind} warnings={mockWarnings} />
-          <MarineCard marine={mockMarine} />
+          {wind && <ConditionsCard wind={wind} warnings={warnings} />}
+          <WarningsCard warnings={warnings} />
+          {tides && <TideCard tides={tides} wind={wind!} warnings={warnings} />}
+          <MarineCard marine={marine} />
 
           {/* Footer */}
           <motion.footer
@@ -40,7 +55,7 @@ const Index = () => {
             className="pt-8 pb-12 text-center"
           >
             <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-              Cromane Watch · MVP
+              Cromane Watch · Live
             </p>
           </motion.footer>
         </div>
