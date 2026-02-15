@@ -90,8 +90,8 @@ const LightningCard = ({ data }: Props) => {
     if (effectiveLevel >= 3 && closestDistance !== null && closestBearing !== null) {
       try {
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('⚡ Lightning Alert — Cromane', {
-            body: `Lightning Strike detected ${closestDistance}km ${closestBearing} of Cromane. Take cover.`,
+          new Notification('⚡ Lightning Alert', {
+            body: `Lightning detected ${closestDistance}km ${closestBearing}. Take cover.`,
             tag: 'lightning-alert',
           } as NotificationOptions);
         }
@@ -144,7 +144,7 @@ const LightningCard = ({ data }: Props) => {
       {/* Header */}
       <div className="flex items-center justify-between relative z-10">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Lightning · Cromane
+          Lightning
         </p>
         <div className="flex items-center gap-1.5">
           <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${
@@ -154,7 +154,7 @@ const LightningCard = ({ data }: Props) => {
             'bg-muted-foreground/30'
           }`} />
           <span className={`text-[10px] uppercase tracking-wider ${alertColors[effectiveLevel]}`}>
-            {effectiveLevel >= 1 ? 'Active' : 'Monitoring'}
+            {effectiveLevel >= 1 ? 'Active' : 'Stable'}
           </span>
         </div>
       </div>
@@ -231,7 +231,7 @@ const LightningCard = ({ data }: Props) => {
             className="relative z-10 bg-warning-red/10 rounded p-3 border border-warning-red/20"
           >
             <p className="text-xs text-foreground font-medium">
-              ⚡ Lightning Strike detected {data.closest_strike.distance_km}km {data.closest_strike.bearing_compass} of Cromane. Take cover.
+              ⚡ Lightning detected {data.closest_strike.distance_km}km {data.closest_strike.bearing_compass}. Take cover.
             </p>
           </motion.div>
         )}
