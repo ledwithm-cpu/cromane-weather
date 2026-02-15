@@ -13,6 +13,8 @@ export interface WindData {
   cloud_cover?: number;
   water_temperature_c?: number;
   feels_like_c?: number;
+  sunrise?: string;
+  sunset?: string;
 }
 
 export interface TideEvent {
@@ -54,6 +56,8 @@ export const mockWind: WindData = {
   cloud_cover: 75,
   water_temperature_c: 11,
   feels_like_c: 9,
+  sunrise: '08:22',
+  sunset: '17:15',
 };
 
 export const mockTides: TideData = {

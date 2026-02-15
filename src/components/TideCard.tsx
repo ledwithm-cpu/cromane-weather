@@ -43,6 +43,12 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
               <span className="text-xs tabular-nums">{wind.feels_like_c}°</span>
             </div>
           )}
+          {wind.sunrise && wind.sunset && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider">☀ {wind.sunrise}</span>
+              <span className="text-[10px] uppercase tracking-wider">☽ {wind.sunset}</span>
+            </div>
+          )}
         </div>
       </div>
 
