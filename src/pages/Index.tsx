@@ -61,7 +61,7 @@ const Index = () => {
           <div className="border-t border-border/30" />
           {tides && <TideCard tides={tides} wind={wind!} warnings={warnings} />}
           <div className="border-t border-border/30" />
-          <WarningsCard warnings={warnings} />
+          <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
           <div className="border-t border-border/30" />
           <MarineCard marine={marine} />
 
