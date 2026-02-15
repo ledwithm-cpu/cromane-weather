@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Waves } from 'lucide-react';
+// Waves icon removed – using text labels instead
 import { TideData, WindData, Warning } from '@/lib/mock-data';
 
 interface Props {
@@ -30,12 +30,20 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · Cromane Point
         </p>
-        {wind.water_temperature_c != null && (
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Waves size={12} />
-            <span className="text-xs tabular-nums">{wind.water_temperature_c}°</span>
-          </div>
-        )}
+      <div className="flex items-center gap-3 text-muted-foreground">
+          {wind.water_temperature_c != null && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider">Water</span>
+              <span className="text-xs tabular-nums">{wind.water_temperature_c}°</span>
+            </div>
+          )}
+          {wind.feels_like_c != null && wind.feels_like_c !== wind.temperature_c && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider">Feels</span>
+              <span className="text-xs tabular-nums">{wind.feels_like_c}°</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Current tide height */}
