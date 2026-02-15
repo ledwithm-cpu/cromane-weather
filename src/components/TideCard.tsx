@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Waves } from 'lucide-react';
 import { TideEvent, WindData, Warning, isBookingConditionsMet } from '@/lib/mock-data';
 
 interface Props {
@@ -18,9 +19,17 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
       transition={{ delay: 0.3 }}
       className="glass-card rounded-lg p-6 space-y-4"
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-        Tides · Cromane Point
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+          Tides · Cromane Point
+        </p>
+        {wind.water_temperature_c != null && (
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Waves size={12} />
+            <span className="text-xs tabular-nums">{wind.water_temperature_c}°</span>
+          </div>
+        )}
+      </div>
 
       {/* Next tide highlight */}
       <div className="flex items-baseline gap-3">
