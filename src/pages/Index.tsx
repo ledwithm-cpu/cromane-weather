@@ -59,7 +59,7 @@ const Index = () => {
           {/* Card Stack */}
           {wind && <ConditionsCard wind={wind} warnings={warnings} />}
           <div className="border-t border-border/30" />
-          {tides && <TideCard tides={tides} wind={wind!} warnings={warnings} />}
+          {tides && <TideCard tideData={tides} wind={wind!} warnings={warnings} />}
           <div className="border-t border-border/30" />
           <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
           <div className="border-t border-border/30" />

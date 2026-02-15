@@ -1,16 +1,19 @@
 import { motion } from 'framer-motion';
 import { Waves } from 'lucide-react';
-import { TideEvent, WindData, Warning, isBookingConditionsMet } from '@/lib/mock-data';
+import { TideData, WindData, Warning } from '@/lib/mock-data';
 
 interface Props {
-  tides: TideEvent[];
+  tideData: TideData;
   wind: WindData;
   warnings: Warning[];
 }
 
-const TideCard = ({ tides, wind, warnings }: Props) => {
+const TideCard = ({ tideData, wind, warnings }: Props) => {
+  const { events: tides, current_height_m, state } = tideData;
   const next = tides[0];
   const calm = wind.speed_knots < 20 && !warnings.some(w => w.level === 'orange' || w.level === 'red');
+  const stateArrow = state === 'rising' ? '↑' : '↓';
+  const stateLabel = state === 'rising' ? 'Rising' : 'Falling';
 
   return (
     <motion.div
@@ -31,20 +34,23 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
         )}
       </div>
 
-      {/* Next tide highlight */}
-      <div className="flex items-baseline gap-3">
-        <span className="text-4xl font-light tabular-nums text-foreground">{next.time}</span>
-        <span className="text-sm text-muted-foreground uppercase">{next.type} tide</span>
-        <span className="text-sm text-muted-foreground">{next.height_m}m</span>
+      {/* Current tide height */}
+      <div className="flex items-baseline gap-2">
+        <span className="text-5xl font-light tabular-nums text-foreground">
+          {current_height_m}
+        </span>
+        <span className="text-lg text-muted-foreground">m</span>
+        <span className="text-lg text-muted-foreground ml-1">{stateArrow}</span>
+        <span className="text-sm text-muted-foreground">{stateLabel}</span>
       </div>
 
+      {/* Next event */}
+      <p className="text-xs text-muted-foreground">
+        Next: {next.type === 'high' ? '▲' : '▼'} {next.type} tide at {next.time} ({next.height_m}m)
+      </p>
 
       {/* Tide timeline */}
       <div className="relative pt-4 pb-2">
-        {/* Horizontal line */}
-        <div className="absolute left-0 right-0 top-1/2 h-px bg-border/60" />
-
-        {/* Sine wave hint */}
         <svg className="w-full h-10" viewBox="0 0 400 40" preserveAspectRatio="none">
           <path
             d={(() => {
@@ -53,7 +59,6 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
                 const y = t.type === 'high' ? 6 : 34;
                 return { x, y };
               });
-              // Build smooth curve through points
               let d = `M${points[0].x},${points[0].y}`;
               for (let i = 0; i < points.length - 1; i++) {
                 const cx = (points[i].x + points[i + 1].x) / 2;
@@ -67,7 +72,6 @@ const TideCard = ({ tides, wind, warnings }: Props) => {
           />
         </svg>
 
-        {/* Markers */}
         <div className="relative flex justify-between -mt-10 h-10">
           {tides.map((t, i) => (
             <div key={i} className={`flex flex-col items-center ${t.type === 'high' ? 'justify-start' : 'justify-end'}`}>
