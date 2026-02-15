@@ -13,6 +13,59 @@ const trendArrow = (trend: string) => {
   return '→';
 };
 
+const WindCompass = ({ degrees }: { degrees: number }) => {
+  const size = 56;
+  const center = size / 2;
+  const radius = 22;
+  const tickLen = 4;
+  const cardinals = ['N', 'E', 'S', 'W'];
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {/* Outer ring */}
+        <circle cx={center} cy={center} r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth="1" />
+
+        {/* Tick marks */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i * 45 - 90) * (Math.PI / 180);
+          const isMajor = i % 2 === 0;
+          const len = isMajor ? tickLen + 1 : tickLen - 1;
+          const x1 = center + (radius - len) * Math.cos(angle);
+          const y1 = center + (radius - len) * Math.sin(angle);
+          const x2 = center + radius * Math.cos(angle);
+          const y2 = center + radius * Math.sin(angle);
+          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="hsl(var(--muted-foreground))" strokeWidth={isMajor ? 1.2 : 0.6} strokeOpacity={isMajor ? 0.7 : 0.4} />;
+        })}
+
+        {/* Cardinal labels */}
+        {cardinals.map((label, i) => {
+          const angle = (i * 90 - 90) * (Math.PI / 180);
+          const x = center + (radius + 7) * Math.cos(angle);
+          const y = center + (radius + 7) * Math.sin(angle);
+          return (
+            <text key={label} x={x} y={y} textAnchor="middle" dominantBaseline="central" className="fill-muted-foreground" fontSize="7" fontWeight={label === 'N' ? 500 : 300}>
+              {label}
+            </text>
+          );
+        })}
+
+        {/* Wind arrow */}
+        <g transform={`rotate(${degrees}, ${center}, ${center})`}>
+          <line x1={center} y1={center + 8} x2={center} y2={center - radius + 6} stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" />
+          <polygon
+            points={`${center},${center - radius + 4} ${center - 3},${center - radius + 10} ${center + 3},${center - radius + 10}`}
+            fill="hsl(var(--primary))"
+          />
+        </g>
+
+        {/* Center dot */}
+        <circle cx={center} cy={center} r="2" fill="hsl(var(--muted-foreground))" opacity="0.5" />
+      </svg>
+    </div>
+  );
+};
+
 const ConditionsCard = ({ wind, warnings }: Props) => {
   const canBook = isBookingConditionsMet(wind, warnings);
   const [unit, setUnit] = useState<'kts' | 'kmh'>('kts');
@@ -42,7 +95,7 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
         </button>
       </div>
 
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-2">
           <span className="text-5xl font-light tabular-nums text-foreground">
             {displaySpeed}
@@ -52,7 +105,8 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
             {trendArrow(wind.trend)}
           </span>
         </div>
-        <div className="text-right">
+        <div className="flex items-center gap-4">
+          <WindCompass degrees={wind.direction_degrees} />
           <p className="text-2xl font-light text-foreground">{wind.temperature_c}°</p>
         </div>
       </div>
