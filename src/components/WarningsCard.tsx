@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { Warning } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
+import { CloudLightning } from 'lucide-react';
 
 interface Props {
   warnings: Warning[];
+  weatherCode?: number;
 }
 
 const levelColor: Record<string, string> = {
@@ -12,8 +14,10 @@ const levelColor: Record<string, string> = {
   red: 'bg-warning-red text-destructive-foreground',
 };
 
-const WarningsCard = ({ warnings }: Props) => {
-  if (warnings.length === 0) {
+const WarningsCard = ({ warnings, weatherCode }: Props) => {
+  const thunderActive = (weatherCode ?? 0) >= 95;
+
+  if (warnings.length === 0 && !thunderActive) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -39,6 +43,18 @@ const WarningsCard = ({ warnings }: Props) => {
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
         Met Éireann Warnings
       </p>
+
+      {thunderActive && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <CloudLightning size={14} className="text-accent" />
+            <span className="text-sm font-normal text-foreground">Thunderstorm Activity Detected</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Live weather data indicates thunderstorm or lightning activity in the Cromane area. Take appropriate precautions.
+          </p>
+        </div>
+      )}
 
       {warnings.map((w, i) => (
         <div key={i} className="space-y-2">
