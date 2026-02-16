@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, FlaskConical } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+
 import { useQueryClient } from '@tanstack/react-query';
 
 export interface LightningData {
@@ -112,21 +112,17 @@ const LightningCard = ({ data }: Props) => {
   }, []);
 
   const triggerTestAlert = useCallback(async () => {
-    await supabase.functions.invoke('get-lightning', {
-      headers: { 'Content-Type': 'application/json' },
-      body: {},
-    });
-    // Now call with test param via fetch directly
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-lightning?test=1`;
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'GET',
       headers: {
         'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
     });
-    // Refetch lightning data to pick up the test strike
-    queryClient.invalidateQueries({ queryKey: ['lightning'] });
+    const testData = await res.json();
+    // Directly inject the test response into the query cache
+    queryClient.setQueryData(['lightning'], testData);
   }, [queryClient]);
 
   return (
