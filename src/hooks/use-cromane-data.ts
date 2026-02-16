@@ -69,8 +69,8 @@ export function useLightning() {
   return useQuery({
     queryKey: ['lightning'],
     queryFn: fetchLightning,
-    refetchInterval: 60 * 1000, // Poll every 60s for near-real-time
-    staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000, // Poll every 30s for near-real-time
+    staleTime: 15 * 1000,
     placeholderData: () => cacheGet<LightningData>('lightning') ?? mockLightning,
     retry: 2,
   });
