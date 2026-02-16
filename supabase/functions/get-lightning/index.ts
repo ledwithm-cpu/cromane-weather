@@ -5,14 +5,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Cromane coordinates
+// Cromane coordinates & geofence
 const HOME_LAT = 52.1008;
 const HOME_LON = -9.8856;
+const GEOFENCE_KM = 20;
 
-// Alert thresholds in km
-const THRESHOLD_AWARENESS = 50;
-const THRESHOLD_WARNING = 10;
-const THRESHOLD_DANGER = 5;
+// In-memory strike cache (persists across warm invocations)
+const strikeCache: Array<{
+  time_ns: number;
+  lat: number;
+  lon: number;
+  distance_km: number;
+  bearing_deg: number;
+  bearing_compass: string;
+  alert_level: number;
+}> = [];
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 // Rate limiting
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -30,7 +38,6 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
-// Haversine distance in km
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -41,7 +48,6 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Bearing from home to strike
 function bearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
@@ -57,10 +63,99 @@ function bearingToCompass(deg: number): string {
 }
 
 function getAlertLevel(distanceKm: number): number {
-  if (distanceKm <= THRESHOLD_DANGER) return 3;
-  if (distanceKm <= THRESHOLD_WARNING) return 2;
-  if (distanceKm <= THRESHOLD_AWARENESS) return 1;
+  if (distanceKm <= 5) return 3;   // Immediate danger
+  if (distanceKm <= 10) return 2;  // Warning
+  if (distanceKm <= 20) return 1;  // Awareness (tightened from 50km)
   return 0;
+}
+
+function pruneCache() {
+  const cutoff = Date.now() - CACHE_TTL_MS;
+  let i = 0;
+  while (i < strikeCache.length) {
+    if (Math.floor(strikeCache[i].time_ns / 1_000_000) < cutoff) {
+      strikeCache.splice(i, 1);
+    } else {
+      i++;
+    }
+  }
+}
+
+function addStrikeToCache(strike: typeof strikeCache[0]) {
+  // Deduplicate by time_ns
+  if (!strikeCache.some(s => s.time_ns === strike.time_ns && s.lat === strike.lat && s.lon === strike.lon)) {
+    strikeCache.push(strike);
+  }
+}
+
+// Connect to Blitzortung WebSocket, collect strikes for a few seconds
+async function fetchStrikesViaWebSocket(): Promise<void> {
+  // Rotate through available servers
+  const servers = ['wss://ws1.blitzortung.org/', 'wss://ws7.blitzortung.org/', 'wss://ws2.blitzortung.org/'];
+  const serverUrl = servers[Math.floor(Math.random() * servers.length)];
+  
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      try { ws.close(); } catch { /* ignore */ }
+      resolve();
+    }, 4000); // Listen for 4 seconds
+
+    let ws: WebSocket;
+    try {
+      ws = new WebSocket(serverUrl);
+    } catch (e) {
+      console.error('WebSocket creation failed:', e);
+      clearTimeout(timeout);
+      resolve();
+      return;
+    }
+
+    ws.onopen = () => {
+      console.log(`Connected to ${serverUrl}`);
+      // Subscribe to region 1 (Europe) which covers Ireland
+      ws.send(JSON.stringify({ a: 111 }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Strike data has lat, lon, time fields
+        if (data.lat !== undefined && data.lon !== undefined) {
+          const lat = data.lat;
+          const lon = data.lon;
+          const dist = haversine(HOME_LAT, HOME_LON, lat, lon);
+          
+          if (dist <= GEOFENCE_KM) {
+            const brng = bearing(HOME_LAT, HOME_LON, lat, lon);
+            const timeNs = data.time || Date.now() * 1_000_000;
+            addStrikeToCache({
+              time_ns: timeNs,
+              lat,
+              lon,
+              distance_km: dist,
+              bearing_deg: brng,
+              bearing_compass: bearingToCompass(brng),
+              alert_level: getAlertLevel(dist),
+            });
+            console.log(`⚡ Strike detected! ${Math.round(dist * 10) / 10}km ${bearingToCompass(brng)}`);
+          }
+        }
+      } catch {
+        // Skip non-JSON or malformed messages
+      }
+    };
+
+    ws.onerror = (e) => {
+      console.error('WebSocket error:', e);
+      clearTimeout(timeout);
+      resolve();
+    };
+
+    ws.onclose = () => {
+      clearTimeout(timeout);
+      resolve();
+    };
+  });
 }
 
 serve(async (req) => {
@@ -76,101 +171,67 @@ serve(async (req) => {
     });
   }
 
+  // Check for test mode
+  const url = new URL(req.url);
+  const testMode = url.searchParams.get('test') === '1';
+
   try {
-    // Use Blitzortung's public JSON archive - fetch last 10 minutes of data for Europe (container 1)
-    const now = new Date();
-    const utcYear = now.getUTCFullYear();
-    const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
-    const utcDay = String(now.getUTCDate()).padStart(2, '0');
-    const utcHour = String(now.getUTCHours()).padStart(2, '0');
-    const utcMin10 = String(Math.floor(now.getUTCMinutes() / 10) * 10).padStart(2, '0');
-
-    // Try current 10-min block and previous one for freshness
-    const blocks = [
-      `${utcYear}/${utcMonth}/${utcDay}/${utcHour}/${utcMin10}`,
-    ];
-    
-    // Also fetch previous 10-min block
-    const prevDate = new Date(now.getTime() - 10 * 60 * 1000);
-    const prevYear = prevDate.getUTCFullYear();
-    const prevMonth = String(prevDate.getUTCMonth() + 1).padStart(2, '0');
-    const prevDay = String(prevDate.getUTCDate()).padStart(2, '0');
-    const prevHour = String(prevDate.getUTCHours()).padStart(2, '0');
-    const prevMin10 = String(Math.floor(prevDate.getUTCMinutes() / 10) * 10).padStart(2, '0');
-    blocks.push(`${prevYear}/${prevMonth}/${prevDay}/${prevHour}/${prevMin10}`);
-
-    const nearbyStrikes: Array<{
-      time_ns: number;
-      lat: number;
-      lon: number;
-      distance_km: number;
-      bearing_deg: number;
-      bearing_compass: string;
-      alert_level: number;
-    }> = [];
-
-    for (const block of blocks) {
-      try {
-        // Blitzortung public JSON archive (Container 1 = Europe)
-        const archiveUrl = `https://data.blitzortung.org/Data/Protected/last_strikes.php?north=${HOME_LAT + 0.6}&south=${HOME_LAT - 0.6}&west=${HOME_LON - 1.0}&east=${HOME_LON + 1.0}&number=500`;
-        
-        const res = await fetch(archiveUrl, {
-          headers: { 'Accept': 'text/plain' },
-        });
-
-        if (!res.ok) {
-          // If protected endpoint fails, fall back to the archive
-          const fallbackUrl = `https://data.blitzortung.org/Data/Protected/strikes.php?north=${HOME_LAT + 0.6}&south=${HOME_LAT - 0.6}&west=${HOME_LON - 1.0}&east=${HOME_LON + 1.0}&number=500&sig=0`;
-          const fallbackRes = await fetch(fallbackUrl);
-          if (!fallbackRes.ok) {
-            console.log(`Archive block unavailable: ${block}`);
-            continue;
-          }
-          const text = await fallbackRes.text();
-          parseStrikes(text, nearbyStrikes);
-        } else {
-          const text = await res.text();
-          parseStrikes(text, nearbyStrikes);
-        }
-        break; // Only need one successful fetch
-      } catch (e) {
-        console.log(`Failed to fetch block ${block}:`, e);
-      }
+    if (testMode) {
+      // Simulate a strike at Cromane Lower (52.0985, -9.8910)
+      const testLat = 52.0985;
+      const testLon = -9.8910;
+      const dist = haversine(HOME_LAT, HOME_LON, testLat, testLon);
+      const brng = bearing(HOME_LAT, HOME_LON, testLat, testLon);
+      addStrikeToCache({
+        time_ns: Date.now() * 1_000_000,
+        lat: testLat,
+        lon: testLon,
+        distance_km: dist,
+        bearing_deg: brng,
+        bearing_compass: bearingToCompass(brng),
+        alert_level: getAlertLevel(dist),
+      });
+      console.log('🧪 Test strike injected at Cromane Lower');
+    } else {
+      // Fetch real strikes via WebSocket
+      await fetchStrikesViaWebSocket();
     }
 
-    // Sort by time (most recent first)
-    nearbyStrikes.sort((a, b) => b.time_ns - a.time_ns);
+    // Prune old strikes
+    pruneCache();
 
-    // Determine overall alert level
-    const maxAlertLevel = nearbyStrikes.length > 0
-      ? Math.max(...nearbyStrikes.map(s => s.alert_level))
+    // Sort by time (most recent first)
+    const sorted = [...strikeCache].sort((a, b) => b.time_ns - a.time_ns);
+
+    const maxAlertLevel = sorted.length > 0
+      ? Math.max(...sorted.map(s => s.alert_level))
       : 0;
 
-    // Find the closest strike
-    const closestStrike = nearbyStrikes.length > 0
-      ? nearbyStrikes.reduce((prev, curr) => curr.distance_km < prev.distance_km ? curr : prev)
+    const closestStrike = sorted.length > 0
+      ? sorted.reduce((prev, curr) => curr.distance_km < prev.distance_km ? curr : prev)
       : null;
 
-    // Most recent strike timestamp
-    const lastStrikeTime = nearbyStrikes.length > 0
-      ? Math.floor(nearbyStrikes[0].time_ns / 1_000_000) // Convert ns to ms
+    const lastStrikeTime = sorted.length > 0
+      ? Math.floor(sorted[0].time_ns / 1_000_000)
       : null;
 
     const result = {
       alert_level: maxAlertLevel,
-      strike_count: nearbyStrikes.length,
+      strike_count: sorted.length,
       last_strike_time_ms: lastStrikeTime,
       closest_strike: closestStrike ? {
         distance_km: Math.round(closestStrike.distance_km * 10) / 10,
         bearing_compass: closestStrike.bearing_compass,
         bearing_deg: Math.round(closestStrike.bearing_deg),
       } : null,
-      strikes: nearbyStrikes.slice(0, 10).map(s => ({
+      strikes: sorted.slice(0, 10).map(s => ({
         distance_km: Math.round(s.distance_km * 10) / 10,
         bearing_compass: s.bearing_compass,
         time_ms: Math.floor(s.time_ns / 1_000_000),
       })),
       checked_at: Date.now(),
+      source: 'blitzortung-websocket',
+      geofence_km: GEOFENCE_KM,
     };
 
     return new Response(JSON.stringify(result), {
@@ -187,38 +248,8 @@ serve(async (req) => {
       checked_at: Date.now(),
       error: 'Unable to fetch lightning data. Please try again later.',
     }), {
-      status: 200, // Return 200 with safe defaults so app still works
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
-
-function parseStrikes(text: string, results: Array<any>) {
-  const lines = text.trim().split('\n').filter(l => l.trim());
-  for (const line of lines) {
-    try {
-      const strike = JSON.parse(line);
-      const lat = strike.lat;
-      const lon = strike.lon;
-      const time_ns = strike.time;
-
-      if (lat == null || lon == null) continue;
-
-      const dist = haversine(HOME_LAT, HOME_LON, lat, lon);
-      if (dist <= THRESHOLD_AWARENESS) {
-        const brng = bearing(HOME_LAT, HOME_LON, lat, lon);
-        results.push({
-          time_ns: time_ns || 0,
-          lat,
-          lon,
-          distance_km: dist,
-          bearing_deg: brng,
-          bearing_compass: bearingToCompass(brng),
-          alert_level: getAlertLevel(dist),
-        });
-      }
-    } catch {
-      // Skip malformed lines
-    }
-  }
-}

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Zap, FlaskConical } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface LightningData {
   alert_level: number; // 0=safe, 1=awareness, 2=warning, 3=danger
@@ -40,6 +42,7 @@ const alertColors: Record<number, string> = {
 };
 
 const LightningCard = ({ data }: Props) => {
+  const queryClient = useQueryClient();
   const [elapsed, setElapsed] = useState('');
   const [showPulse, setShowPulse] = useState(false);
   const [prevStrikeTime, setPrevStrikeTime] = useState<number | null>(null);
@@ -107,6 +110,24 @@ const LightningCard = ({ data }: Props) => {
       }
     } catch { /* Notifications not available */ }
   }, []);
+
+  const triggerTestAlert = useCallback(async () => {
+    await supabase.functions.invoke('get-lightning', {
+      headers: { 'Content-Type': 'application/json' },
+      body: {},
+    });
+    // Now call with test param via fetch directly
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-lightning?test=1`;
+    await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+    });
+    // Refetch lightning data to pick up the test strike
+    queryClient.invalidateQueries({ queryKey: ['lightning'] });
+  }, [queryClient]);
 
   return (
     <motion.div
@@ -209,15 +230,24 @@ const LightningCard = ({ data }: Props) => {
         {/* Strike count */}
         {data.strike_count > 0 && effectiveLevel >= 1 && (
           <p className="text-xs text-muted-foreground mt-3">
-            {data.strike_count} strike{data.strike_count !== 1 ? 's' : ''} detected within 50km
+            {data.strike_count} strike{data.strike_count !== 1 ? 's' : ''} detected within 20km
           </p>
         )}
 
         {/* Safe state */}
         {effectiveLevel === 0 && (
-          <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-            No lightning activity within 50km for the past 30 minutes. Blitzortung community network.
-          </p>
+          <>
+            <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
+              No lightning activity within 20km for the past 30 minutes. Blitzortung community network.
+            </p>
+            <button
+              onClick={triggerTestAlert}
+              className="mt-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              <FlaskConical size={12} />
+              Test Alert
+            </button>
+          </>
         )}
       </div>
 
