@@ -101,16 +101,19 @@
     --sidebar-ring: 210 55% 55%;
   }
 
-  /* Warning state — deep charcoal with amber */
+  /* Warning state — deep charcoal with amber tint */
   .theme-warning {
-    --background: 220 15% 12%;
-    --foreground: 40 20% 90%;
-    --card: 220 15% 15%;
-    --card-foreground: 40 20% 90%;
-    --glass-bg: 220 15% 18% / 0.7;
-    --glass-border: 35 60% 40% / 0.3;
-    --muted-foreground: 215 10% 60%;
-    --border: 220 15% 22%;
+    --background: 25 15% 10%;
+    --foreground: 35 30% 92%;
+    --card: 25 12% 14%;
+    --card-foreground: 35 30% 92%;
+    --glass-bg: 25 12% 16% / 0.7;
+    --glass-border: 35 60% 40% / 0.35;
+    --muted: 25 10% 16%;
+    --muted-foreground: 30 15% 58%;
+    --border: 30 15% 22%;
+    --accent: 15 85% 50%;
+    --accent-foreground: 15 95% 92%;
   }
 }
 
