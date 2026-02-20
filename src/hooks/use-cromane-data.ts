@@ -58,8 +58,8 @@ export function useWarnings() {
   return useQuery({
     queryKey: ['warnings'],
     queryFn: fetchWarnings,
-    refetchInterval: 15 * 60 * 1000,
-    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000, // 5-minute refresh for Met Éireann feeds
+    staleTime: 2 * 60 * 1000,
     placeholderData: () => cacheGet<{ warnings: Warning[]; marine: MarineWarning }>('warnings') ?? { warnings: mockWarnings, marine: mockMarine },
     retry: 2,
   });

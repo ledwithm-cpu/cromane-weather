@@ -34,6 +34,8 @@ export interface Warning {
   headline: string;
   description: string;
   valid_until: string;
+  is_thunderstorm?: boolean;
+  elevated?: boolean;
 }
 
 export interface MarineWarning {
