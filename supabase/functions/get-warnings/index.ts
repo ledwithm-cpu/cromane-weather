@@ -56,26 +56,47 @@ serve(async (req) => {
 
         warnings = warningList
           .filter((w: any) => {
+            // Re-parse county list on every refresh to catch late-additions
             const allText = JSON.stringify(w).toLowerCase();
-            return allText.includes('kerry') || allText.includes('munster') || 
+            // Check explicit county list field first
+            const counties = (w.counties || w.regions || w.areas || '').toLowerCase();
+            const isKerryInCounties = counties.includes('kerry');
+            // Broad match fallback
+            const isBroadMatch = allText.includes('kerry') || allText.includes('munster') || 
                    allText.includes('ireland') || allText.includes('national') ||
                    allText.includes('all counties');
+            return isKerryInCounties || isBroadMatch;
           })
           .map((w: any) => {
             const rawLevel = (w.severity || w.level || 'yellow').toLowerCase();
+            const rawType = (w.type || w.phenomenon || w.headline || '').toLowerCase();
             let level = 'yellow';
             if (rawLevel.includes('red') || rawLevel.includes('severe')) level = 'red';
             else if (rawLevel.includes('orange') || rawLevel.includes('moderate')) level = 'orange';
+
+            // Elevate Yellow Thunderstorm to high-priority (treated like orange)
+            const isThunderstorm = rawType.includes('thunder') || rawType.includes('lightning') ||
+                                    allText_includes_thunder(JSON.stringify(w));
+            const elevated = isThunderstorm && level === 'yellow';
+
             return {
-              level,
+              level: elevated ? 'orange' : level,
               headline: w.headline || w.title || 'Weather Warning',
               description: w.description || '',
               valid_until: w.expiry || w.valid_until || 'Check met.ie',
+              is_thunderstorm: isThunderstorm,
+              elevated,
             };
           });
       } catch (e) {
         console.error('JSON parse error:', e);
       }
+    }
+
+    // Helper: check if text mentions thunderstorm/lightning
+    function allText_includes_thunder(text: string): boolean {
+      const t = text.toLowerCase();
+      return t.includes('thunder') || t.includes('lightning') || t.includes('electrical storm');
     }
 
     // --- Parse XML feed (includes marine/gale warnings) ---
@@ -142,10 +163,18 @@ serve(async (req) => {
             // Also check for Kerry-relevant weather warnings from XML
             if (isActive && !isGaleOrMarine) {
               const allText = (header + ' ' + warnText + ' ' + regions).toLowerCase();
-              if (allText.includes('kerry') || allText.includes('munster') || 
-                  allText.includes('ireland') || allText.includes('all counties')) {
-                const wLevel = level.toLowerCase().includes('red') ? 'red' :
+              // Explicit county/region check + broad fallback
+              const isKerryRelevant = allText.includes('kerry') || allText.includes('munster') || 
+                  allText.includes('ireland') || allText.includes('all counties');
+              if (isKerryRelevant) {
+                let wLevel = level.toLowerCase().includes('red') ? 'red' :
                                level.toLowerCase().includes('orange') ? 'orange' : 'yellow';
+                
+                // Elevate Yellow Thunderstorm to orange priority
+                const isThunder = allText.includes('thunder') || allText.includes('lightning');
+                const elevated = isThunder && wLevel === 'yellow';
+                if (elevated) wLevel = 'orange';
+
                 // Only add if not already from JSON
                 if (!warnings.some(w => w.headline === header)) {
                   warnings.push({
@@ -153,6 +182,8 @@ serve(async (req) => {
                     headline: header || warnTypeName,
                     description: warnText,
                     valid_until: validTo || 'Check met.ie',
+                    is_thunderstorm: isThunder,
+                    elevated,
                   });
                 }
               }

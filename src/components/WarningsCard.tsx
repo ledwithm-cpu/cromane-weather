@@ -60,10 +60,15 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
         <div key={i} className="space-y-2">
           <div className="flex items-center gap-2">
             <Badge className={`${levelColor[w.level]} border-0 text-xs uppercase font-medium`}>
-              {w.level}
+              {w.elevated ? '⚡ ' : ''}{w.level}
             </Badge>
             <span className="text-sm font-normal text-foreground">{w.headline}</span>
           </div>
+          {w.elevated && (
+            <p className="text-xs text-warning-orange font-medium">
+              ⚡ Elevated priority — thunderstorm risk near Cromane Bay
+            </p>
+          )}
           <p className="text-xs text-muted-foreground leading-relaxed">{w.description}</p>
           <p className="text-xs text-muted-foreground/60">Valid until {w.valid_until}</p>
         </div>
