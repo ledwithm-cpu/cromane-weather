@@ -161,7 +161,7 @@ const LightningCard = ({ data }: Props) => {
       {/* Header */}
       <div className="flex items-center justify-between relative z-10">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Lightning
+          Thunder &amp; Lightning
         </p>
         <div className="flex items-center gap-1.5">
           <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${
