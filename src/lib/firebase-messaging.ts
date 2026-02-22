@@ -50,6 +50,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
     // For now, try without (works for some Firebase projects)
     const token = await getToken(messaging, {
       serviceWorkerRegistration: registration,
+      vapidKey: 'BAh0tVkaffNfH5WqnZ8MtxGmHQvfnl7GiIoDtCtAApLhjKtwla1ETtCihfD0HJ3oJg0lyeH-01mpyY-eQ59IMqs',
     });
 
     if (!token) {
