@@ -196,14 +196,7 @@ const LightningCard = ({ data }: Props) => {
           Thunder &amp; Lightning
         </p>
         <div className="flex items-center gap-2">
-          {/* Radar Health Indicator */}
-          <div className="flex items-center gap-1" title={radarFresh ? 'Nowcast active' : 'Nowcast syncing...'}>
-            <Radar size={10} className="text-muted-foreground/50" />
-            <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${
-              radarFresh ? 'bg-emerald-500' : 'bg-muted-foreground/30'
-            }`} />
-          </div>
-          {/* Alert Status Dot */}
+          {/* Alert Status Light */}
           <div
             className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
               effectiveLevel >= 2 || displayLevel >= 1
