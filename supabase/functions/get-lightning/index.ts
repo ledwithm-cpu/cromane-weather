@@ -378,7 +378,6 @@ serve(async (req) => {
         bearing_compass: s.bearing_compass,
         time_ms: Math.floor(s.time_ns / 1_000_000),
       })),
-      // ─── Nowcast (new) ───
       nowcast: {
         lpi: nowcast.lpi,
         cape: nowcast.cape,
@@ -394,6 +393,11 @@ serve(async (req) => {
       source: 'blitzortung-websocket',
       geofence_km: GEOFENCE_KM,
     };
+
+    // ─── Trigger Push Notifications ───
+    triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike).catch(e =>
+      console.error('Push trigger error:', e)
+    );
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -436,4 +440,92 @@ async function injectTestStrike() {
     alert_level: getAlertLevel(dist),
   });
   console.log('🧪 Test strike injected at Cromane Lower');
+}
+
+// ─── Push Notification Trigger ───
+let lastPushLevel = 0;
+let lastPushTime = 0;
+const PUSH_COOLDOWN_MS = 15 * 60 * 1000;
+
+async function triggerPushIfNeeded(
+  alertLevel: number,
+  nowcast: NowcastResult,
+  closestStrike: typeof strikeCache[0] | null
+) {
+  const now = Date.now();
+  
+  // Only push on escalation or new threat, with cooldown
+  if (now - lastPushTime < PUSH_COOLDOWN_MS && alertLevel <= lastPushLevel) return;
+  
+  let title = '';
+  let body = '';
+  let notificationType = '';
+
+  // Stage 3: Immediate danger (real strikes < 5km)
+  if (alertLevel >= 3 && closestStrike) {
+    title = '⚡ Lightning Alert — Take Cover';
+    body = `Lightning detected ${Math.round(closestStrike.distance_km * 10) / 10}km ${closestStrike.bearing_compass}. Seek shelter immediately.`;
+    notificationType = 'immediate_danger';
+  }
+  // Stage 2: Warning (strikes 5-10km)
+  else if (alertLevel >= 2 && closestStrike) {
+    title = '⚡ Lightning Warning';
+    body = `Lightning detected ${Math.round(closestStrike.distance_km * 10) / 10}km ${closestStrike.bearing_compass}. Stay alert.`;
+    notificationType = 'lightning_warning';
+  }
+  // Stage 1: Awareness / approaching storm
+  else if (alertLevel >= 1 || nowcast.nowcast_level >= 1) {
+    if (nowcast.eta_minutes !== null && nowcast.eta_minutes <= 60) {
+      title = '🌩️ Storm Approaching Cromane';
+      body = `Storm cell detected ${nowcast.nearest_cell?.direction ?? ''} — ETA ${nowcast.eta_minutes} minutes.`;
+      notificationType = 'storm_approaching';
+    } else if (alertLevel >= 1) {
+      title = '⚡ Lightning Awareness';
+      body = 'Lightning activity detected within 20km of Cromane.';
+      notificationType = 'lightning_awareness';
+    } else {
+      return; // No push needed
+    }
+  }
+  // Atmospheric charging (LPI spike)
+  else if (nowcast.atmospheric_alert && nowcast.lpi > 0.5) {
+    title = '🌩️ Heads Up — Atmosphere Charging';
+    body = 'Conditions favorable for thunderstorms near Cromane.';
+    notificationType = 'atmosphere_charging';
+  }
+  else {
+    return; // Nothing to push
+  }
+
+  // Send via the send-push-notification function
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        body,
+        notification_type: notificationType,
+        alert_level: alertLevel,
+        data: {
+          alert_level: String(alertLevel),
+          nowcast_level: String(nowcast.nowcast_level),
+        },
+      }),
+    });
+
+    const result = await res.json();
+    console.log(`📲 Push sent: ${notificationType}, delivered to ${result.sent ?? 0} devices`);
+    
+    lastPushLevel = alertLevel;
+    lastPushTime = now;
+  } catch (e) {
+    console.error('Failed to trigger push notification:', e);
+  }
 }
