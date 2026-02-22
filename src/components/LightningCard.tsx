@@ -91,7 +91,7 @@ const LightningCard = ({ data }: Props) => {
       try {
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification('⚡ Lightning Alert', {
-            body: `Lightning detected ${closestDistance}km ${closestBearing}. Take cover.`,
+            body: `Lightning detected ${closestDistance}km ${closestBearing}. Take your pets inside.`,
             tag: 'lightning-alert',
           } as NotificationOptions);
         }
@@ -204,12 +204,9 @@ const LightningCard = ({ data }: Props) => {
             }`} />
           </div>
           {/* Alert Status Dot */}
-          <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${
-            effectiveLevel >= 3 ? 'bg-warning-red animate-pulse' :
-            effectiveLevel >= 2 ? 'bg-warning-orange animate-pulse' :
-            displayLevel >= 1 ? 'bg-warning-orange animate-pulse' :
-            nowcastLevel > 0 ? 'bg-accent animate-pulse' :
-            'bg-muted-foreground/30'
+          <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-500 shadow-sm ${
+            effectiveLevel >= 2 || displayLevel >= 1 ? 'bg-warning-red animate-pulse shadow-warning-red/40' :
+            'bg-emerald-500 shadow-emerald-500/30'
           }`} />
           <span className={`text-[10px] uppercase tracking-wider ${
             displayLevel >= 1 || nowcastLevel > 0 ? statusColor : 'text-muted-foreground'
@@ -310,7 +307,7 @@ const LightningCard = ({ data }: Props) => {
         {effectiveLevel === 0 && nowcastLevel === 0 && (
           <>
             <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-              No lightning activity within 20km for the past 30 minutes. Blitzortung community network.
+              No lightning activity within 20km for the past 30 minutes.
             </p>
             <button
               onClick={triggerTestAlert}
@@ -333,7 +330,7 @@ const LightningCard = ({ data }: Props) => {
             className="relative z-10 bg-warning-red/10 rounded p-3 border border-warning-red/20"
           >
             <p className="text-xs text-foreground font-medium">
-              ⚡ Lightning detected {data.closest_strike.distance_km}km {data.closest_strike.bearing_compass}. Take cover.
+              ⚡ Lightning detected {data.closest_strike.distance_km}km {data.closest_strike.bearing_compass}. Take your pets inside.
             </p>
           </motion.div>
         )}
