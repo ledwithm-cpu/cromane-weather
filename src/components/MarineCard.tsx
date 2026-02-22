@@ -24,14 +24,14 @@ const MarineCard = ({ marine }: Props) => {
             }`}
             style={marine.active ? { boxShadow: '0 0 8px 3px hsla(25, 95%, 55%, 0.4)' } : undefined}
           />
-          {marine.active && (
-            <span className="text-[10px] uppercase tracking-wider text-warning-orange">Active</span>
-          )}
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <span className="text-sm font-normal text-foreground">{marine.type}</span>
+        {marine.active && (
+          <span className="text-[10px] uppercase tracking-wider text-warning-orange">Active</span>
+        )}
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">{marine.description}</p>
