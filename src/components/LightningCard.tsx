@@ -221,7 +221,7 @@ const LightningCard = ({ data }: Props) => {
           <span className={`text-[10px] uppercase tracking-wider ${
             displayLevel >= 1 || nowcastLevel > 0 ? statusColor : 'text-muted-foreground'
           }`}>
-            {effectiveLevel >= 1 ? 'Active' : nowcastLevel >= 1 ? 'Tracking' : nowcastLevel > 0 ? 'Charging' : 'Stable'}
+            {effectiveLevel >= 1 ? 'Active' : nowcastLevel >= 1 ? 'Tracking' : nowcastLevel > 0 ? 'Charging' : ''}
           </span>
         </div>
       </div>
