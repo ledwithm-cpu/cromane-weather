@@ -204,10 +204,18 @@ const LightningCard = ({ data }: Props) => {
             }`} />
           </div>
           {/* Alert Status Dot */}
-          <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-500 shadow-sm ${
-            effectiveLevel >= 2 || displayLevel >= 1 ? 'bg-warning-red animate-pulse shadow-warning-red/40' :
-            'bg-emerald-500 shadow-emerald-500/30'
-          }`} />
+          <div
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
+              effectiveLevel >= 2 || displayLevel >= 1
+                ? 'bg-warning-red animate-pulse'
+                : 'bg-emerald-500'
+            }`}
+            style={
+              effectiveLevel >= 2 || displayLevel >= 1
+                ? { boxShadow: '0 0 8px 3px hsla(0, 80%, 50%, 0.5)' }
+                : undefined
+            }
+          />
           <span className={`text-[10px] uppercase tracking-wider ${
             displayLevel >= 1 || nowcastLevel > 0 ? statusColor : 'text-muted-foreground'
           }`}>
