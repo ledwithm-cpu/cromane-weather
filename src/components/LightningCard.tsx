@@ -211,8 +211,10 @@ const LightningCard = ({ data }: Props) => {
                 : 'bg-emerald-500'
             }`}
             style={
-              effectiveLevel >= 2 || displayLevel >= 1
-                ? { boxShadow: '0 0 8px 3px hsla(0, 80%, 50%, 0.5)' }
+              effectiveLevel >= 3
+                ? { boxShadow: '0 0 12px 5px hsla(0, 80%, 50%, 0.7)' }
+                : effectiveLevel >= 2 || displayLevel >= 1
+                ? { boxShadow: '0 0 8px 3px hsla(0, 80%, 50%, 0.4)' }
                 : undefined
             }
           />
