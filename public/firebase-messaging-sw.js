@@ -1,24 +1,20 @@
 // Firebase Cloud Messaging Service Worker
-// This file must be at the root of the public directory
-
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-// Firebase config will be injected when the app registers this SW
-// For now, handle background messages with defaults
 firebase.initializeApp({
-  // These will be populated by the main app's postMessage
-  apiKey: self.__FIREBASE_CONFIG__?.apiKey || '',
-  projectId: self.__FIREBASE_CONFIG__?.projectId || '',
-  messagingSenderId: self.__FIREBASE_CONFIG__?.messagingSenderId || '',
-  appId: self.__FIREBASE_CONFIG__?.appId || '',
+  apiKey: "AIzaSyAbgzfwQ3x0WhXtRvY5LABLPhl8sZDOOZA",
+  authDomain: "cromane-weather.firebaseapp.com",
+  projectId: "cromane-weather",
+  storageBucket: "cromane-weather.firebasestorage.app",
+  messagingSenderId: "594882967502",
+  appId: "1:594882967502:web:9c7a49e8bf94d64c591d9f",
 });
 
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[SW] Background message received:', payload);
-  
   const title = payload.notification?.title || '⚡ Cromane Watch';
   const options = {
     body: payload.notification?.body || 'Weather alert for Cromane.',
@@ -29,11 +25,9 @@ messaging.onBackgroundMessage((payload) => {
     vibrate: [200, 100, 200],
     data: payload.data,
   };
-
   self.registration.showNotification(title, options);
 });
 
-// Handle notification click
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
