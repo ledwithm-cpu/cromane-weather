@@ -1,31 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, FlaskConical } from 'lucide-react';
-
+import { Zap, FlaskConical, CloudLightning, Radar } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-
-export interface LightningData {
-  alert_level: number; // 0=safe, 1=awareness, 2=warning, 3=danger
-  strike_count: number;
-  last_strike_time_ms: number | null;
-  closest_strike: {
-    distance_km: number;
-    bearing_compass: string;
-    bearing_deg: number;
-  } | null;
-  strikes: Array<{
-    distance_km: number;
-    bearing_compass: string;
-    time_ms: number;
-  }>;
-  checked_at: number;
-}
+import type { LightningData } from '@/lib/mock-data';
 
 interface Props {
   data: LightningData;
 }
 
-const SAFE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const SAFE_TIMEOUT_MS = 30 * 60 * 1000;
+const RADAR_FRESH_MS = 6 * 60 * 1000; // 6 minutes
 
 const alertLabels: Record<number, string> = {
   0: 'Atmosphere Stable',
@@ -47,9 +31,23 @@ const LightningCard = ({ data }: Props) => {
   const [showPulse, setShowPulse] = useState(false);
   const [prevStrikeTime, setPrevStrikeTime] = useState<number | null>(null);
 
+  const nowcast = data.nowcast;
+  const nowcastLevel = nowcast?.nowcast_level ?? 0;
+
   // Determine if safe (no strikes in 30 min)
   const isSafe = !data.last_strike_time_ms || (Date.now() - data.last_strike_time_ms > SAFE_TIMEOUT_MS);
   const effectiveLevel = isSafe ? 0 : data.alert_level;
+
+  // Combined display level: real-time strikes take priority, then nowcast
+  const displayLevel = effectiveLevel > 0 ? effectiveLevel : (nowcastLevel >= 1 ? 1 : 0);
+
+  // Radar health
+  const radarSyncAge = nowcast?.radar_sync_ms ? Date.now() - nowcast.radar_sync_ms : Infinity;
+  const radarFresh = radarSyncAge < RADAR_FRESH_MS;
+
+  // Horizon gradient: storms 30-60 min out
+  const showHorizon = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) > 30;
+  const showHorizonClose = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) <= 30;
 
   // Trigger radial pulse when a new strike is detected
   useEffect(() => {
@@ -57,12 +55,11 @@ const LightningCard = ({ data }: Props) => {
       setPrevStrikeTime(data.last_strike_time_ms);
       if (prevStrikeTime !== null) {
         setShowPulse(true);
-        // Trigger vibration for level 2+ (Web Vibration API)
         try {
           if (effectiveLevel >= 2 && navigator.vibrate) {
             navigator.vibrate(effectiveLevel >= 3 ? [200, 100, 200] : [100]);
           }
-        } catch { /* vibration not supported in this context */ }
+        } catch { /* vibration not supported */ }
         setTimeout(() => setShowPulse(false), 2000);
       }
     }
@@ -98,7 +95,7 @@ const LightningCard = ({ data }: Props) => {
             tag: 'lightning-alert',
           } as NotificationOptions);
         }
-      } catch { /* Notifications not supported in this context */ }
+      } catch { /* not supported */ }
     }
   }, [effectiveLevel, closestDistance, closestBearing]);
 
@@ -108,7 +105,7 @@ const LightningCard = ({ data }: Props) => {
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
       }
-    } catch { /* Notifications not available */ }
+    } catch { /* not available */ }
   }, []);
 
   const triggerTestAlert = useCallback(async () => {
@@ -121,9 +118,25 @@ const LightningCard = ({ data }: Props) => {
       },
     });
     const testData = await res.json();
-    // Directly inject the test response into the query cache
     queryClient.setQueryData(['lightning'], testData);
   }, [queryClient]);
+
+  // Status text: prefer nowcast when no active strikes
+  const statusText = effectiveLevel >= 1
+    ? alertLabels[effectiveLevel]
+    : nowcastLevel > 0
+    ? nowcast?.status_text ?? 'Atmosphere Stable'
+    : 'Atmosphere Stable';
+
+  const statusColor = effectiveLevel >= 3
+    ? 'text-warning-red'
+    : effectiveLevel >= 2
+    ? 'text-warning-orange'
+    : nowcastLevel >= 1
+    ? 'text-warning-orange'
+    : nowcastLevel > 0
+    ? 'text-accent'
+    : 'text-muted-foreground';
 
   return (
     <motion.div
@@ -133,9 +146,28 @@ const LightningCard = ({ data }: Props) => {
       className={`glass-card rounded-lg p-6 space-y-4 relative overflow-hidden transition-colors duration-700 ${
         effectiveLevel >= 3 ? 'border-warning-red/40' :
         effectiveLevel >= 2 ? 'border-warning-orange/30' :
-        effectiveLevel >= 1 ? 'border-border' : ''
+        displayLevel >= 1 ? 'border-warning-orange/20' :
+        nowcastLevel > 0 ? 'border-accent/20' : ''
       }`}
     >
+      {/* Horizon Gradient — distant storm darkening */}
+      <AnimatePresence>
+        {(showHorizon || showHorizonClose) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: showHorizonClose ? 0.4 : 0.2 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2, ease: 'easeInOut' }}
+            className="absolute inset-x-0 top-0 h-16 pointer-events-none z-0"
+            style={{
+              background: showHorizonClose
+                ? 'linear-gradient(to bottom, hsla(25, 15%, 8%, 0.6), transparent)'
+                : 'linear-gradient(to bottom, hsla(220, 20%, 12%, 0.4), transparent)',
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Radial Pulse Animation */}
       <AnimatePresence>
         {showPulse && (
@@ -163,15 +195,26 @@ const LightningCard = ({ data }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Thunder &amp; Lightning
         </p>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          {/* Radar Health Indicator */}
+          <div className="flex items-center gap-1" title={radarFresh ? 'Nowcast active' : 'Nowcast syncing...'}>
+            <Radar size={10} className="text-muted-foreground/50" />
+            <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${
+              radarFresh ? 'bg-emerald-500' : 'bg-muted-foreground/30'
+            }`} />
+          </div>
+          {/* Alert Status Dot */}
           <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${
             effectiveLevel >= 3 ? 'bg-warning-red animate-pulse' :
             effectiveLevel >= 2 ? 'bg-warning-orange animate-pulse' :
-            effectiveLevel >= 1 ? 'bg-accent' :
+            displayLevel >= 1 ? 'bg-warning-orange animate-pulse' :
+            nowcastLevel > 0 ? 'bg-accent animate-pulse' :
             'bg-muted-foreground/30'
           }`} />
-          <span className={`text-[10px] uppercase tracking-wider ${alertColors[effectiveLevel]}`}>
-            {effectiveLevel >= 1 ? 'Active' : 'Stable'}
+          <span className={`text-[10px] uppercase tracking-wider ${
+            displayLevel >= 1 || nowcastLevel > 0 ? statusColor : 'text-muted-foreground'
+          }`}>
+            {effectiveLevel >= 1 ? 'Active' : nowcastLevel >= 1 ? 'Tracking' : nowcastLevel > 0 ? 'Charging' : 'Stable'}
           </span>
         </div>
       </div>
@@ -179,23 +222,56 @@ const LightningCard = ({ data }: Props) => {
       {/* Status & Timer */}
       <div className="relative z-10">
         <div className="flex items-center gap-3">
-          {effectiveLevel >= 1 && (
-            <Zap
-              size={18}
-              className={`${
-                effectiveLevel >= 3 ? 'text-warning-red' :
-                effectiveLevel >= 2 ? 'text-warning-orange' :
-                'text-accent'
-              }`}
-              fill={effectiveLevel >= 2 ? 'currentColor' : 'none'}
-            />
+          {(effectiveLevel >= 1 || nowcastLevel > 0) && (
+            nowcastLevel > 0 && effectiveLevel === 0
+              ? <CloudLightning size={18} className={statusColor} />
+              : <Zap
+                  size={18}
+                  className={statusColor}
+                  fill={effectiveLevel >= 2 ? 'currentColor' : 'none'}
+                />
           )}
-          <span className={`text-sm font-normal ${alertColors[effectiveLevel]}`}>
-            {alertLabels[effectiveLevel]}
+          <span className={`text-sm font-normal ${statusColor}`}>
+            {statusText}
           </span>
         </div>
 
-        {/* Time since last strike */}
+        {/* Nowcast ETA (when no active strikes but storm approaching) */}
+        {effectiveLevel === 0 && nowcastLevel >= 1 && nowcast?.eta_minutes != null && (
+          <div className="mt-3 flex items-baseline gap-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-1">
+                Estimated Arrival
+              </p>
+              <span className="text-3xl font-light tabular-nums tracking-wide text-foreground">
+                {nowcast.eta_minutes}
+                <span className="text-lg text-muted-foreground ml-1">min</span>
+              </span>
+            </div>
+            {nowcast.nearest_cell && (
+              <div className="ml-auto text-right">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-1">
+                  From
+                </p>
+                <span className="text-lg font-light text-foreground">
+                  {nowcast.nearest_cell.direction}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {nowcast.nearest_cell.distance_km}km
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Atmospheric charging (level 0.5) detail */}
+        {effectiveLevel === 0 && nowcastLevel === 0.5 && (
+          <p className="text-xs text-muted-foreground/70 mt-2 leading-relaxed">
+            LPI: {nowcast?.lpi?.toFixed(1)} J/kg · CAPE: {nowcast?.cape?.toFixed(0)} J/kg
+          </p>
+        )}
+
+        {/* Time since last strike (active strikes) */}
         {effectiveLevel >= 1 && (
           <div className="mt-3 flex items-baseline gap-3">
             <div>
@@ -230,8 +306,8 @@ const LightningCard = ({ data }: Props) => {
           </p>
         )}
 
-        {/* Safe state */}
-        {effectiveLevel === 0 && (
+        {/* Safe state (no nowcast activity either) */}
+        {effectiveLevel === 0 && nowcastLevel === 0 && (
           <>
             <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
               No lightning activity within 20km for the past 30 minutes. Blitzortung community network.
