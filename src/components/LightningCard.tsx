@@ -199,15 +199,17 @@ const LightningCard = ({ data }: Props) => {
           {/* Alert Status Light */}
           <div
             className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
-              effectiveLevel >= 2 || displayLevel >= 1
+              effectiveLevel >= 3
                 ? 'bg-warning-red animate-pulse'
+                : effectiveLevel >= 1 || displayLevel >= 1
+                ? 'bg-warning-orange animate-pulse'
                 : 'bg-emerald-500'
             }`}
             style={
               effectiveLevel >= 3
                 ? { boxShadow: '0 0 12px 5px hsla(0, 80%, 50%, 0.7)' }
                 : effectiveLevel >= 2 || displayLevel >= 1
-                ? { boxShadow: '0 0 8px 3px hsla(0, 80%, 50%, 0.4)' }
+                ? { boxShadow: '0 0 8px 3px hsla(25, 95%, 55%, 0.4)' }
                 : undefined
             }
           />
