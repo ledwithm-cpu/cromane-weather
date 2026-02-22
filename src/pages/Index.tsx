@@ -20,8 +20,9 @@ const Index = () => {
   const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
   const warningActive = hasActiveWarnings(warnings);
 
-  // Lightning level 2+ also triggers warning theme
+  // Lightning level 2+ or nowcast approaching triggers warning theme
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
+  const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
   const lastUpdated = Math.max(windUpdatedAt, tidesUpdatedAt, warningsUpdatedAt);
@@ -30,7 +31,7 @@ const Index = () => {
     : null;
 
   return (
-    <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`}>
+    <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`} data-storm-approaching={stormApproaching || undefined}>
       <div className="bg-background min-h-screen">
         <PullToRefresh onRefresh={refreshAll}>
         <div className="max-w-md mx-auto px-4 py-8 space-y-4">

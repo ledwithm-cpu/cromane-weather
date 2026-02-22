@@ -107,6 +107,24 @@ export function isBookingConditionsMet(wind: WindData, warnings: Warning[]): boo
   return wind.speed_knots < 25 && !hasActiveWarnings(warnings);
 }
 
+export interface NowcastData {
+  lpi: number;
+  cape: number;
+  atmospheric_alert: boolean;
+  nowcast_level: number; // 0=stable, 0.5=charging, 1=approaching
+  status_text: string;
+  eta_minutes: number | null;
+  nearest_cell: {
+    direction: string;
+    distance_km: number;
+    intensity_mm: number;
+    eta_minutes: number | null;
+    approaching: boolean;
+  } | null;
+  storm_cell_count: number;
+  radar_sync_ms: number;
+}
+
 export interface LightningData {
   alert_level: number;
   strike_count: number;
@@ -121,6 +139,7 @@ export interface LightningData {
     bearing_compass: string;
     time_ms: number;
   }>;
+  nowcast?: NowcastData;
   checked_at: number;
 }
 
@@ -130,5 +149,16 @@ export const mockLightning: LightningData = {
   last_strike_time_ms: null,
   closest_strike: null,
   strikes: [],
+  nowcast: {
+    lpi: 0,
+    cape: 0,
+    atmospheric_alert: false,
+    nowcast_level: 0,
+    status_text: 'Atmosphere Stable',
+    eta_minutes: null,
+    nearest_cell: null,
+    storm_cell_count: 0,
+    radar_sync_ms: Date.now(),
+  },
   checked_at: Date.now(),
 };
