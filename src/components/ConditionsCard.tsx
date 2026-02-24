@@ -15,7 +15,7 @@ const trendArrow = (trend: string) => {
 };
 
 const WindCompass = ({ degrees }: { degrees: number }) => {
-  const size = 80;
+  const size = 96;
   const center = size / 2;
   const radius = 32;
   const tickLen = 5;
