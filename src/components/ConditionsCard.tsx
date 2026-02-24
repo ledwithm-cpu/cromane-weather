@@ -87,7 +87,7 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
     ? wind.speed_knots
     : Math.round(wind.speed_knots * 1.852);
 
-  const unitLabel = unit === 'kts' ? 'kts' : 'km/h';
+  const unitLabel = unit === 'kts' ? 'Knots' : 'km/h';
 
   return (
     <motion.div
