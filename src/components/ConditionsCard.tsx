@@ -52,7 +52,7 @@ const WindCompass = ({ degrees }: { degrees: number }) => {
         })}
 
         {/* Wind arrow */}
-        <g transform={`rotate(${degrees}, ${center}, ${center})`}>
+        <g transform={`rotate(${(degrees + 180) % 360}, ${center}, ${center})`}>
           <line x1={center} y1={center + 10} x2={center} y2={center - radius + 8} stroke="hsl(var(--primary))" strokeWidth="1.8" strokeLinecap="round" />
           <polygon
             points={`${center},${center - radius + 5} ${center - 4},${center - radius + 13} ${center + 4},${center - radius + 13}`}
