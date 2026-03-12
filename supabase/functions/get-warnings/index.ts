@@ -7,7 +7,6 @@ const corsHeaders = {
 
 const WARNINGS_PAGE_URL = 'https://www.met.ie/warnings';
 
-// Simple in-memory rate limiting (per IP, 30 requests per minute)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60_000;
@@ -23,101 +22,92 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
-/** Parse warning blocks from the Met Éireann warnings HTML page */
+function cleanHtml(s: string): string {
+  return s.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+}
+
 function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
   const warnings: any[] = [];
   let marine = { type: 'No warnings', area: 'Southwest Coast', description: 'No active marine warnings.', active: false };
 
-  // Split HTML into Weather Warnings and Marine Warnings sections
-  const weatherSection = html.split(/Marine Warnings/i)[0] || html;
-  const marineSection = html.split(/Marine Warnings/i)[1] || '';
+  // Split at Marine Warnings heading
+  const marineSplit = html.split(/<h2>Marine Warnings<\/h2>/i);
+  const weatherHtml = marineSplit[0] || '';
+  const marineHtml = marineSplit[1] || '';
 
-  // Parse weather warnings - look for warning heading pattern:
-  // "Status Yellow - Rain warning for Counties..."
-  const warningHeadingRegex = /Status\s+(Yellow|Orange|Red)\s*[-–]\s*(\w[\w\s]*?)\s*warning\s+for\s+([\s\S]*?)(?=<\/h|<\/a)/gi;
-  // Also try the class-based approach from the HTML
-  const warningBlockRegex = /<div[^>]*class="[^"]*warning-item[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi;
-
-  // Primary approach: parse the structured heading + description blocks
-  // Pattern: <h3>Status Yellow - Rain warning for Counties</h3> ... description ... Valid: dates
-  const h3Regex = /Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*warning\s+for\s+([^<]+)/gi;
+  // Parse weather warning blocks using <h3> tags
+  // Format: <h3>Status Yellow - Rain warning for Counties...</h3>
+  const h3Regex = /<h3>\s*Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*warning\s+for\s+(.*?)<\/h3>/gi;
   let match;
 
-  while ((match = h3Regex.exec(html)) !== null) {
+  while ((match = h3Regex.exec(weatherHtml)) !== null) {
     const level = match[1].toLowerCase();
     const type = match[2].trim();
-    const regions = match[3].trim();
+    const regions = cleanHtml(match[3]);
 
     // Skip Northern Ireland warnings
-    const afterMatch = html.substring(match.index, match.index + 1500);
-    if (afterMatch.includes('UK Met Office') || afterMatch.includes('Northern Ireland')) continue;
+    const contextBefore = weatherHtml.substring(Math.max(0, match.index - 500), match.index);
+    if (contextBefore.includes('Northern Ireland')) continue;
 
     // Check if Kerry-relevant
     const regionsLower = regions.toLowerCase();
     const isKerryRelevant = regionsLower.includes('kerry') || regionsLower.includes('munster') ||
-      regionsLower.includes('ireland') || regionsLower.includes('all counties') ||
-      regionsLower.includes('connacht'); // Connacht sometimes paired with Munster warnings
+      regionsLower.includes('ireland') || regionsLower.includes('all counties');
 
-    // Extract description - text after "Met Éireann Weather Warning" until "Valid:"
-    const descMatch = afterMatch.match(/Met\s+[ÉE]ireann\s+Weather\s+Warning[\s\S]*?<\/[^>]+>\s*([\s\S]*?)(?=Valid:|Issued:)/i);
-    const rawDesc = descMatch ? descMatch[1] : '';
-    // Clean HTML tags and normalize whitespace
-    const description = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!isKerryRelevant) continue;
+
+    // Extract description and validity from text after h3
+    const afterH3 = weatherHtml.substring(match.index + match[0].length, match.index + match[0].length + 2000);
+
+    // Get description: text in <p> tags between the heading and the "Valid:" line
+    const descParts: string[] = [];
+    const pRegex = /<p(?:\s[^>]*)?>(?!<strong>Met|<strong>Issued|<strong>UK)([\s\S]*?)<\/p>/gi;
+    let pMatch;
+    while ((pMatch = pRegex.exec(afterH3)) !== null) {
+      const text = cleanHtml(pMatch[1]);
+      if (text.startsWith('Valid:')) break;
+      if (text.startsWith('Issued:')) break;
+      if (text && !text.startsWith('Met Éireann') && !text.startsWith('Met Eireann')) {
+        descParts.push(text);
+      }
+    }
 
     // Extract valid until
-    const validMatch = afterMatch.match(/Valid:\s*([\s\S]*?)(?=Issued:|<\/div>|$)/i);
-    const validUntil = validMatch
-      ? validMatch[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-      : 'Check met.ie';
+    const validMatch = afterH3.match(/Valid:\s*(.*?)(?:<\/p>)/i);
+    const validUntil = validMatch ? cleanHtml(validMatch[1]) : 'Check met.ie';
 
-    // Check if thunderstorm-related
+    const description = descParts.join(' ').trim();
     const allText = (type + ' ' + description).toLowerCase();
     const isThunderstorm = allText.includes('thunder') || allText.includes('lightning');
     const elevated = isThunderstorm && level === 'yellow';
 
-    // Check if this is a marine/gale warning (skip for weather section)
-    const isMarine = type.toLowerCase().includes('gale') || type.toLowerCase().includes('marine') ||
-      type.toLowerCase().includes('craft');
-
-    if (isMarine) {
-      // Handle in marine section below
-      continue;
-    }
-
-    if (isKerryRelevant) {
-      const headline = `Status ${match[1]} - ${type} warning for ${regions}`;
-      // Avoid duplicates
-      if (!warnings.some(w => w.headline === headline)) {
-        warnings.push({
-          level: elevated ? 'orange' : level,
-          headline,
-          description: description || `${type} warning in effect.`,
-          valid_until: validUntil,
-          is_thunderstorm: isThunderstorm,
-          elevated,
-        });
-      }
+    const headline = `${type} warning`;
+    if (!warnings.some(w => w.headline === headline && w.level === level)) {
+      warnings.push({
+        level: elevated ? 'orange' : level,
+        headline,
+        description: description || `${type} warning in effect.`,
+        valid_until: validUntil,
+        is_thunderstorm: isThunderstorm,
+        elevated,
+      });
     }
   }
 
-  // Parse marine warnings from marine section
-  const marineH3Regex = /Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*(?:warning\s+)?for\s+([^<]+)/gi;
-  while ((match = marineH3Regex.exec(marineSection)) !== null) {
-    const level = match[1].toLowerCase();
+  // Parse marine warnings
+  const marineH3Regex = /<h3>\s*Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*(?:warning\s+)?for\s+(.*?)<\/h3>/gi;
+  while ((match = marineH3Regex.exec(marineHtml)) !== null) {
     const type = match[2].trim();
-    const area = match[3].trim();
+    const area = cleanHtml(match[3]);
 
-    // Extract description
-    const afterMatch = marineSection.substring(match.index, match.index + 1500);
-    const descMatch = afterMatch.match(/(?:<\/h[^>]+>|<\/a>)\s*([\s\S]*?)(?=Valid:|Issued:|$)/i);
-    const rawDesc = descMatch ? descMatch[1] : '';
-    const description = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    // Get description
+    const afterH3 = marineHtml.substring(match.index + match[0].length, match.index + match[0].length + 1000);
+    const descP = afterH3.match(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/i);
+    const description = descP ? cleanHtml(descP[1]) : '';
 
     const isGale = type.toLowerCase().includes('gale');
-    const isSmallCraft = type.toLowerCase().includes('craft');
-    const typeName = isGale ? 'Gale Warning' : isSmallCraft ? 'Small Craft Warning' : type;
+    const typeName = isGale ? 'Gale Warning' : type.toLowerCase().includes('craft') ? 'Small Craft Warning' : type;
 
-    // Gale takes priority over small craft
     const currentIsGale = marine.type === 'Gale Warning';
     if (!marine.active || (isGale && !currentIsGale)) {
       marine = {
@@ -146,19 +136,16 @@ serve(async (req) => {
   }
 
   try {
-    // Fetch the Met Éireann warnings HTML page directly
     const res = await fetch(WARNINGS_PAGE_URL, {
       headers: { 'User-Agent': 'CromaneWatch/1.0 (weather monitoring)' },
     });
 
     if (!res.ok) {
-      console.error('Failed to fetch Met Éireann warnings page:', res.status);
+      console.error('Failed to fetch warnings page:', res.status);
       throw new Error(`HTTP ${res.status}`);
     }
 
     const html = await res.text();
-    console.log('Fetched warnings HTML, length:', html.length);
-
     const { warnings, marine } = parseWarningsHtml(html);
 
     console.log(`Returning ${warnings.length} warnings, marine active: ${marine.active} (${marine.type})`);
