@@ -78,8 +78,14 @@ const Index = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="pt-8 pb-12 text-center"
+            className="pt-8 pb-12 text-center space-y-4"
           >
+            <Link
+              to="/how-it-works"
+              className="inline-block text-xs text-muted-foreground/60 hover:text-foreground transition-colors tracking-wider uppercase border border-border/30 rounded-md px-4 py-2"
+            >
+              How this works
+            </Link>
             <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
               Cromane Watch · Live
             </p>
