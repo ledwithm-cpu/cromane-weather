@@ -62,9 +62,9 @@ const Index = () => {
           </motion.header>
 
           {/* Card Stack */}
-          {wind && <ConditionsCard wind={wind} warnings={warnings} />}
+          {tides && wind && <TideCard tideData={tides} wind={wind} warnings={warnings} />}
           <div className="border-t border-border/30" />
-          {tides && <TideCard tideData={tides} wind={wind!} warnings={warnings} />}
+          {wind && <ConditionsCard wind={wind} warnings={warnings} />}
           <div className="border-t border-border/30" />
           {lightning && <LightningCard data={lightning} />}
           <div className="border-t border-border/30" />
