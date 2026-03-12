@@ -88,7 +88,14 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
           const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
           const rangeMs = endMs - startMs || 1;
 
-          const nowY = state === 'rising' ? 28 : 12;
+          // Interpolate nowY from current_height_m relative to tide range
+          const heights = tideTimestamps.map(t => t.height_m);
+          const minH = Math.min(...heights);
+          const maxH = Math.max(...heights);
+          const rangeH = maxH - minH || 1;
+          const clampedHeight = Math.max(minH, Math.min(maxH, current_height_m));
+          // y=6 is high tide (top), y=34 is low tide (bottom)
+          const nowY = 34 - ((clampedHeight - minH) / rangeH) * 28;
 
           const eventPoints = tideTimestamps.map((t) => ({
             x: ((t.ts - startMs) / rangeMs) * 400,
