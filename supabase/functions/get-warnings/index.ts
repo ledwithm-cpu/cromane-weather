@@ -146,12 +146,6 @@ serve(async (req) => {
     }
 
     const html = await res.text();
-    console.log('HTML length:', html.length);
-    
-    // Debug: check if h3 tags with Status exist
-    const h3Test = html.match(/<h3>[^<]*Status[^<]*<\/h3>/gi);
-    console.log('h3 Status matches:', h3Test?.length, h3Test?.map(h => h.substring(0, 100)));
-    
     const { warnings, marine } = parseWarningsHtml(html);
 
     console.log(`Returning ${warnings.length} warnings, marine active: ${marine.active} (${marine.type})`);
