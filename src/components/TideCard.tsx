@@ -154,17 +154,14 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
-      <div className="pt-1 space-y-1">
-        <p className="text-[10px] text-muted-foreground/50 tracking-wider uppercase">
-          Tide at {current_height_m}m · {stateLabel}
-        </p>
+      <div className="pt-1">
         <a
           href="https://www.samhradhssauna.com/book-sauna"
           target="_blank"
           rel="noopener noreferrer"
           className="block text-xs text-primary/70 hover:text-primary transition-colors"
         >
-          Book Sauna at Samhradh's →
+          Book Samhradh's sauna →
         </a>
       </div>
     </motion.div>
