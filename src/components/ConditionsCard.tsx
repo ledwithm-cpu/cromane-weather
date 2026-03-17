@@ -118,7 +118,10 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
             {trendArrow(wind.trend)}
           </span>
         </div>
-        <WindCompass degrees={wind.direction_degrees} />
+        <div className="flex items-center gap-3">
+          {getWeatherIcon(wind.weather_code ?? 0, wind.cloud_cover ?? 0)}
+          <WindCompass degrees={wind.direction_degrees} />
+        </div>
       </div>
 
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
