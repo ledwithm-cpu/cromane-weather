@@ -30,7 +30,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
     >
       <div className="flex items-center justify-between">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Tides · Cromane Point
+          Tides · {location.name}
         </p>
         <div className="flex flex-col items-end gap-0.5 text-muted-foreground">
           {wind.water_temperature_c != null && (
