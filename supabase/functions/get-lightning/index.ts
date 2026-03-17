@@ -5,13 +5,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Cromane coordinates & geofence
-const HOME_LAT = 52.1008;
-const HOME_LON = -9.8856;
+// Default coordinates (Cromane)
+const DEFAULT_LAT = 52.1008;
+const DEFAULT_LON = -9.8856;
 const GEOFENCE_KM = 20;
 
-// ─── Strike Cache (persists across warm invocations) ───
-const strikeCache: Array<{
+// ─── Strike Cache (persists across warm invocations, keyed by location) ───
+const strikeCaches = new Map<string, Array<{
   time_ns: number;
   lat: number;
   lon: number;
@@ -19,13 +19,12 @@ const strikeCache: Array<{
   bearing_deg: number;
   bearing_compass: string;
   alert_level: number;
-}> = [];
+}>>();
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
-// ─── Nowcast Cache ───
-let nowcastCache: NowcastResult | null = null;
-let nowcastCacheTime = 0;
-const NOWCAST_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+// ─── Nowcast Cache (keyed by location) ───
+const nowcastCaches = new Map<string, { result: NowcastResult; time: number }>();
+const NOWCAST_CACHE_TTL_MS = 5 * 60 * 1000;
 
 interface NowcastResult {
   lpi: number;
@@ -34,7 +33,7 @@ interface NowcastResult {
   storm_cells: StormCell[];
   nearest_cell: StormCell | null;
   eta_minutes: number | null;
-  nowcast_level: number; // 0=stable, 0.5=charging, 1=approaching
+  nowcast_level: number;
   status_text: string;
   radar_sync_ms: number;
 }
@@ -95,7 +94,6 @@ function getAlertLevel(distanceKm: number): number {
   return 0;
 }
 
-// Get point at given distance/bearing from origin
 function destinationPoint(lat: number, lon: number, distKm: number, bearingDeg: number): [number, number] {
   const R = 6371;
   const d = distKm / R;
@@ -107,27 +105,36 @@ function destinationPoint(lat: number, lon: number, distKm: number, bearingDeg: 
   return [lat2 * 180 / Math.PI, lon2 * 180 / Math.PI];
 }
 
+function getCacheKey(lat: number, lon: number): string {
+  return `${lat.toFixed(2)}_${lon.toFixed(2)}`;
+}
+
+function getStrikeCache(key: string) {
+  if (!strikeCaches.has(key)) strikeCaches.set(key, []);
+  return strikeCaches.get(key)!;
+}
+
 // ─── Strike Cache Management ───
-function pruneCache() {
+function pruneCache(cache: typeof strikeCaches extends Map<string, infer V> ? V : never) {
   const cutoff = Date.now() - CACHE_TTL_MS;
   let i = 0;
-  while (i < strikeCache.length) {
-    if (Math.floor(strikeCache[i].time_ns / 1_000_000) < cutoff) {
-      strikeCache.splice(i, 1);
+  while (i < cache.length) {
+    if (Math.floor(cache[i].time_ns / 1_000_000) < cutoff) {
+      cache.splice(i, 1);
     } else {
       i++;
     }
   }
 }
 
-function addStrikeToCache(strike: typeof strikeCache[0]) {
-  if (!strikeCache.some(s => s.time_ns === strike.time_ns && s.lat === strike.lat && s.lon === strike.lon)) {
-    strikeCache.push(strike);
+function addStrikeToCache(cache: ReturnType<typeof getStrikeCache>, strike: ReturnType<typeof getStrikeCache>[0]) {
+  if (!cache.some(s => s.time_ns === strike.time_ns && s.lat === strike.lat && s.lon === strike.lon)) {
+    cache.push(strike);
   }
 }
 
 // ─── Blitzortung WebSocket ───
-async function fetchStrikesViaWebSocket(): Promise<void> {
+async function fetchStrikesViaWebSocket(homeLat: number, homeLon: number, cache: ReturnType<typeof getStrikeCache>): Promise<void> {
   const servers = ['wss://ws1.blitzortung.org/', 'wss://ws7.blitzortung.org/', 'wss://ws2.blitzortung.org/'];
   const serverUrl = servers[Math.floor(Math.random() * servers.length)];
 
@@ -158,11 +165,11 @@ async function fetchStrikesViaWebSocket(): Promise<void> {
         if (data.lat !== undefined && data.lon !== undefined) {
           const lat = data.lat;
           const lon = data.lon;
-          const dist = haversine(HOME_LAT, HOME_LON, lat, lon);
+          const dist = haversine(homeLat, homeLon, lat, lon);
           if (dist <= GEOFENCE_KM) {
-            const brng = bearing(HOME_LAT, HOME_LON, lat, lon);
+            const brng = bearing(homeLat, homeLon, lat, lon);
             const timeNs = data.time || Date.now() * 1_000_000;
-            addStrikeToCache({
+            addStrikeToCache(cache, {
               time_ns: timeNs, lat, lon,
               distance_km: dist,
               bearing_deg: brng,
@@ -180,32 +187,27 @@ async function fetchStrikesViaWebSocket(): Promise<void> {
   });
 }
 
-// ─── Nowcast: Open-Meteo LPI + Spatial Grid Storm Tracking ───
-async function fetchNowcast(): Promise<NowcastResult> {
-  // Check cache
-  if (nowcastCache && Date.now() - nowcastCacheTime < NOWCAST_CACHE_TTL_MS) {
-    return nowcastCache;
+// ─── Nowcast ───
+async function fetchNowcast(homeLat: number, homeLon: number, cacheKey: string): Promise<NowcastResult> {
+  const cached = nowcastCaches.get(cacheKey);
+  if (cached && Date.now() - cached.time < NOWCAST_CACHE_TTL_MS) {
+    return cached.result;
   }
 
   const radarSyncTime = Date.now();
-
-  // Spatial grid: 8 cardinal points at 50km and 100km
   const bearings = [0, 45, 90, 135, 180, 225, 270, 315];
-  const distances = [50, 100]; // km rings
+  const distances = [50, 100];
 
   const gridPoints: Array<{ lat: number; lon: number; dist: number; bearingDeg: number; dir: string }> = [];
   for (const dist of distances) {
     for (const b of bearings) {
-      const [lat, lon] = destinationPoint(HOME_LAT, HOME_LON, dist, b);
+      const [lat, lon] = destinationPoint(homeLat, homeLon, dist, b);
       gridPoints.push({ lat, lon, dist, bearingDeg: b, dir: bearingToCompass(b) });
     }
   }
 
-  // Build Open-Meteo URLs:
-  // 1. Home point: LPI + CAPE + precipitation
-  // 2. Grid points: precipitation only (batched)
-  const homeLats = [HOME_LAT, ...gridPoints.map(p => p.lat)].join(',');
-  const homeLons = [HOME_LON, ...gridPoints.map(p => p.lon)].join(',');
+  const homeLats = [homeLat, ...gridPoints.map(p => p.lat)].join(',');
+  const homeLons = [homeLon, ...gridPoints.map(p => p.lon)].join(',');
 
   const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${homeLats}&longitude=${homeLons}&hourly=lightning_potential,cape,precipitation&forecast_hours=6&timezone=Europe%2FDublin`;
 
@@ -218,15 +220,10 @@ async function fetchNowcast(): Promise<NowcastResult> {
     const res = await fetch(openMeteoUrl);
     if (res.ok) {
       const data = await res.json();
-
-      // Find current hour index
       const now = new Date();
       const currentHour = now.toISOString().substring(0, 13) + ':00';
-
-      // data is an array when multiple coordinates
       const results = Array.isArray(data) ? data : [data];
 
-      // Home point (index 0)
       if (results[0]?.hourly) {
         const h = results[0].hourly;
         const timeIdx = h.time?.findIndex((t: string) => t >= currentHour) ?? 0;
@@ -235,34 +232,21 @@ async function fetchNowcast(): Promise<NowcastResult> {
         homePrecip = h.precipitation?.[timeIdx] ?? 0;
       }
 
-      // Grid points (index 1..N)
       for (let i = 0; i < gridPoints.length; i++) {
         const ptData = results[i + 1]?.hourly;
         if (!ptData) continue;
-
         const timeIdx = ptData.time?.findIndex((t: string) => t >= currentHour) ?? 0;
         const precip = ptData.precipitation?.[timeIdx] ?? 0;
-
-        // Current hour + next hour to detect intensifying cells
         const nextPrecip = ptData.precipitation?.[timeIdx + 1] ?? 0;
 
-        // Heavy precipitation threshold: > 4mm/h suggests convective activity
         if (precip > 4 || nextPrecip > 4) {
           const gp = gridPoints[i];
-
-          // Check if inner ring (50km) has less precip than outer (100km) = approaching
-          // Or if this point's precip is heavy enough
           const intensity = Math.max(precip, nextPrecip);
-
-          // Simple ETA: distance / assumed storm speed (40 km/h typical mid-latitude)
           const assumedSpeedKmh = 40;
           const etaMin = Math.round((gp.dist / assumedSpeedKmh) * 60);
-
-          // Check if it's approaching by comparing inner/outer ring precip
-          // A cell is "approaching" if outer ring has heavier precip in same direction
           const isApproaching = gp.dist === 100
-            ? true // outer ring detections are potentially approaching
-            : precip > homePrecip * 2; // inner ring with much more precip than home
+            ? true
+            : precip > homePrecip * 2;
 
           stormCells.push({
             direction: gp.dir,
@@ -278,7 +262,6 @@ async function fetchNowcast(): Promise<NowcastResult> {
     console.error('Nowcast fetch error:', e);
   }
 
-  // Determine approaching cells with ETA
   const approachingCells = stormCells.filter(c => c.approaching && c.eta_minutes !== null);
   const nearestCell = approachingCells.length > 0
     ? approachingCells.reduce((a, b) => (a.eta_minutes ?? 999) < (b.eta_minutes ?? 999) ? a : b)
@@ -287,7 +270,6 @@ async function fetchNowcast(): Promise<NowcastResult> {
   const etaMinutes = nearestCell?.eta_minutes ?? null;
   const atmosphericAlert = lpi > 0 || cape > 500;
 
-  // Nowcast level
   let nowcastLevel = 0;
   let statusText = 'Atmosphere Stable';
 
@@ -302,22 +284,14 @@ async function fetchNowcast(): Promise<NowcastResult> {
     statusText = 'Atmosphere Charging: Conditions favorable for thunder.';
   }
 
-  console.log(`🌩️ Nowcast: LPI=${lpi}, CAPE=${cape}, cells=${stormCells.length}, approaching=${approachingCells.length}, level=${nowcastLevel}`);
-
   const result: NowcastResult = {
-    lpi,
-    cape,
-    atmospheric_alert: atmosphericAlert,
-    storm_cells: stormCells,
-    nearest_cell: nearestCell,
-    eta_minutes: etaMinutes,
-    nowcast_level: nowcastLevel,
-    status_text: statusText,
-    radar_sync_ms: radarSyncTime,
+    lpi, cape, atmospheric_alert: atmosphericAlert,
+    storm_cells: stormCells, nearest_cell: nearestCell,
+    eta_minutes: etaMinutes, nowcast_level: nowcastLevel,
+    status_text: statusText, radar_sync_ms: radarSyncTime,
   };
 
-  nowcastCache = result;
-  nowcastCacheTime = Date.now();
+  nowcastCaches.set(cacheKey, { result, time: Date.now() });
   return result;
 }
 
@@ -335,17 +309,28 @@ serve(async (req) => {
     });
   }
 
-  const url = new URL(req.url);
-  const testMode = url.searchParams.get('test') === '1';
+  let homeLat = DEFAULT_LAT;
+  let homeLon = DEFAULT_LON;
+  let locationName = 'Cromane';
 
   try {
-    // Fetch strikes + nowcast in parallel
+    const body = await req.json();
+    if (body.lat && body.lon) { homeLat = body.lat; homeLon = body.lon; }
+    if (body.name) locationName = body.name;
+  } catch {}
+
+  const url = new URL(req.url);
+  const testMode = url.searchParams.get('test') === '1';
+  const cacheKey = getCacheKey(homeLat, homeLon);
+  const strikeCache = getStrikeCache(cacheKey);
+
+  try {
     const [_, nowcast] = await Promise.all([
-      testMode ? injectTestStrike() : fetchStrikesViaWebSocket(),
-      fetchNowcast(),
+      testMode ? injectTestStrike(homeLat, homeLon, strikeCache) : fetchStrikesViaWebSocket(homeLat, homeLon, strikeCache),
+      fetchNowcast(homeLat, homeLon, cacheKey),
     ]);
 
-    pruneCache();
+    pruneCache(strikeCache);
 
     const sorted = [...strikeCache].sort((a, b) => b.time_ns - a.time_ns);
     const maxAlertLevel = sorted.length > 0
@@ -358,10 +343,9 @@ serve(async (req) => {
       ? Math.floor(sorted[0].time_ns / 1_000_000)
       : null;
 
-    // Combined alert_level considers both real-time strikes AND predicted threats
     let effectiveAlertLevel = maxAlertLevel;
     if (nowcast.nowcast_level >= 1 && effectiveAlertLevel < 1) {
-      effectiveAlertLevel = 1; // Approaching storm = at least awareness
+      effectiveAlertLevel = 1;
     }
 
     const result = {
@@ -394,10 +378,12 @@ serve(async (req) => {
       geofence_km: GEOFENCE_KM,
     };
 
-    // ─── Trigger Push Notifications ───
-    triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike).catch(e =>
-      console.error('Push trigger error:', e)
-    );
+    // Push notifications (only for default Cromane location to avoid spam)
+    if (cacheKey === getCacheKey(DEFAULT_LAT, DEFAULT_LON)) {
+      triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike, locationName).catch(e =>
+        console.error('Push trigger error:', e)
+      );
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -425,13 +411,12 @@ serve(async (req) => {
   }
 });
 
-// Test strike injection helper
-async function injectTestStrike() {
-  const testLat = 52.0985;
-  const testLon = -9.8910;
-  const dist = haversine(HOME_LAT, HOME_LON, testLat, testLon);
-  const brng = bearing(HOME_LAT, HOME_LON, testLat, testLon);
-  addStrikeToCache({
+async function injectTestStrike(homeLat: number, homeLon: number, cache: ReturnType<typeof getStrikeCache>) {
+  const testLat = homeLat - 0.002;
+  const testLon = homeLon - 0.005;
+  const dist = haversine(homeLat, homeLon, testLat, testLon);
+  const brng = bearing(homeLat, homeLon, testLat, testLon);
+  addStrikeToCache(cache, {
     time_ns: Date.now() * 1_000_000,
     lat: testLat, lon: testLon,
     distance_km: dist,
@@ -439,7 +424,7 @@ async function injectTestStrike() {
     bearing_compass: bearingToCompass(brng),
     alert_level: getAlertLevel(dist),
   });
-  console.log('🧪 Test strike injected at Cromane Lower');
+  console.log('🧪 Test strike injected');
 }
 
 // ─── Push Notification Trigger ───
@@ -450,58 +435,48 @@ const PUSH_COOLDOWN_MS = 15 * 60 * 1000;
 async function triggerPushIfNeeded(
   alertLevel: number,
   nowcast: NowcastResult,
-  closestStrike: typeof strikeCache[0] | null
+  closestStrike: { distance_km: number; bearing_compass: string } | null,
+  locationName: string,
 ) {
   const now = Date.now();
-  
-  // Only push on escalation or new threat, with cooldown
   if (now - lastPushTime < PUSH_COOLDOWN_MS && alertLevel <= lastPushLevel) return;
-  
+
   let title = '';
   let body = '';
   let notificationType = '';
 
-  // Stage 3: Immediate danger (real strikes < 5km)
   if (alertLevel >= 3 && closestStrike) {
     title = '⚡ Lightning Alert — Take Cover';
-    body = `Lightning detected ${Math.round(closestStrike.distance_km * 10) / 10}km ${closestStrike.bearing_compass}. Seek shelter immediately.`;
+    body = `Lightning detected ${closestStrike.distance_km}km ${closestStrike.bearing_compass}. Seek shelter immediately.`;
     notificationType = 'immediate_danger';
-  }
-  // Stage 2: Warning (strikes 5-10km)
-  else if (alertLevel >= 2 && closestStrike) {
+  } else if (alertLevel >= 2 && closestStrike) {
     title = '⚡ Lightning Warning';
-    body = `Lightning detected ${Math.round(closestStrike.distance_km * 10) / 10}km ${closestStrike.bearing_compass}. Stay alert.`;
+    body = `Lightning detected ${closestStrike.distance_km}km ${closestStrike.bearing_compass}. Stay alert.`;
     notificationType = 'lightning_warning';
-  }
-  // Stage 1: Awareness / approaching storm
-  else if (alertLevel >= 1 || nowcast.nowcast_level >= 1) {
+  } else if (alertLevel >= 1 || nowcast.nowcast_level >= 1) {
     if (nowcast.eta_minutes !== null && nowcast.eta_minutes <= 60) {
-      title = '🌩️ Storm Approaching Cromane';
+      title = `🌩️ Storm Approaching ${locationName}`;
       body = `Storm cell detected ${nowcast.nearest_cell?.direction ?? ''} — ETA ${nowcast.eta_minutes} minutes.`;
       notificationType = 'storm_approaching';
     } else if (alertLevel >= 1) {
       title = '⚡ Lightning Awareness';
-      body = 'Lightning activity detected within 20km of Cromane.';
+      body = `Lightning activity detected within 20km of ${locationName}.`;
       notificationType = 'lightning_awareness';
     } else {
-      return; // No push needed
+      return;
     }
-  }
-  // Atmospheric charging (LPI spike)
-  else if (nowcast.atmospheric_alert && nowcast.lpi > 0.5) {
+  } else if (nowcast.atmospheric_alert && nowcast.lpi > 0.5) {
     title = '🌩️ Heads Up — Atmosphere Charging';
-    body = 'Conditions favorable for thunderstorms near Cromane.';
+    body = `Conditions favorable for thunderstorms near ${locationName}.`;
     notificationType = 'atmosphere_charging';
-  }
-  else {
-    return; // Nothing to push
+  } else {
+    return;
   }
 
-  // Send via the send-push-notification function
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
     const res = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
       method: 'POST',
       headers: {
@@ -522,7 +497,7 @@ async function triggerPushIfNeeded(
 
     const result = await res.json();
     console.log(`📲 Push sent: ${notificationType}, delivered to ${result.sent ?? 0} devices`);
-    
+
     lastPushLevel = alertLevel;
     lastPushTime = now;
   } catch (e) {
