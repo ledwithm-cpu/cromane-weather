@@ -14,8 +14,26 @@ serve(async (req) => {
   try {
     const { token } = await req.json();
 
-    if (!token || typeof token !== 'string' || token.length < 20) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+    // Validate token exists and is a string
+    if (!token || typeof token !== 'string') {
+      return new Response(JSON.stringify({ error: 'Token required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate token length (FCM tokens are typically 152-163 chars)
+    if (token.length < 20 || token.length > 500) {
+      return new Response(JSON.stringify({ error: 'Invalid token length' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate token format (alphanumeric, hyphens, underscores, colons)
+    const FCM_TOKEN_REGEX = /^[A-Za-z0-9_\-:]+$/;
+    if (!FCM_TOKEN_REGEX.test(token)) {
+      return new Response(JSON.stringify({ error: 'Invalid token format' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
