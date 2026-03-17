@@ -78,7 +78,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
             <span className="text-sm font-normal text-foreground">Thunderstorm Activity Detected</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Live weather data indicates thunderstorm or lightning activity in the Cromane area. Take appropriate precautions.
+            Live weather data indicates thunderstorm or lightning activity in the {location.name} area. Take appropriate precautions.
           </p>
         </div>
       )}
