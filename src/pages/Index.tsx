@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
@@ -9,8 +10,18 @@ import LightningCard from '@/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
+import { useLocation } from '@/hooks/use-location';
+import { LOCATIONS } from '@/lib/locations';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const Index = () => {
+  const { location, setLocationById } = useLocation();
   const { data: wind, isLoading: windLoading, dataUpdatedAt: windUpdatedAt } = useWeather();
   const { data: tides, isLoading: tidesLoading, dataUpdatedAt: tidesUpdatedAt } = useTides();
   const { data: warningData, isLoading: warningsLoading, dataUpdatedAt: warningsUpdatedAt } = useWarnings();
@@ -21,7 +32,6 @@ const Index = () => {
   const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
   const warningActive = hasActiveWarnings(warnings);
 
-  // Lightning level 2+ or nowcast approaching triggers warning theme
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
@@ -30,6 +40,12 @@ const Index = () => {
   const lastUpdatedStr = lastUpdated
     ? new Date(lastUpdated).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Dublin' })
     : null;
+
+  // Group locations by county for the dropdown
+  const grouped = LOCATIONS.reduce<Record<string, typeof LOCATIONS>>((acc, loc) => {
+    (acc[loc.county] ??= []).push(loc);
+    return acc;
+  }, {});
 
   return (
     <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`} data-storm-approaching={stormApproaching || undefined}>
@@ -45,11 +61,33 @@ const Index = () => {
             <div className="absolute right-0 top-0">
               <ThemeToggle />
             </div>
-            <h1 className="text-2xl font-normal tracking-wide text-foreground">
-              Cromane
-            </h1>
-            <p className="text-sm text-muted-foreground tracking-[0.15em] uppercase">
-              Co. Kerry · 52.11°N
+
+            <Select value={location.id} onValueChange={setLocationById}>
+              <SelectTrigger className="inline-flex w-auto gap-1 border-none bg-transparent shadow-none h-auto p-0 mx-auto focus:ring-0 focus:ring-offset-0 hover:opacity-70 transition-opacity">
+                <SelectValue>
+                  <span className="text-2xl font-normal tracking-wide text-foreground">
+                    {location.name}
+                  </span>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="max-h-80">
+                {Object.entries(grouped).map(([county, locs]) => (
+                  <div key={county}>
+                    <div className="px-2 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 font-medium">
+                      {county}
+                    </div>
+                    {locs.map(loc => (
+                      <SelectItem key={loc.id} value={loc.id}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
+                  </div>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <p className="text-sm text-muted-foreground tracking-[0.15em] uppercase mt-1">
+              {location.subtitle}
             </p>
             {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">

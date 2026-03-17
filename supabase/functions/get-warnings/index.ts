@@ -26,17 +26,17 @@ function cleanHtml(s: string): string {
   return s.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
 }
 
-function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
+function parseWarningsHtml(html: string, county: string, province: string): { warnings: any[]; marine: any } {
   const warnings: any[] = [];
-  let marine = { type: 'No warnings', area: 'Southwest Coast', description: 'No active marine warnings.', active: false };
+  let marine = { type: 'No warnings', area: 'Irish Coast', description: 'No active marine warnings.', active: false };
 
-  // Split at Marine Warnings heading
+  const countyLower = county.toLowerCase();
+  const provinceLower = province.toLowerCase();
+
   const marineSplit = html.split(/<h2>Marine Warnings<\/h2>/i);
   const weatherHtml = marineSplit[0] || '';
   const marineHtml = marineSplit[1] || '';
 
-  // Parse weather warning blocks using <h3> tags
-  // Format: <h3>Status Yellow - Rain warning for Counties...</h3>
   const h3Regex = /<h3>\s*Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*warning\s+for\s+(.*?)<\/h3>/gi;
   let match;
 
@@ -45,21 +45,19 @@ function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
     const type = match[2].trim();
     const regions = cleanHtml(match[3]);
 
-    // Skip Northern Ireland warnings
     const contextBefore = weatherHtml.substring(Math.max(0, match.index - 500), match.index);
     if (contextBefore.includes('Northern Ireland')) continue;
 
-    // Check if Kerry-relevant
     const regionsLower = regions.toLowerCase();
-    const isKerryRelevant = regionsLower.includes('kerry') || regionsLower.includes('munster') ||
-      regionsLower.includes('ireland') || regionsLower.includes('all counties');
+    const isRelevant = regionsLower.includes(countyLower) ||
+      regionsLower.includes(provinceLower) ||
+      regionsLower.includes('ireland') ||
+      regionsLower.includes('all counties');
 
-    if (!isKerryRelevant) continue;
+    if (!isRelevant) continue;
 
-    // Extract description and validity from text after h3
     const afterH3 = weatherHtml.substring(match.index + match[0].length, match.index + match[0].length + 2000);
 
-    // Get description: text in <p> tags between the heading and the "Valid:" line
     const descParts: string[] = [];
     const pRegex = /<p(?:\s[^>]*)?>(?!<strong>Met|<strong>Issued|<strong>UK)([\s\S]*?)<\/p>/gi;
     let pMatch;
@@ -72,7 +70,6 @@ function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
       }
     }
 
-    // Extract valid until
     const validMatch = afterH3.match(/Valid:\s*(.*?)(?:<\/p>)/i);
     const validUntil = validMatch ? cleanHtml(validMatch[1]) : 'Check met.ie';
 
@@ -94,13 +91,11 @@ function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
     }
   }
 
-  // Parse marine warnings
   const marineH3Regex = /<h3>\s*Status\s+(Yellow|Orange|Red)\s*[-–]\s*([\w\s]+?)\s*(?:warning\s+)?for\s+(.*?)<\/h3>/gi;
   while ((match = marineH3Regex.exec(marineHtml)) !== null) {
     const type = match[2].trim();
     const area = cleanHtml(match[3]);
 
-    // Get description
     const afterH3 = marineHtml.substring(match.index + match[0].length, match.index + match[0].length + 1000);
     const descP = afterH3.match(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/i);
     const description = descP ? cleanHtml(descP[1]) : '';
@@ -112,7 +107,7 @@ function parseWarningsHtml(html: string): { warnings: any[]; marine: any } {
     if (!marine.active || (isGale && !currentIsGale)) {
       marine = {
         type: typeName,
-        area: area || 'Southwest Coast',
+        area: area || 'Irish Coast',
         description: description || `Active ${typeName.toLowerCase()}.`,
         active: true,
       };
@@ -136,6 +131,15 @@ serve(async (req) => {
   }
 
   try {
+    let county = 'Kerry';
+    let province = 'Munster';
+
+    try {
+      const body = await req.json();
+      if (body.county) county = body.county;
+      if (body.province) province = body.province;
+    } catch {}
+
     const res = await fetch(WARNINGS_PAGE_URL, {
       headers: { 'User-Agent': 'CromaneWatch/1.0 (weather monitoring)' },
     });
@@ -146,9 +150,9 @@ serve(async (req) => {
     }
 
     const html = await res.text();
-    const { warnings, marine } = parseWarningsHtml(html);
+    const { warnings, marine } = parseWarningsHtml(html, county, province);
 
-    console.log(`Returning ${warnings.length} warnings, marine active: ${marine.active} (${marine.type})`);
+    console.log(`Returning ${warnings.length} warnings for ${county}/${province}, marine active: ${marine.active} (${marine.type})`);
 
     return new Response(JSON.stringify({ warnings, marine }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -157,7 +161,7 @@ serve(async (req) => {
     console.error('Warnings fetch error:', error);
     return new Response(JSON.stringify({
       warnings: [],
-      marine: { type: 'Data unavailable', area: 'Southwest Coast', description: 'Unable to fetch warnings. Check met.ie for updates.', active: false },
+      marine: { type: 'Data unavailable', area: 'Irish Coast', description: 'Unable to fetch warnings. Check met.ie for updates.', active: false },
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
