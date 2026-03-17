@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Cloud, CloudRain, CloudDrizzle, CloudSnow, CloudLightning, CloudFog, CloudSun } from 'lucide-react';
 import { WindData, isBookingConditionsMet, Warning } from '@/lib/mock-data';
+import { useLocation } from '@/hooks/use-location';
 
 interface Props {
   wind: WindData;
