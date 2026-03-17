@@ -35,7 +35,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
             className="w-2.5 h-2.5 rounded-full transition-all duration-500 bg-emerald-500"
           />
         </div>
-        <p className="text-sm text-muted-foreground">No active warnings for Kerry</p>
+        <p className="text-sm text-muted-foreground">No active warnings for {location.county}</p>
       </motion.div>
     );
   }
