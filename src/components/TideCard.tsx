@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 // Waves icon removed – using text labels instead
 import { TideData, WindData, Warning } from '@/lib/mock-data';
+import { useLocation } from '@/hooks/use-location';
 
 interface Props {
   tideData: TideData;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const TideCard = ({ tideData, wind, warnings }: Props) => {
+  const { location } = useLocation();
   // Handle both new format ({events, current_height_m, state}) and legacy cached array format
   const tides = Array.isArray(tideData) ? tideData : tideData?.events ?? [];
   const current_height_m = Array.isArray(tideData) ? 0 : tideData?.current_height_m ?? 0;
@@ -28,7 +30,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
     >
       <div className="flex items-center justify-between">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Tides · Cromane Point
+          Tides · {location.name}
         </p>
         <div className="flex flex-col items-end gap-0.5 text-muted-foreground">
           {wind.water_temperature_c != null && (
@@ -154,16 +156,18 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
-      <div className="pt-1">
-        <a
-          href="https://www.samhradhssauna.com/book-sauna"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block text-xs text-primary/70 hover:text-primary transition-colors"
-        >
-          Book Samhradh's sauna →
-        </a>
-      </div>
+      {location.id === 'cromane' && (
+        <div className="pt-1">
+          <a
+            href="https://www.samhradhssauna.com/book-sauna"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-xs text-primary/70 hover:text-primary transition-colors"
+          >
+            Book Samhradh's sauna →
+          </a>
+        </div>
+      )}
     </motion.div>
   );
 };

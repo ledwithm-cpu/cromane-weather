@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Cloud, CloudRain, CloudDrizzle, CloudSnow, CloudLightning, CloudFog, CloudSun } from 'lucide-react';
 import { WindData, isBookingConditionsMet, Warning } from '@/lib/mock-data';
+import { useLocation } from '@/hooks/use-location';
 
 interface Props {
   wind: WindData;
@@ -80,7 +81,8 @@ const getWeatherIcon = (code: number, cloudCover: number) => {
 };
 
 const ConditionsCard = ({ wind, warnings }: Props) => {
-  const canBook = isBookingConditionsMet(wind, warnings);
+  const { location } = useLocation();
+  const canBook = location.id === 'cromane' && isBookingConditionsMet(wind, warnings);
   const [unit, setUnit] = useState<'kts' | 'kmh'>('kmh');
 
   const displaySpeed = unit === 'kts'

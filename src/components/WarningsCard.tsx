@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Warning } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
 import { CloudLightning } from 'lucide-react';
+import { useLocation } from '@/hooks/use-location';
 
 interface Props {
   warnings: Warning[];
@@ -15,6 +16,7 @@ const levelColor: Record<string, string> = {
 };
 
 const WarningsCard = ({ warnings, weatherCode }: Props) => {
+  const { location } = useLocation();
   const thunderActive = (weatherCode ?? 0) >= 95;
 
   if (warnings.length === 0 && !thunderActive) {
@@ -33,7 +35,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
             className="w-2.5 h-2.5 rounded-full transition-all duration-500 bg-emerald-500"
           />
         </div>
-        <p className="text-sm text-muted-foreground">No active warnings for Kerry</p>
+        <p className="text-sm text-muted-foreground">No active warnings for {location.county}</p>
       </motion.div>
     );
   }
@@ -76,7 +78,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
             <span className="text-sm font-normal text-foreground">Thunderstorm Activity Detected</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Live weather data indicates thunderstorm or lightning activity in the Cromane area. Take appropriate precautions.
+            Live weather data indicates thunderstorm or lightning activity in the {location.name} area. Take appropriate precautions.
           </p>
         </div>
       )}
@@ -91,7 +93,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           </div>
           {w.elevated && (
             <p className="text-xs text-warning-orange font-medium">
-              ⚡ Elevated priority — thunderstorm risk near Cromane Bay
+              ⚡ Elevated priority — thunderstorm risk near {location.name}
             </p>
           )}
           <p className="text-xs text-muted-foreground leading-relaxed">{w.description}</p>
