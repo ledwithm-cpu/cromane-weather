@@ -68,7 +68,7 @@ const WindCompass = ({ degrees }: { degrees: number }) => {
 };
 
 const getWeatherIcon = (code: number, cloudCover: number) => {
-  const props = { size: 20, className: 'text-muted-foreground' };
+  const props = { size: 32, strokeWidth: 1.5, className: 'text-muted-foreground' };
   if (code >= 95) return <CloudLightning {...props} className="text-accent" />;
   if (code >= 71) return <CloudSnow {...props} className="text-primary/60" />;
   if (code >= 61) return <CloudRain {...props} className="text-primary" />;
