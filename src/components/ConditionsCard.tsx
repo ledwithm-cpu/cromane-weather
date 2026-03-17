@@ -81,7 +81,8 @@ const getWeatherIcon = (code: number, cloudCover: number) => {
 };
 
 const ConditionsCard = ({ wind, warnings }: Props) => {
-  const canBook = isBookingConditionsMet(wind, warnings);
+  const { location } = useLocation();
+  const canBook = location.id === 'cromane' && isBookingConditionsMet(wind, warnings);
   const [unit, setUnit] = useState<'kts' | 'kmh'>('kmh');
 
   const displaySpeed = unit === 'kts'
