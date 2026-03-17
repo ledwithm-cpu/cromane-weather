@@ -208,7 +208,7 @@ const HowItWorks = () => {
         {/* Footer */}
         <motion.footer {...section(0.5)} className="pt-12 pb-12 text-center">
           <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-            Cromane Watch · Built for the shore
+            Irish Tide Watch · Built for the shore
           </p>
         </motion.footer>
       </div>
