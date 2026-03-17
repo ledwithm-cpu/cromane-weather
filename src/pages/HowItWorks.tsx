@@ -29,15 +29,16 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            Cromane Watch is a single-purpose tool built to answer one question:
+            This app is built to answer one question:
             <em className="text-foreground font-normal"> what's happening outside right now?</em>
+            {' '}Pick your location from 20 Irish coastal towns and beaches, and every card updates with live data for that spot.
           </p>
         </motion.header>
 
         {/* Philosophy */}
         <motion.section {...section(0.1)} className="pb-8">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Every card on the dashboard pulls from a real data source — no guesswork, no stale
+            Every card on the dashboard pulls from a real data source. No guesswork, no stale
             forecasts left over from yesterday. The app polls these sources continuously so you're
             always looking at the freshest picture available. Here's exactly where each piece comes
             from and why we trust it.
@@ -45,6 +46,24 @@ const HowItWorks = () => {
         </motion.section>
 
         <div className="space-y-8">
+          {/* Location Selector */}
+          <motion.section {...section(0.12)} className="space-y-3">
+            <div className="border-t border-border/30 pt-6">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+                Locations
+              </p>
+            </div>
+            <h2 className="text-base font-normal text-foreground">
+              20 Coastal Towns, Beaches & Swimming Spots
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Sligo, Donegal, Dublin, Waterford, and Wexford. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your selected location is remembered between visits. When you switch, all five cards re-fetch with the new coordinates.
+            </p>
+          </motion.section>
+
           {/* Tides */}
           <motion.section {...section(0.15)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
@@ -53,19 +72,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Marine Institute ERDDAP — Fenit Station
+              Marine Institute ERDDAP
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Tide predictions come directly from Ireland's Marine Institute via their ERDDAP
-              scientific data server. We use the Fenit tidal station — the closest monitored point
-              to Cromane — and apply a <strong className="text-foreground font-normal">+25 minute offset</strong> to
-              account for the time it takes the tidal wave to travel up Castlemaine Harbour.
+              Tide predictions come directly from Ireland's Marine Institute via their ERDDAP scientific data server. Each location is mapped to its nearest monitored station (Fenit, Galway, Ballyglass, Cobh, and others), with a time offset applied to account for how long it takes the tidal wave to reach that particular harbour or beach.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              A <strong className="text-foreground font-normal">+2.53m datum conversion</strong> translates the raw LAT
-              (Lowest Astronomical Tide) readings into heights you'd actually recognise at the
-              shore. The tide graph interpolates your current position between known high and low
-              events, refreshing every hour.
+              A <strong className="text-foreground font-normal">+2.53m datum conversion</strong> translates the raw readings into heights you'd actually recognise at the shore. The tide graph shows your current position between known high and low events, and it refreshes every hour.
             </p>
           </motion.section>
 
@@ -77,18 +90,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Open-Meteo — Hyper-local Weather
+              Open-Meteo Weather
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speed, direction, temperature, cloud cover, and precipitation all come from
-              Open-Meteo's open-source weather API. We request data pinned to Cromane's exact
-              coordinates (52.11°N, 9.89°W), so you're not getting a generic "Kerry" forecast —
-              you're getting <em>this</em> stretch of coast.
+              Wind speed, direction, temperature, cloud cover, and precipitation all come from Open-Meteo's open source weather API. We request data pinned to your selected location's exact coordinates, so you're not getting a generic county forecast. You're getting <em>this</em> stretch of coast.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speeds are converted to knots and mapped onto the Beaufort scale with plain-language
-              labels. Water temperature, feels-like, sunrise, and sunset are all derived from the same
-              request. The conditions card refreshes every 15 minutes.
+              Wind speeds are converted to knots and mapped onto the Beaufort scale with plain language labels. The weather icon beside the compass reflects current conditions at a glance: sun, cloud, rain, snow, fog, or thunderstorm. Water temperature comes from the marine API, and the feels like reading is sourced from the nearest Met Éireann observation station (Valentia for Kerry, Roches Point for Cork, Shannon for Clare, and so on). This card refreshes every 15 minutes.
             </p>
           </motion.section>
 
@@ -103,20 +111,13 @@ const HowItWorks = () => {
               Blitzortung Community Network + Storm Intelligence
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Lightning detection uses a "sensor-direct" approach. We connect to the Blitzortung
-              community network — a global array of volunteer-operated lightning detectors — via
-              real-time WebSocket feeds. Strikes within range of Cromane are cached with a 30-minute
-              rolling window.
+              Lightning detection uses a sensor direct approach. We connect to the Blitzortung community network, a global array of volunteer operated lightning detectors, via real time WebSocket feeds. Strikes within 20km of your selected location are cached with a 30 minute rolling window.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              On top of raw strike data, a custom <strong className="text-foreground font-normal">Storm Intelligence engine</strong> tracks
-              heavy rainfall cells across a spatial grid of 16 polling points at 50km and 100km radii.
-              It calculates velocity vectors and estimates arrival times. This is further enhanced by
-              Open-Meteo's Lightning Potential Index (LPI) and CAPE values for predictive nowcasting.
+              On top of raw strike data, a custom <strong className="text-foreground font-normal">Storm Intelligence engine</strong> tracks heavy rainfall cells across a spatial grid of 16 polling points at 50km and 100km radii around your location. It calculates velocity vectors and estimates arrival times. This is further enhanced by Open-Meteo's Lightning Potential Index (LPI) and CAPE values for predictive nowcasting.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              This card polls every 30 seconds — the fastest refresh rate in the app — because
-              when lightning is approaching, minutes matter.
+              This card polls every 30 seconds, the fastest refresh rate in the app, because when lightning is approaching, minutes matter.
             </p>
           </motion.section>
 
@@ -128,20 +129,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Met Éireann — Direct HTML Parsing
+              Met Éireann Warnings
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Weather warnings are scraped directly from Met Éireann's official warnings page
-              (met.ie/warnings) using regex-based parsing. We chose this approach deliberately:
-              the official JSON and XML feeds can be stale or inconsistent, but the public-facing
-              HTML page is always current.
+              Weather warnings are scraped directly from Met Éireann's official warnings page (met.ie/warnings) using pattern based parsing. We chose this approach deliberately: the official JSON and XML feeds can be stale or inconsistent, but the public facing HTML page is always current.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We filter for warnings that mention <strong className="text-foreground font-normal">Kerry</strong>,{' '}
-              <strong className="text-foreground font-normal">Munster</strong>, or{' '}
-              <strong className="text-foreground font-normal">Ireland</strong> — casting a wider net to catch
-              late-addition regional alerts. The colour-coded levels (yellow, orange, red) match Met
-              Éireann's own system exactly. This refreshes every 5 minutes.
+              Warnings are filtered to match your selected location's county and province. If you've chosen Bundoran, you'll see warnings for Donegal and Ulster. If you've chosen Lahinch, you'll see Clare and Munster. National warnings that mention all of Ireland are always shown regardless. The colour coded levels (yellow, orange, red) match Met Éireann's own system exactly. This refreshes every 5 minutes.
             </p>
           </motion.section>
 
@@ -153,13 +147,10 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Met Éireann — Southwest Coast Marine
+              Marine Warnings
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              The marine card pulls the current small craft warning and sea area forecast for the
-              Southwest Coast from the same Met Éireann parsing pipeline as the warnings card.
-              It tells you whether conditions offshore are noteworthy — useful context even if
-              you're staying on the beach.
+              The marine card pulls the current small craft warning and sea area forecast from the same Met Éireann parsing pipeline as the warnings card. It tells you whether conditions offshore are noteworthy, useful context even if you're staying on the beach.
             </p>
           </motion.section>
 
@@ -171,15 +162,10 @@ const HowItWorks = () => {
               </p>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              All external API calls run through backend functions — the app never
-              contacts third-party services directly from your browser. This means your data stays
-              private, requests are rate-limited and cached, and the app continues to work with
-              locally cached data if your connection drops.
+              All external API calls run through backend functions. The app never contacts third party services directly from your browser. This means your data stays private, requests are rate limited and cached, and the app continues to work with locally cached data if your connection drops.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              When you pull to refresh, every data source is re-fetched simultaneously. When you
-              don't, each card manages its own polling interval — fast for lightning, relaxed for
-              tides — so you're never waiting for data you don't need.
+              When you pull to refresh, every data source is re-fetched simultaneously. When you don't, each card manages its own polling interval: fast for lightning, relaxed for tides. You're never waiting for data you don't need.
             </p>
           </motion.section>
         </div>
