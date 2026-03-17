@@ -93,7 +93,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           </div>
           {w.elevated && (
             <p className="text-xs text-warning-orange font-medium">
-              ⚡ Elevated priority — thunderstorm risk near Cromane Bay
+              ⚡ Elevated priority — thunderstorm risk near {location.name}
             </p>
           )}
           <p className="text-xs text-muted-foreground leading-relaxed">{w.description}</p>

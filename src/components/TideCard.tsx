@@ -156,16 +156,18 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
-      <div className="pt-1">
-        <a
-          href="https://www.samhradhssauna.com/book-sauna"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block text-xs text-primary/70 hover:text-primary transition-colors"
-        >
-          Book Samhradh's sauna →
-        </a>
-      </div>
+      {location.id === 'cromane' && (
+        <div className="pt-1">
+          <a
+            href="https://www.samhradhssauna.com/book-sauna"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-xs text-primary/70 hover:text-primary transition-colors"
+          >
+            Book Samhradh's sauna →
+          </a>
+        </div>
+      )}
     </motion.div>
   );
 };
