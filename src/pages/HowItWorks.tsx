@@ -154,6 +154,41 @@ const HowItWorks = () => {
             </p>
           </motion.section>
 
+          {/* Push Notifications */}
+          <motion.section {...section(0.37)} className="space-y-3">
+            <div className="border-t border-border/30 pt-6">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+                Push Notifications
+              </p>
+            </div>
+            <h2 className="text-base font-normal text-foreground">
+              Lightning Alerts Sent to Your Phone
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              When you first open the app, it asks permission to send push notifications. If you allow it, the app registers your device so it can reach you even when your browser is closed.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Notifications are triggered automatically based on the lightning monitoring system. There are four escalation stages, each with a clear message so you know exactly what's happening:
+            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Atmosphere Charging</strong> — conditions are becoming favourable for thunderstorms. The Lightning Potential Index or CAPE values have crossed a threshold. This is a heads up, not an alarm.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Storm Approaching</strong> — the Storm Intelligence engine has detected a heavy rainfall cell moving toward your location. You'll see the direction it's coming from and an estimated arrival time, typically within 60 minutes.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Lightning Warning</strong> — real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. Take your pets inside.
+              </li>
+            </ul>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              There's a 15 minute cooldown between notifications of the same type, so you won't be bombarded. Alerts only escalate; you won't get a lower level notification if you've already received a higher one recently.
+            </p>
+          </motion.section>
+
           {/* Architecture note */}
           <motion.section {...section(0.4)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
