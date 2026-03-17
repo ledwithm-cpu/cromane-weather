@@ -16,6 +16,7 @@ const levelColor: Record<string, string> = {
 };
 
 const WarningsCard = ({ warnings, weatherCode }: Props) => {
+  const { location } = useLocation();
   const thunderActive = (weatherCode ?? 0) >= 95;
 
   if (warnings.length === 0 && !thunderActive) {
