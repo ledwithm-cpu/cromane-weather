@@ -10,6 +10,7 @@ interface Props {
 }
 
 const TideCard = ({ tideData, wind, warnings }: Props) => {
+  const { location } = useLocation();
   // Handle both new format ({events, current_height_m, state}) and legacy cached array format
   const tides = Array.isArray(tideData) ? tideData : tideData?.events ?? [];
   const current_height_m = Array.isArray(tideData) ? 0 : tideData?.current_height_m ?? 0;
