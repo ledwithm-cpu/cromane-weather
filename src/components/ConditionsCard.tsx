@@ -132,16 +132,6 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
         <span>{wind.direction} ({wind.direction_degrees}°)</span>
       </div>
 
-      {canBook && (
-        <a
-          href="https://www.dooks.com/contact/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block text-xs text-primary/70 hover:text-primary transition-colors pt-1"
-        >
-          Book Golf at Dooks →
-        </a>
-      )}
     </motion.div>
   );
 };

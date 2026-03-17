@@ -156,7 +156,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
-      {location.id === 'cromane' && (
+      {location.county === 'Kerry' && (
         <div className="pt-1">
           <a
             href="https://www.samhradhssauna.com/book-sauna"
