@@ -1,14 +1,16 @@
 export interface Location {
   id: string;
   name: string;
-  subtitle: string; // e.g. "Co. Kerry · 52.11°N"
+  subtitle: string;
   lat: number;
   lon: number;
   county: string;
   province: string;
-  tideStation: string;       // ERDDAP station name
-  tideOffsetMinutes: number; // delay from station to location
-  metEireannStation?: string; // nearest Met Éireann obs station
+  tideStation: string;
+  tideOffsetMinutes: number;
+  metEireannStation?: string;
+  saunaName?: string;
+  saunaUrl?: string;
 }
 
 export const LOCATIONS: Location[] = [
@@ -21,6 +23,8 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 25,
     metEireannStation: 'valentia',
+    saunaName: "Samhradh's Sauna",
+    saunaUrl: 'https://www.samhradhssauna.com/book-sauna',
   },
   {
     id: 'inch-beach',
@@ -30,6 +34,8 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 20,
     metEireannStation: 'valentia',
+    saunaName: 'Rossbeigh Sauna',
+    saunaUrl: 'https://www.instagram.com/rossbeigh_sauna',
   },
   {
     id: 'dingle',
@@ -39,6 +45,19 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 10,
     metEireannStation: 'valentia',
+    saunaName: 'Brandon Bay Sauna',
+    saunaUrl: 'https://www.brandonbaysauna.com',
+  },
+  {
+    id: 'maharees',
+    name: 'Maharees',
+    subtitle: 'Co. Kerry · 52.27°N',
+    lat: 52.268, lon: -10.018,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 8,
+    metEireannStation: 'valentia',
+    saunaName: 'Brandon Bay Sauna',
+    saunaUrl: 'https://www.brandonbaysauna.com',
   },
   {
     id: 'ballybunion',
@@ -48,6 +67,8 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 15,
     metEireannStation: 'valentia',
+    saunaName: "Samhradh's Sauna",
+    saunaUrl: 'https://www.samhradhssauna.com/book-sauna',
   },
   {
     id: 'banna-strand',
@@ -57,6 +78,19 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 5,
     metEireannStation: 'valentia',
+    saunaName: "Samhradh's Sauna",
+    saunaUrl: 'https://www.samhradhssauna.com/book-sauna',
+  },
+  {
+    id: 'rossbeigh',
+    name: 'Rossbeigh',
+    subtitle: 'Co. Kerry · 52.06°N',
+    lat: 52.062, lon: -9.972,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 22,
+    metEireannStation: 'valentia',
+    saunaName: 'Rossbeigh Sauna',
+    saunaUrl: 'https://www.instagram.com/rossbeigh_sauna',
   },
   {
     id: 'cahersiveen',
@@ -66,6 +100,30 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 30,
     metEireannStation: 'valentia',
+    saunaName: 'Skellig Sauna',
+    saunaUrl: 'https://www.skelligsauna.ie',
+  },
+  {
+    id: 'ballinskelligs',
+    name: 'Ballinskelligs',
+    subtitle: 'Co. Kerry · 51.82°N',
+    lat: 51.819, lon: -10.270,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 32,
+    metEireannStation: 'valentia',
+    saunaName: 'Skellig Sauna',
+    saunaUrl: 'https://www.skelligsauna.ie',
+  },
+  {
+    id: 'derrynane',
+    name: 'Derrynane',
+    subtitle: 'Co. Kerry · 51.77°N',
+    lat: 51.766, lon: -10.132,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 33,
+    metEireannStation: 'valentia',
+    saunaName: 'Kingdom Sauna',
+    saunaUrl: 'https://www.kingdomsauna.ie',
   },
   {
     id: 'waterville',
@@ -75,6 +133,8 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 35,
     metEireannStation: 'valentia',
+    saunaName: 'Fire & Ice',
+    saunaUrl: 'https://www.fire-and-ice-sauna.com',
   },
   // Cork
   {
@@ -85,6 +145,19 @@ export const LOCATIONS: Location[] = [
     county: 'Cork', province: 'Munster',
     tideStation: 'Cobh', tideOffsetMinutes: 15,
     metEireannStation: 'roches-point',
+    saunaName: 'Wild Wellness',
+    saunaUrl: 'https://www.wildwellness.ie',
+  },
+  {
+    id: 'garrettstown',
+    name: 'Garrettstown',
+    subtitle: 'Co. Cork · 51.64°N',
+    lat: 51.638, lon: -8.588,
+    county: 'Cork', province: 'Munster',
+    tideStation: 'Cobh', tideOffsetMinutes: 18,
+    metEireannStation: 'roches-point',
+    saunaName: 'Wild Wellness',
+    saunaUrl: 'https://www.wildwellness.ie',
   },
   {
     id: 'inchydoney',
@@ -94,6 +167,30 @@ export const LOCATIONS: Location[] = [
     county: 'Cork', province: 'Munster',
     tideStation: 'Cobh', tideOffsetMinutes: 30,
     metEireannStation: 'roches-point',
+    saunaName: 'The Sauna Snugg',
+    saunaUrl: 'https://www.thesaunasnugg.com',
+  },
+  {
+    id: 'clonakilty',
+    name: 'Clonakilty',
+    subtitle: 'Co. Cork · 51.62°N',
+    lat: 51.621, lon: -8.887,
+    county: 'Cork', province: 'Munster',
+    tideStation: 'Cobh', tideOffsetMinutes: 28,
+    metEireannStation: 'roches-point',
+    saunaName: 'Éalú Sauna',
+    saunaUrl: 'https://www.ealusauna.ie',
+  },
+  {
+    id: 'dunworley',
+    name: 'Dunworley',
+    subtitle: 'Co. Cork · 51.57°N',
+    lat: 51.571, lon: -8.921,
+    county: 'Cork', province: 'Munster',
+    tideStation: 'Cobh', tideOffsetMinutes: 29,
+    metEireannStation: 'roches-point',
+    saunaName: 'Element Wellness',
+    saunaUrl: 'https://www.elementwellness.ie',
   },
   {
     id: 'schull',
@@ -103,6 +200,8 @@ export const LOCATIONS: Location[] = [
     county: 'Cork', province: 'Munster',
     tideStation: 'Castletownbere', tideOffsetMinutes: 20,
     metEireannStation: 'sherkin-island',
+    saunaName: 'The Balmy Barrel',
+    saunaUrl: 'https://www.thebalmybarrel.com',
   },
   // Clare
   {
@@ -132,6 +231,19 @@ export const LOCATIONS: Location[] = [
     county: 'Galway', province: 'Connacht',
     tideStation: 'Galway', tideOffsetMinutes: 5,
     metEireannStation: 'athenry',
+    saunaName: 'Sauna Fiáin',
+    saunaUrl: 'https://www.saunafiain.com',
+  },
+  {
+    id: 'spiddal',
+    name: 'Spiddal',
+    subtitle: 'Co. Galway · 53.24°N',
+    lat: 53.243, lon: -9.308,
+    county: 'Galway', province: 'Connacht',
+    tideStation: 'Galway', tideOffsetMinutes: -5,
+    metEireannStation: 'athenry',
+    saunaName: 'Driftwood Sauna',
+    saunaUrl: 'https://www.driftwoodsaunas.ie',
   },
   {
     id: 'dogs-bay',
@@ -141,6 +253,20 @@ export const LOCATIONS: Location[] = [
     county: 'Galway', province: 'Connacht',
     tideStation: 'Galway', tideOffsetMinutes: -15,
     metEireannStation: 'athenry',
+    saunaName: 'Driftwood Sauna',
+    saunaUrl: 'https://www.driftwoodsaunas.ie',
+  },
+  // Mayo
+  {
+    id: 'achill-island',
+    name: 'Achill Island',
+    subtitle: 'Co. Mayo · 53.96°N',
+    lat: 53.961, lon: -10.070,
+    county: 'Mayo', province: 'Connacht',
+    tideStation: 'Ballyglass', tideOffsetMinutes: -10,
+    metEireannStation: 'knock',
+    saunaName: 'Sabhna Saunas',
+    saunaUrl: 'https://www.sabhna.ie',
   },
   // Sligo
   {
@@ -161,6 +287,19 @@ export const LOCATIONS: Location[] = [
     county: 'Donegal', province: 'Ulster',
     tideStation: 'Ballyglass', tideOffsetMinutes: 25,
     metEireannStation: 'malin-head',
+    saunaName: 'Salt & Ember',
+    saunaUrl: 'https://www.saltandember.ie',
+  },
+  {
+    id: 'rossnowlagh',
+    name: 'Rossnowlagh',
+    subtitle: 'Co. Donegal · 54.54°N',
+    lat: 54.541, lon: -8.218,
+    county: 'Donegal', province: 'Ulster',
+    tideStation: 'Ballyglass', tideOffsetMinutes: 23,
+    metEireannStation: 'malin-head',
+    saunaName: 'Salt & Ember',
+    saunaUrl: 'https://www.saltandember.ie',
   },
   {
     id: 'portnoo',
@@ -170,6 +309,30 @@ export const LOCATIONS: Location[] = [
     county: 'Donegal', province: 'Ulster',
     tideStation: 'Aranmore', tideOffsetMinutes: 10,
     metEireannStation: 'malin-head',
+    saunaName: 'Sliabh Liag Sauna',
+    saunaUrl: 'https://www.sliabhliagsauna.ie',
+  },
+  {
+    id: 'teelin',
+    name: 'Teelin',
+    subtitle: 'Co. Donegal · 54.63°N',
+    lat: 54.632, lon: -8.637,
+    county: 'Donegal', province: 'Ulster',
+    tideStation: 'Aranmore', tideOffsetMinutes: 12,
+    metEireannStation: 'malin-head',
+    saunaName: 'Sliabh Liag Sauna',
+    saunaUrl: 'https://www.sliabhliagsauna.ie',
+  },
+  {
+    id: 'shrove',
+    name: 'Shrove',
+    subtitle: 'Co. Donegal · 55.22°N',
+    lat: 55.222, lon: -7.036,
+    county: 'Donegal', province: 'Ulster',
+    tideStation: 'Aranmore', tideOffsetMinutes: 15,
+    metEireannStation: 'malin-head',
+    saunaName: 'The Sea View',
+    saunaUrl: 'https://www.theseaviewsauna.ie',
   },
   // Dublin
   {
@@ -180,6 +343,31 @@ export const LOCATIONS: Location[] = [
     county: 'Dublin', province: 'Leinster',
     tideStation: 'Howth', tideOffsetMinutes: 5,
     metEireannStation: 'dublin-airport',
+    saunaName: 'Restore Sauna',
+    saunaUrl: 'https://www.restoresauna.ie',
+  },
+  {
+    id: 'portrane',
+    name: 'Portrane',
+    subtitle: 'Co. Dublin · 53.49°N',
+    lat: 53.494, lon: -6.116,
+    county: 'Dublin', province: 'Leinster',
+    tideStation: 'Howth', tideOffsetMinutes: 8,
+    metEireannStation: 'dublin-airport',
+    saunaName: 'The Sea Sauna',
+    saunaUrl: 'https://www.theseasauna.ie',
+  },
+  // Wicklow
+  {
+    id: 'greystones',
+    name: 'Greystones',
+    subtitle: 'Co. Wicklow · 53.14°N',
+    lat: 53.141, lon: -6.063,
+    county: 'Wicklow', province: 'Leinster',
+    tideStation: 'Arklow', tideOffsetMinutes: -10,
+    metEireannStation: 'dublin-airport',
+    saunaName: 'Fad Saoil Saunas',
+    saunaUrl: 'https://www.fadsaoilsaunas.com',
   },
   // Waterford
   {
@@ -190,6 +378,19 @@ export const LOCATIONS: Location[] = [
     county: 'Waterford', province: 'Munster',
     tideStation: 'Dunmore East', tideOffsetMinutes: 10,
     metEireannStation: 'johnstown-castle',
+    saunaName: 'The Hot Pod',
+    saunaUrl: 'https://www.thehotpod.ie',
+  },
+  {
+    id: 'dunmore-east',
+    name: 'Dunmore East',
+    subtitle: 'Co. Waterford · 52.15°N',
+    lat: 52.151, lon: -6.995,
+    county: 'Waterford', province: 'Munster',
+    tideStation: 'Dunmore East', tideOffsetMinutes: 0,
+    metEireannStation: 'johnstown-castle',
+    saunaName: 'The Hot Pod',
+    saunaUrl: 'https://www.thehotpod.ie',
   },
   // Wexford
   {
@@ -200,6 +401,31 @@ export const LOCATIONS: Location[] = [
     county: 'Wexford', province: 'Leinster',
     tideStation: 'Arklow', tideOffsetMinutes: 20,
     metEireannStation: 'johnstown-castle',
+    saunaName: 'The Sweathouse',
+    saunaUrl: 'https://www.sweathouse.ie',
+  },
+  {
+    id: 'cahore',
+    name: 'Cahore',
+    subtitle: 'Co. Wexford · 52.56°N',
+    lat: 52.561, lon: -6.199,
+    county: 'Wexford', province: 'Leinster',
+    tideStation: 'Arklow', tideOffsetMinutes: 15,
+    metEireannStation: 'johnstown-castle',
+    saunaName: "Sybil's Sauna",
+    saunaUrl: 'https://www.sybilssauna.ie',
+  },
+  // Louth
+  {
+    id: 'termonfeckin',
+    name: 'Termonfeckin',
+    subtitle: 'Co. Louth · 53.73°N',
+    lat: 53.732, lon: -6.262,
+    county: 'Louth', province: 'Leinster',
+    tideStation: 'Howth', tideOffsetMinutes: 15,
+    metEireannStation: 'dublin-airport',
+    saunaName: 'An Ghrian Sauna',
+    saunaUrl: 'https://www.anghriansauna.com',
   },
 ];
 
