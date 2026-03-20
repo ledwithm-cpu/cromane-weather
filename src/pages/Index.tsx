@@ -125,7 +125,7 @@ const Index = () => {
               How this works
             </Link>
             <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-              Irish Tide Watch · Live
+              Irish Saunas · Live
             </p>
           </motion.footer>
         </div>
