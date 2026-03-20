@@ -29,9 +29,8 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            This app is built to answer one question:
-            <em className="text-foreground font-normal"> what's happening outside right now?</em>
-            {' '}Pick your location from 20 Irish coastal towns and beaches, and every card updates with live data for that spot.
+            We built Irish Tide Watch to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
+            {' '}Pick your location from over 35 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
           </p>
         </motion.header>
 
@@ -54,10 +53,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              20 Coastal Towns, Beaches & Swimming Spots
+              35+ Coastal Towns, Beaches & Local Saunas
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Sligo, Donegal, Dublin, Waterford, and Wexford. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
+              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Where there's a sauna nearby, you'll find a booking link right below the tide chart. We've mapped saunas from Samhradh's in Cromane to Salt & Ember in Bundoran, so wherever you are on the coast, you can check the tides and book a warm up in one place.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Your selected location is remembered between visits. When you switch, all five cards re-fetch with the new coordinates.
@@ -181,7 +183,7 @@ const HowItWorks = () => {
                 <strong className="text-foreground font-normal">Lightning Warning</strong> — real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. Take your pets inside.
+                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. If you have pets outside, bring them in now.
               </li>
             </ul>
             <p className="text-sm text-muted-foreground leading-relaxed">
