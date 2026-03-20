@@ -87,7 +87,7 @@ export function onForegroundMessage(callback: (payload: { title: string; body: s
     onMessage(messaging, (payload) => {
       console.log('Foreground message:', payload);
       callback({
-        title: payload.notification?.title || '⚡ Irish Tide Watch',
+        title: payload.notification?.title || '⚡ Irish Saunas',
         body: payload.notification?.body || 'Weather alert.',
       });
     });

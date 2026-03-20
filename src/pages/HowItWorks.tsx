@@ -29,8 +29,8 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Tide Watch to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
-            {' '}Pick your location from over 35 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
+            We built Irish Saunas to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
+            {' '}Pick your location from over 40 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
           </p>
         </motion.header>
 
@@ -53,7 +53,7 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              35+ Coastal Towns, Beaches & Local Saunas
+              40+ Coastal Towns, Beaches & Local Saunas
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
@@ -210,7 +210,7 @@ const HowItWorks = () => {
         {/* Footer */}
         <motion.footer {...section(0.5)} className="pt-12 pb-12 text-center">
           <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-            Irish Tide Watch · Built for the shore
+            Irish Saunas · Built for the shore
           </p>
         </motion.footer>
       </div>

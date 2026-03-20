@@ -63,9 +63,9 @@ const Index = () => {
             </div>
 
             <Select value={location.id} onValueChange={setLocationById}>
-              <SelectTrigger className="inline-flex w-auto gap-1 border-none bg-transparent shadow-none h-auto p-0 mx-auto focus:ring-0 focus:ring-offset-0 hover:opacity-70 transition-opacity">
+              <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/40 bg-card/50 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/60 active:scale-[0.97] transition-all">
                 <SelectValue>
-                  <span className="text-2xl font-normal tracking-wide text-foreground">
+                  <span className="text-xl font-normal tracking-wide text-foreground">
                     {location.name}
                   </span>
                 </SelectValue>
@@ -86,7 +86,7 @@ const Index = () => {
               </SelectContent>
             </Select>
 
-            <p className="text-sm text-muted-foreground tracking-[0.15em] uppercase mt-1">
+            <p className="text-xs text-muted-foreground/50 tracking-[0.12em] uppercase mt-1.5">
               {location.subtitle}
             </p>
             {isLoading ? (
@@ -125,7 +125,7 @@ const Index = () => {
               How this works
             </Link>
             <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-              Irish Tide Watch · Live
+              Irish Saunas · Live
             </p>
           </motion.footer>
         </div>
