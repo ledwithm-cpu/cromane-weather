@@ -156,15 +156,15 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
-      {location.county === 'Kerry' && (
+      {location.saunaUrl && (
         <div className="pt-1">
           <a
-            href="https://www.samhradhssauna.com/book-sauna"
+            href={location.saunaUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="block text-xs text-primary/70 hover:text-primary transition-colors"
           >
-            Book Samhradh's sauna →
+            Book {location.saunaName} →
           </a>
         </div>
       )}
