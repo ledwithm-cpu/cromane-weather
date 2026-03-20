@@ -29,8 +29,8 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Tide Watch to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
-            {' '}Pick your location from over 35 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
+            We built Irish Saunas to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
+            {' '}Pick your location from over 40 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
           </p>
         </motion.header>
 
