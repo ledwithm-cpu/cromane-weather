@@ -53,10 +53,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              20 Coastal Towns, Beaches & Swimming Spots
+              35+ Coastal Towns, Beaches & Local Saunas
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Sligo, Donegal, Dublin, Waterford, and Wexford. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
+              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Where there's a sauna nearby, you'll find a booking link right below the tide chart. We've mapped saunas from Samhradh's in Cromane to Salt & Ember in Bundoran, so wherever you are on the coast, you can check the tides and book a warm up in one place.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Your selected location is remembered between visits. When you switch, all five cards re-fetch with the new coordinates.
