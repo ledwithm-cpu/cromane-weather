@@ -53,7 +53,7 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              35+ Coastal Towns, Beaches & Local Saunas
+              40+ Coastal Towns, Beaches & Local Saunas
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
