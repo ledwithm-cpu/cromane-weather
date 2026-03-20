@@ -183,7 +183,7 @@ const HowItWorks = () => {
                 <strong className="text-foreground font-normal">Lightning Warning</strong> — real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. Take your pets inside.
+                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. If you have pets outside, bring them in now.
               </li>
             </ul>
             <p className="text-sm text-muted-foreground leading-relaxed">
