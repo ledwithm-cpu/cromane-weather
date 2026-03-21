@@ -76,8 +76,6 @@ export const LOCATIONS: Location[] = [
     county: 'Kerry', province: 'Munster',
     tideStation: 'Fenit', tideOffsetMinutes: 5,
     metEireannStation: 'valentia',
-    saunaName: "Samhradh's Sauna",
-    saunaUrl: 'https://www.samhradhssauna.com/book-sauna',
   },
   {
     id: 'rossbeigh',
