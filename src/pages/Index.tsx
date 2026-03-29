@@ -133,6 +133,12 @@ const Index = () => {
             >
               How this works
             </Link>
+            <Link
+              to="/contact"
+              className="inline-block text-xs text-muted-foreground/60 hover:text-foreground transition-colors tracking-wider uppercase border border-border/30 rounded-md px-4 py-2"
+            >
+              Contact Us
+            </Link>
             <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
               Irish Saunas · Live
             </p>
