@@ -18,7 +18,7 @@ const createSaunaIcon = (hasSauna: boolean) =>
     iconSize: [32, 32],
     iconAnchor: [16, 16],
     html: `<div style="
-      width: 32px; height: 32px;
+      width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
       background: ${hasSauna ? 'hsl(210, 60%, 45%)' : 'hsl(215, 12%, 50%)'};
       border: 2.5px solid white;
@@ -26,8 +26,7 @@ const createSaunaIcon = (hasSauna: boolean) =>
       box-shadow: 0 2px 12px rgba(0,0,0,0.18);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
-      font-size: 14px;
-    ">🔥</div>`,
+    "></div>`,
   });
 
 const saunaIcon = createSaunaIcon(true);
@@ -108,7 +107,7 @@ const DiscoverMap = () => {
           <div className="pointer-events-auto flex items-center gap-2">
             <div className="glass-card rounded-full px-4 py-2.5 shadow-lg">
               <span className="text-sm font-normal tracking-wide text-foreground">
-                🔥 Discover Saunas
+                Discover Saunas
               </span>
             </div>
             <div className="glass-card rounded-full shadow-lg">
