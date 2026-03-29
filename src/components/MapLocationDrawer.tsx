@@ -148,21 +148,23 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
-      />
+      {!isMobile && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
+        />
+      )}
 
       <motion.div
         {...panelVariants}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className={`absolute z-[1002] glass-card shadow-2xl ${
+        className={`absolute z-[1002] ${
           isMobile
-            ? 'bottom-0 left-0 right-0 rounded-t-3xl max-h-[80vh] overflow-y-auto'
-            : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl overflow-y-auto'
+            ? 'inset-0 bg-background overflow-y-auto'
+            : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl glass-card shadow-2xl overflow-y-auto'
         }`}
       >
         {isMobile && (
