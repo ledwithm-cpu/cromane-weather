@@ -168,8 +168,14 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
         }`}
       >
         {isMobile && (
-          <div className="flex justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-border" />
+          <div className="sticky top-0 z-10 bg-background border-b border-border/30 px-4 py-3">
+            <button
+              onClick={onClose}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground active:scale-[0.97] transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to map
+            </button>
           </div>
         )}
 
@@ -183,9 +189,11 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
               )}
               <p className="text-xs text-muted-foreground tracking-[0.12em] uppercase mt-1">{location.subtitle}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
-              <X className="w-5 h-5" />
-            </button>
+            {!isMobile && (
+              <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Weather Card */}
