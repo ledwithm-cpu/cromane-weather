@@ -199,6 +199,17 @@ export const LOCATIONS: Location[] = [
     saunaName: 'The Balmy Barrel',
     saunaUrl: 'https://www.thebalmybarrel.com',
   },
+  {
+    id: 'fountainstown',
+    name: 'Fountainstown',
+    subtitle: 'Co. Cork · 51.79°N',
+    lat: 51.793, lon: -8.294,
+    county: 'Cork', province: 'Munster',
+    tideStation: 'Cobh', tideOffsetMinutes: 5,
+    metEireannStation: 'sherkin-island',
+    saunaName: 'Happy Place Saunas',
+    saunaUrl: 'https://happyplacesaunas.ie/book-now/',
+  },
   // Clare
   {
     id: 'lahinch',
