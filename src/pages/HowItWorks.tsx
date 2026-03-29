@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppFooter from '@/components/AppFooter';
 
 const section = (delay: number) => ({
   initial: { opacity: 0, y: 16 },
