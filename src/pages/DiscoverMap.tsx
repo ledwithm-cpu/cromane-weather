@@ -60,19 +60,21 @@ const DiscoverMap = () => {
     setHasClosedDrawer(true);
   }, []);
 
+  const saunaLocations = useMemo(() => LOCATIONS.filter((loc) => loc.saunaUrl), []);
+
   const markers = useMemo(
     () =>
-      LOCATIONS.map((loc) => (
+      saunaLocations.map((loc) => (
         <Marker
           key={loc.id}
           position={[loc.lat, loc.lon]}
-          icon={loc.saunaUrl ? saunaIcon : noSaunaIcon}
+          icon={saunaIcon}
           eventHandlers={{
             click: () => handleMarkerClick(loc),
           }}
         />
       )),
-    [handleMarkerClick]
+    [saunaLocations, handleMarkerClick]
   );
 
   return (
