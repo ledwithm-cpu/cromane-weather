@@ -107,7 +107,7 @@ const DiscoverMap = () => {
           <div className="pointer-events-auto flex items-center gap-2">
             <div className="glass-card rounded-full px-4 py-2.5 shadow-lg">
               <span className="text-sm font-normal tracking-wide text-foreground">
-                🔥 Discover Saunas
+                Discover Saunas
               </span>
             </div>
             <div className="glass-card rounded-full shadow-lg">

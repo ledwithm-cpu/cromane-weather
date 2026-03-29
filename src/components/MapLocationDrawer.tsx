@@ -269,7 +269,6 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
                 <p className="text-sm font-medium text-foreground">{location.saunaName}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Book a session →</p>
               </div>
-              <span className="text-2xl group-hover:scale-110 transition-transform">🔥</span>
             </button>
           )}
 
