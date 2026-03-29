@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Navigation, Wind, Thermometer, Droplets, ExternalLink } from 'lucide-react';
+import { X, Navigation, Wind, Thermometer, Droplets } from 'lucide-react';
 import { Location } from '@/lib/locations';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -177,30 +177,26 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
           {/* Sauna Info */}
           {location.saunaUrl && (
-            <a
-              href={location.saunaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 p-5 group active:scale-[0.98] transition-all"
+            <button
+              onClick={() => window.open(location.saunaUrl, '_blank', 'noopener,noreferrer')}
+              className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 p-5 group active:scale-[0.98] transition-all text-left"
             >
               <div>
                 <p className="text-sm font-medium text-foreground">{location.saunaName}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Book a session →</p>
               </div>
               <span className="text-2xl group-hover:scale-110 transition-transform">🔥</span>
-            </a>
+            </button>
           )}
 
           {/* Directions */}
-          <a
-            href={directionsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => window.open(directionsUrl, '_blank', 'noopener,noreferrer')}
             className="flex items-center justify-center gap-2 w-full rounded-2xl bg-foreground text-background py-3.5 text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
           >
             <Navigation className="w-4 h-4" />
             Open in Google Maps
-          </a>
+          </button>
 
           {/* Coordinates */}
           <p className="text-center text-[10px] text-muted-foreground/50 tracking-wider tabular-nums">
