@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppFooter from '@/components/AppFooter';
 import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
