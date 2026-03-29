@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
-import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
 import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
