@@ -16,6 +16,18 @@ interface WeatherSnapshot {
   water_temperature_c?: number;
 }
 
+interface TideEvent {
+  time: string;
+  type: 'high' | 'low';
+  height_m: number;
+}
+
+interface TideData {
+  events: TideEvent[];
+  current_height_m: number;
+  state: 'rising' | 'falling';
+}
+
 interface Props {
   location: Location;
   onClose: () => void;
@@ -38,43 +50,104 @@ function getWeatherIcon(code: number): string {
   return '🌤️';
 }
 
+function MiniTideTimeline({ tides, currentHeight }: { tides: TideEvent[]; currentHeight: number }) {
+  const now = new Date();
+  const nowMs = now.getTime();
+
+  const tideTimestamps = tides.map((t) => {
+    const [h, m] = t.time.split(':').map(Number);
+    const d = new Date(now);
+    d.setHours(h, m, 0, 0);
+    if (d.getTime() < nowMs - 2 * 60 * 60 * 1000) d.setDate(d.getDate() + 1);
+    return { ...t, ts: d.getTime() };
+  });
+  tideTimestamps.sort((a, b) => a.ts - b.ts);
+
+  if (tideTimestamps.length === 0) return null;
+
+  const startMs = nowMs;
+  const endMs = tideTimestamps[tideTimestamps.length - 1].ts;
+  const rangeMs = endMs - startMs || 1;
+
+  const heights = tideTimestamps.map((t) => t.height_m);
+  const minH = Math.min(...heights);
+  const maxH = Math.max(...heights);
+  const rangeH = maxH - minH || 1;
+  const clampedHeight = Math.max(minH, Math.min(maxH, currentHeight));
+  const nowY = 34 - ((clampedHeight - minH) / rangeH) * 28;
+
+  const eventPoints = tideTimestamps.map((t) => ({
+    x: ((t.ts - startMs) / rangeMs) * 300,
+    y: t.type === 'high' ? 6 : 34,
+    time: t.time,
+    type: t.type,
+  }));
+
+  const allPoints = [{ x: 0, y: nowY }, ...eventPoints];
+  let pathD = `M${allPoints[0].x},${allPoints[0].y}`;
+  for (let i = 0; i < allPoints.length - 1; i++) {
+    const cx = (allPoints[i].x + allPoints[i + 1].x) / 2;
+    pathD += ` C${cx},${allPoints[i].y} ${cx},${allPoints[i + 1].y} ${allPoints[i + 1].x},${allPoints[i + 1].y}`;
+  }
+
+  return (
+    <svg className="w-full" viewBox="0 0 300 50" preserveAspectRatio="none" style={{ height: 44, overflow: 'visible' }}>
+      <path d={pathD} fill="none" stroke="hsl(var(--primary) / 0.3)" strokeWidth="1.5" transform="translate(0, 8)" />
+      <circle cx={0} cy={nowY + 8} r="3" fill="hsl(var(--primary))" />
+      {eventPoints.map((pt, i) => (
+        <g key={i}>
+          <circle cx={pt.x} cy={pt.y + 8} r="2.5" fill={pt.type === 'high' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground) / 0.4)'} />
+          <text x={pt.x} y={pt.type === 'high' ? pt.y + 2 : pt.y + 20} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="8" fontFamily="inherit">
+            {pt.time}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 const MapLocationDrawer = ({ location, onClose }: Props) => {
   const isMobile = useIsMobile();
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
+  const [tideData, setTideData] = useState<TideData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tideLoading, setTideLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     setWeather(null);
+    setTideData(null);
+    setTideLoading(true);
+
     supabase.functions
       .invoke('get-weather', {
         body: { lat: location.lat, lon: location.lon, metStation: location.metEireannStation },
       })
-      .then(({ data }) => {
-        if (data) setWeather(data);
-      })
+      .then(({ data }) => { if (data) setWeather(data); })
       .finally(() => setLoading(false));
+
+    supabase.functions
+      .invoke('get-tides', {
+        body: { station: location.tideStation, offsetMinutes: location.tideOffsetMinutes },
+      })
+      .then(({ data }) => { if (data) setTideData(data); })
+      .finally(() => setTideLoading(false));
   }, [location.id]);
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lon}`;
   const condition = weather ? getConditionLabel(weather.weather_code, weather.speed_knots) : null;
 
-  // Mobile = bottom sheet, Desktop = side panel
+  const tides = tideData ? (Array.isArray(tideData) ? tideData : tideData.events ?? []) : [];
+  const currentHeight = tideData && !Array.isArray(tideData) ? tideData.current_height_m ?? 0 : 0;
+  const tideState = tideData && !Array.isArray(tideData) ? tideData.state ?? 'falling' : 'falling';
+  const nextTide = tides[0];
+
   const panelVariants = isMobile
-    ? {
-        initial: { y: '100%' },
-        animate: { y: 0 },
-        exit: { y: '100%' },
-      }
-    : {
-        initial: { x: '100%', opacity: 0 },
-        animate: { x: 0, opacity: 1 },
-        exit: { x: '100%', opacity: 0 },
-      };
+    ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+    : { initial: { x: '100%', opacity: 0 }, animate: { x: 0, opacity: 1 }, exit: { x: '100%', opacity: 0 } };
 
   return (
     <>
-      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -83,17 +156,15 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
         className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
       />
 
-      {/* Panel */}
       <motion.div
         {...panelVariants}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
         className={`absolute z-[1002] glass-card shadow-2xl ${
           isMobile
-            ? 'bottom-0 left-0 right-0 rounded-t-3xl max-h-[75vh] overflow-y-auto'
+            ? 'bottom-0 left-0 right-0 rounded-t-3xl max-h-[80vh] overflow-y-auto'
             : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl overflow-y-auto'
         }`}
       >
-        {/* Handle bar (mobile) */}
         {isMobile && (
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-10 h-1 rounded-full bg-border" />
@@ -104,27 +175,17 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
           {/* Header */}
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-light tracking-tight text-foreground">
-                {location.name}
-              </h2>
-              <p className="text-xs text-muted-foreground tracking-[0.12em] uppercase mt-1">
-                {location.subtitle}
-              </p>
+              <h2 className="text-2xl font-light tracking-tight text-foreground">{location.name}</h2>
+              <p className="text-xs text-muted-foreground tracking-[0.12em] uppercase mt-1">{location.subtitle}</p>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground"
-            >
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Weather Card */}
           <div className="rounded-2xl bg-muted/30 border border-border/30 p-5 space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
-              Current Conditions
-            </p>
-
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">Current Conditions</p>
             {loading ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-32 rounded-xl" />
@@ -139,17 +200,9 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
               <>
                 <div className="flex items-baseline gap-3">
                   <span className="text-4xl">{getWeatherIcon(weather.weather_code)}</span>
-                  <span className="text-4xl font-light tabular-nums text-foreground">
-                    {weather.temperature_c}°
-                  </span>
+                  <span className="text-4xl font-light tabular-nums text-foreground">{weather.temperature_c}°</span>
                 </div>
-
-                {condition && (
-                  <p className={`text-sm font-medium ${condition.color}`}>
-                    {condition.label}
-                  </p>
-                )}
-
+                {condition && <p className={`text-sm font-medium ${condition.color}`}>{condition.label}</p>}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="flex flex-col items-center gap-1 rounded-xl bg-background/50 p-3">
                     <Wind className="w-4 h-4 text-muted-foreground" />
@@ -172,6 +225,34 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
               </>
             ) : (
               <p className="text-sm text-muted-foreground">Weather unavailable</p>
+            )}
+          </div>
+
+          {/* Tide Card */}
+          <div className="rounded-2xl bg-muted/30 border border-border/30 p-5 space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">Tides</p>
+            {tideLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-8 w-28 rounded-xl" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+            ) : tides.length > 0 ? (
+              <>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-light tabular-nums text-foreground">{currentHeight}</span>
+                  <span className="text-base text-muted-foreground">m</span>
+                  <span className="text-base text-muted-foreground ml-1">{tideState === 'rising' ? '↑' : '↓'}</span>
+                  <span className="text-xs text-muted-foreground">{tideState === 'rising' ? 'Rising' : 'Falling'}</span>
+                </div>
+                {nextTide && (
+                  <p className="text-xs text-muted-foreground">
+                    Next: {nextTide.type === 'high' ? '▲' : '▼'} {nextTide.type} tide at {nextTide.time} ({nextTide.height_m}m)
+                  </p>
+                )}
+                <MiniTideTimeline tides={tides} currentHeight={currentHeight} />
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Tide data unavailable</p>
             )}
           </div>
 
@@ -198,7 +279,6 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
             Open in Google Maps
           </button>
 
-          {/* Coordinates */}
           <p className="text-center text-[10px] text-muted-foreground/50 tracking-wider tabular-nums">
             {location.lat.toFixed(4)}°N · {Math.abs(location.lon).toFixed(4)}°W
           </p>
