@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Navigation, Wind, Thermometer, Droplets } from 'lucide-react';
+import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft } from 'lucide-react';
 import { Location } from '@/lib/locations';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
