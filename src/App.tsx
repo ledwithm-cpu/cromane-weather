@@ -9,6 +9,7 @@ import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebas
 import { LocationContext, useLocationState } from "@/hooks/use-location";
 import Index from "./pages/Index";
 import HowItWorks from "./pages/HowItWorks";
+import DiscoverMap from "./pages/DiscoverMap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
