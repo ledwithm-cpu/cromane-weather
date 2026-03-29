@@ -86,6 +86,9 @@ const Index = () => {
               </SelectContent>
             </Select>
 
+            {location.saunaName && (
+              <p className="text-sm text-primary font-medium mt-0.5">{location.saunaName}</p>
+            )}
             <p className="text-xs text-muted-foreground/50 tracking-[0.12em] uppercase mt-1.5">
               {location.subtitle}
             </p>
