@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppFooter from '@/components/AppFooter';
 import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
 import TideCard from '@/components/TideCard';
@@ -115,34 +114,7 @@ const Index = () => {
           <MarineCard marine={marine} />
 
           {/* Footer */}
-          <motion.footer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="pt-8 pb-12 text-center space-y-4"
-          >
-            <Link
-              to="/discover"
-              className="inline-flex items-center gap-2 text-xs text-foreground hover:text-primary transition-colors tracking-wider uppercase border border-border/40 rounded-full px-5 py-2.5 hover:border-primary/40"
-            >
-              🔥 Discover Saunas Map
-            </Link>
-            <Link
-              to="/how-it-works"
-              className="inline-block text-xs text-muted-foreground/60 hover:text-foreground transition-colors tracking-wider uppercase border border-border/30 rounded-md px-4 py-2"
-            >
-              How this works
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-block text-xs text-muted-foreground/60 hover:text-foreground transition-colors tracking-wider uppercase border border-border/30 rounded-md px-4 py-2"
-            >
-              Contact Us
-            </Link>
-            <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-              Irish Saunas · Live
-            </p>
-          </motion.footer>
+          <AppFooter delay={0.6} />
         </div>
         </PullToRefresh>
       </div>
