@@ -176,6 +176,9 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-light tracking-tight text-foreground">{location.name}</h2>
+              {location.saunaName && (
+                <p className="text-sm text-primary font-medium mt-0.5">{location.saunaName}</p>
+              )}
               <p className="text-xs text-muted-foreground tracking-[0.12em] uppercase mt-1">{location.subtitle}</p>
             </div>
             <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
