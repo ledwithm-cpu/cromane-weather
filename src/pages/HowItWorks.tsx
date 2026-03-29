@@ -208,12 +208,7 @@ const HowItWorks = () => {
           </motion.section>
         </div>
 
-        {/* Footer */}
-        <motion.footer {...section(0.5)} className="pt-12 pb-12 text-center">
-          <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-            Irish Saunas · Built for the shore
-          </p>
-        </motion.footer>
+        <AppFooter delay={0.5} />
       </div>
     </div>
   );
