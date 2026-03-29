@@ -24,7 +24,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background relative">
       {/* Map background */}
-      <div className="absolute inset-0 opacity-[0.12] pointer-events-none z-0">
+      <div className="absolute inset-0 opacity-[0.35] pointer-events-none z-0">
         <MapContainer
           center={IRELAND_CENTER}
           zoom={IRELAND_ZOOM}
