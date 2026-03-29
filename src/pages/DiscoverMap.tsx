@@ -92,7 +92,7 @@ const DiscoverMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
         />
         {markers}
-        <FlyToLocation location={selected} />
+        <FlyToLocation location={selected} resetToOverview={hasClosedDrawer} />
       </MapContainer>
 
       {/* Top bar */}
