@@ -161,10 +161,10 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
       <motion.div
         {...panelVariants}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className={`absolute z-[1002] ${
+        className={`${
           isMobile
-            ? 'inset-0 bg-background overflow-y-auto'
-            : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl glass-card shadow-2xl overflow-y-auto'
+            ? 'fixed inset-0 z-[2000] h-dvh w-screen overflow-y-auto bg-background'
+            : 'absolute top-4 right-4 bottom-4 w-[380px] z-[1002] rounded-3xl glass-card shadow-2xl overflow-y-auto'
         }`}
       >
         {isMobile && (
