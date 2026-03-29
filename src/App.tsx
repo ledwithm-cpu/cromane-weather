@@ -10,6 +10,7 @@ import { LocationContext, useLocationState } from "@/hooks/use-location";
 import Index from "./pages/Index";
 import HowItWorks from "./pages/HowItWorks";
 import DiscoverMap from "./pages/DiscoverMap";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/discover" element={<DiscoverMap />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
