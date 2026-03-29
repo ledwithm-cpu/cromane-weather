@@ -49,13 +49,16 @@ function FlyToLocation({ location, resetToOverview }: { location: Location | nul
 
 const DiscoverMap = () => {
   const [selected, setSelected] = useState<Location | null>(null);
+  const [hasClosedDrawer, setHasClosedDrawer] = useState(false);
 
   const handleMarkerClick = useCallback((loc: Location) => {
     setSelected(loc);
+    setHasClosedDrawer(false);
   }, []);
 
   const handleClose = useCallback(() => {
     setSelected(null);
+    setHasClosedDrawer(true);
   }, []);
 
   const markers = useMemo(
