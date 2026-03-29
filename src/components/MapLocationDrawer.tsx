@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Navigation, Wind, Thermometer, Droplets } from 'lucide-react';
+import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft } from 'lucide-react';
 import { Location } from '@/lib/locations';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -148,26 +148,34 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
-      />
+      {!isMobile && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
+        />
+      )}
 
       <motion.div
         {...panelVariants}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className={`absolute z-[1002] glass-card shadow-2xl ${
+        className={`absolute z-[1002] ${
           isMobile
-            ? 'bottom-0 left-0 right-0 rounded-t-3xl max-h-[80vh] overflow-y-auto'
-            : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl overflow-y-auto'
+            ? 'inset-0 bg-background overflow-y-auto'
+            : 'top-4 right-4 bottom-4 w-[380px] rounded-3xl glass-card shadow-2xl overflow-y-auto'
         }`}
       >
         {isMobile && (
-          <div className="flex justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-border" />
+          <div className="sticky top-0 z-10 bg-background border-b border-border/30 px-4 py-3">
+            <button
+              onClick={onClose}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground active:scale-[0.97] transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to map
+            </button>
           </div>
         )}
 
@@ -181,9 +189,11 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
               )}
               <p className="text-xs text-muted-foreground tracking-[0.12em] uppercase mt-1">{location.subtitle}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
-              <X className="w-5 h-5" />
-            </button>
+            {!isMobile && (
+              <button onClick={onClose} className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all text-muted-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Weather Card */}
