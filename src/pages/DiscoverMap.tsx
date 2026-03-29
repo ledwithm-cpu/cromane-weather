@@ -37,10 +37,12 @@ const noSaunaIcon = createSaunaIcon(false);
 const IRELAND_CENTER: [number, number] = [53.5, -8.0];
 const IRELAND_ZOOM = 7;
 
-function FlyToLocation({ location }: { location: Location | null }) {
+function FlyToLocation({ location, resetToOverview }: { location: Location | null; resetToOverview: boolean }) {
   const map = useMap();
   if (location) {
     map.flyTo([location.lat, location.lon], 11, { duration: 0.8 });
+  } else if (resetToOverview) {
+    map.flyTo(IRELAND_CENTER, IRELAND_ZOOM, { duration: 0.8 });
   }
   return null;
 }
