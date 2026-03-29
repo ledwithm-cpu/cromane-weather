@@ -121,19 +121,9 @@ const DiscoverMap = () => {
 
       {/* Legend */}
       <div className="absolute bottom-6 left-4 z-[1000] glass-card rounded-2xl px-4 py-3 shadow-lg">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-2 font-medium">
-          {LOCATIONS.filter(l => l.saunaUrl).length} saunas across Ireland
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">
+          {saunaLocations.length} saunas across Ireland
         </p>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-primary border border-white shadow-sm" />
-            <span className="text-[10px] text-muted-foreground">Sauna</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-muted-foreground/50 border border-white shadow-sm" />
-            <span className="text-[10px] text-muted-foreground">Beach only</span>
-          </div>
-        </div>
       </div>
 
       {/* Location drawer */}
