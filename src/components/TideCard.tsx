@@ -28,12 +28,12 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
       transition={{ delay: 0.3 }}
       className="glass-card rounded-lg p-6 space-y-4"
     >
-      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium text-center">
         Tides · {location.name}
       </p>
 
       {/* Current tide height */}
-      <div className="flex items-baseline gap-2">
+      <div className="flex items-baseline gap-2 justify-center">
         <span className="text-5xl font-light tabular-nums text-foreground">
           {current_height_m}
         </span>
@@ -43,7 +43,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
       </div>
 
       {/* Next event */}
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground text-center">
         Next: {next.type === 'high' ? '▲' : '▼'} {next.type} tide at {next.time} ({next.height_m}m)
       </p>
 
