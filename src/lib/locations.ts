@@ -49,6 +49,17 @@ export const LOCATIONS: Location[] = [
     saunaUrl: 'https://glosaunas.ie/collections/all',
   },
   {
+    id: 'glenteenassig',
+    name: 'Glenteenassig',
+    subtitle: 'Co. Kerry · 52.22°N',
+    lat: 52.221, lon: -9.951,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 15,
+    metEireannStation: 'valentia',
+    saunaName: 'Acumeen Sauna',
+    saunaUrl: 'https://flutterwbdev.azurewebsites.net/#/tenantDetails?tenantName=Acumeen_Farm',
+  },
+  {
     id: 'maharees',
     name: 'Maharees',
     subtitle: 'Co. Kerry · 52.27°N',
