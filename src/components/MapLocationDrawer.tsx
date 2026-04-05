@@ -292,6 +292,14 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
             Open in Google Maps
           </button>
 
+          {/* View full location page */}
+          <Link
+            to={`/${location.id}`}
+            className="flex items-center justify-center gap-2 w-full rounded-2xl bg-muted/40 border border-border/30 py-3.5 text-sm font-medium text-foreground hover:bg-muted/60 active:scale-[0.98] transition-all"
+          >
+            View full details →
+          </Link>
+
           <p className="text-center text-[10px] text-muted-foreground/50 tracking-wider tabular-nums">
             {location.lat.toFixed(4)}°N · {Math.abs(location.lon).toFixed(4)}°W
           </p>
