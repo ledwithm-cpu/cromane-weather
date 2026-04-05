@@ -28,31 +28,9 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
       transition={{ delay: 0.3 }}
       className="glass-card rounded-lg p-6 space-y-4"
     >
-      <div className="flex items-center justify-between">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Tides · {location.name}
-        </p>
-        <div className="flex flex-col items-end gap-0.5 text-muted-foreground">
-          {wind.water_temperature_c != null && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">Water Temp</span>
-              <span className="text-xs tabular-nums">{wind.water_temperature_c}°</span>
-            </div>
-          )}
-          {wind.feels_like_c != null && wind.feels_like_c !== wind.temperature_c && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">Feels Like</span>
-              <span className="text-xs tabular-nums">{wind.feels_like_c}°</span>
-            </div>
-          )}
-          {wind.sunrise && wind.sunset && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">☀ {wind.sunrise}</span>
-              <span className="text-[10px] uppercase tracking-wider">☽ {wind.sunset}</span>
-            </div>
-          )}
-        </div>
-      </div>
+      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+        Tides · {location.name}
+      </p>
 
       {/* Current tide height */}
       <div className="flex items-baseline gap-2">
@@ -167,8 +145,36 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         })()}
       </div>
 
+      {/* Conditions strip */}
+      <div className="flex items-center justify-between border-t border-border/40 pt-3 text-muted-foreground">
+        {wind.water_temperature_c != null && (
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg tabular-nums text-foreground">{wind.water_temperature_c}°</span>
+            <span className="text-[10px] uppercase tracking-wider">Water</span>
+          </div>
+        )}
+        {wind.feels_like_c != null && wind.feels_like_c !== wind.temperature_c && (
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg tabular-nums text-foreground">{wind.feels_like_c}°</span>
+            <span className="text-[10px] uppercase tracking-wider">Feels Like</span>
+          </div>
+        )}
+        {wind.sunrise && (
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg tabular-nums text-foreground">{wind.sunrise}</span>
+            <span className="text-[10px] uppercase tracking-wider">☀ Sunrise</span>
+          </div>
+        )}
+        {wind.sunset && (
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg tabular-nums text-foreground">{wind.sunset}</span>
+            <span className="text-[10px] uppercase tracking-wider">☽ Sunset</span>
+          </div>
+        )}
+      </div>
+
       {location.saunaUrl && (
-        <div className="pt-2">
+        <div className="pt-1">
           <a
             href={location.saunaUrl}
             target="_blank"
