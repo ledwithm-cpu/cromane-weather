@@ -162,7 +162,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
             href={location.saunaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all rounded-md px-4 py-2.5 tracking-wide"
+            className="flex items-center justify-center gap-2 w-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all rounded-md px-4 py-2.5 tracking-wide"
           >
             🔥 Book {location.saunaName}
             <span className="text-primary/60">→</span>
