@@ -28,31 +28,9 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
       transition={{ delay: 0.3 }}
       className="glass-card rounded-lg p-6 space-y-4"
     >
-      <div className="flex items-center justify-between">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Tides · {location.name}
-        </p>
-        <div className="flex flex-col items-end gap-0.5 text-muted-foreground">
-          {wind.water_temperature_c != null && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">Water Temp</span>
-              <span className="text-xs tabular-nums">{wind.water_temperature_c}°</span>
-            </div>
-          )}
-          {wind.feels_like_c != null && wind.feels_like_c !== wind.temperature_c && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">Feels Like</span>
-              <span className="text-xs tabular-nums">{wind.feels_like_c}°</span>
-            </div>
-          )}
-          {wind.sunrise && wind.sunset && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider">☀ {wind.sunrise}</span>
-              <span className="text-[10px] uppercase tracking-wider">☽ {wind.sunset}</span>
-            </div>
-          )}
-        </div>
-      </div>
+      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+        Tides · {location.name}
+      </p>
 
       {/* Current tide height */}
       <div className="flex items-baseline gap-2">
