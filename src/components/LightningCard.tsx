@@ -310,18 +310,9 @@ const LightningCard = ({ data }: Props) => {
 
         {/* Safe state (no nowcast activity either) */}
         {effectiveLevel === 0 && nowcastLevel === 0 && (
-          <>
-            <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-              No lightning activity within 20km for the past 30 minutes.
-            </p>
-            <button
-              onClick={triggerTestAlert}
-              className="mt-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-            >
-              <FlaskConical size={12} />
-              Test Alert
-            </button>
-          </>
+          <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
+            No lightning activity within 20km for the past 30 minutes.
+          </p>
         )}
       </div>
 
