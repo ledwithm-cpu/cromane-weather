@@ -130,6 +130,17 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
               />
               {/* Now marker */}
               <circle cx={0} cy={nowY + waveOffsetY} r="3" fill="hsl(var(--primary))" />
+              <text
+                x={0}
+                y={nowY + waveOffsetY - 7}
+                textAnchor="start"
+                fill="hsl(var(--primary))"
+                fontSize="9"
+                fontFamily="inherit"
+                fontWeight="600"
+              >
+                Now
+              </text>
               {/* Event dots and labels on the curve */}
               {eventPoints.map((pt, i) => (
                 <g key={i}>
