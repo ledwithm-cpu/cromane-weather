@@ -210,6 +210,17 @@ export const LOCATIONS: Location[] = [
     saunaName: 'Happy Place Saunas',
     saunaUrl: 'https://happyplacesaunas.ie/book-now/',
   },
+  {
+    id: 'redbarn-youghal',
+    name: 'Redbarn, Youghal',
+    subtitle: 'Co. Cork · 51.93°N',
+    lat: 51.932, lon: -7.856,
+    county: 'Cork', province: 'Munster',
+    tideStation: 'Cobh', tideOffsetMinutes: 10,
+    metEireannStation: 'roches-point',
+    saunaName: 'My Hot Spot – Sauna By The Sea',
+    saunaUrl: 'https://flutterwbdev.azurewebsites.net/#/tenantDetails?tenantName=My_Hot_Spot',
+  },
   // Clare
   {
     id: 'lahinch',
