@@ -49,6 +49,17 @@ export const LOCATIONS: Location[] = [
     saunaUrl: 'https://glosaunas.ie/collections/all',
   },
   {
+    id: 'ventry',
+    name: 'Ventry',
+    subtitle: 'Co. Kerry · 52.12°N',
+    lat: 52.118, lon: -10.358,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 12,
+    metEireannStation: 'valentia',
+    saunaName: 'Sona Sauna',
+    saunaUrl: 'https://linktr.ee/sonasauna',
+  },
+  {
     id: 'glenteenassig',
     name: 'Glenteenassig',
     subtitle: 'Co. Kerry · 52.22°N',
