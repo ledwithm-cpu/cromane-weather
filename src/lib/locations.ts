@@ -60,6 +60,17 @@ export const LOCATIONS: Location[] = [
     saunaUrl: 'https://linktr.ee/sonasauna',
   },
   {
+    id: 'killarney',
+    name: 'Killarney',
+    subtitle: 'Co. Kerry · 52.06°N',
+    lat: 52.059, lon: -9.504,
+    county: 'Kerry', province: 'Munster',
+    tideStation: 'Fenit', tideOffsetMinutes: 20,
+    metEireannStation: 'valentia',
+    saunaName: 'Abhainn Sauna',
+    saunaUrl: 'https://abhainnsauna.com/',
+  },
+  {
     id: 'glenteenassig',
     name: 'Glenteenassig',
     subtitle: 'Co. Kerry · 52.22°N',
