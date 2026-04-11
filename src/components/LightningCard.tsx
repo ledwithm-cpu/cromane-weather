@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, FlaskConical, CloudLightning, Radar } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import { Zap, CloudLightning } from 'lucide-react';
 import type { LightningData } from '@/lib/mock-data';
 
 interface Props {
@@ -9,7 +8,6 @@ interface Props {
 }
 
 const SAFE_TIMEOUT_MS = 30 * 60 * 1000;
-const RADAR_FRESH_MS = 6 * 60 * 1000; // 6 minutes
 
 const alertLabels: Record<number, string> = {
   0: 'Atmosphere Stable',
@@ -18,15 +16,7 @@ const alertLabels: Record<number, string> = {
   3: 'Immediate Danger',
 };
 
-const alertColors: Record<number, string> = {
-  0: 'text-muted-foreground',
-  1: 'text-muted-foreground',
-  2: 'text-warning-orange',
-  3: 'text-warning-red',
-};
-
 const LightningCard = ({ data }: Props) => {
-  const queryClient = useQueryClient();
   const [elapsed, setElapsed] = useState('');
   const [showPulse, setShowPulse] = useState(false);
   const [prevStrikeTime, setPrevStrikeTime] = useState<number | null>(null);
@@ -40,14 +30,6 @@ const LightningCard = ({ data }: Props) => {
 
   // Combined display level: real-time strikes take priority, then nowcast
   const displayLevel = effectiveLevel > 0 ? effectiveLevel : (nowcastLevel >= 1 ? 1 : 0);
-
-  // Radar health
-  const radarSyncAge = nowcast?.radar_sync_ms ? Date.now() - nowcast.radar_sync_ms : Infinity;
-  const radarFresh = radarSyncAge < RADAR_FRESH_MS;
-
-  // Horizon gradient: storms 30-60 min out
-  const showHorizon = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) > 30;
-  const showHorizonClose = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) <= 30;
 
   // Trigger radial pulse when a new strike is detected
   useEffect(() => {
@@ -83,44 +65,6 @@ const LightningCard = ({ data }: Props) => {
     return () => clearInterval(interval);
   }, [updateElapsed]);
 
-  // Web Notification for level 3
-  const closestDistance = data.closest_strike?.distance_km ?? null;
-  const closestBearing = data.closest_strike?.bearing_compass ?? null;
-  useEffect(() => {
-    if (effectiveLevel >= 3 && closestDistance !== null && closestBearing !== null) {
-      try {
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('⚡ Lightning Alert', {
-            body: `Lightning detected ${closestDistance}km ${closestBearing}. Take your pets inside.`,
-            tag: 'lightning-alert',
-          } as NotificationOptions);
-        }
-      } catch { /* not supported */ }
-    }
-  }, [effectiveLevel, closestDistance, closestBearing]);
-
-  // Request notification permission once
-  useEffect(() => {
-    try {
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-    } catch { /* not available */ }
-  }, []);
-
-  const triggerTestAlert = useCallback(async () => {
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-lightning?test=1`;
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-    });
-    const testData = await res.json();
-    queryClient.setQueryData(['lightning'], testData);
-  }, [queryClient]);
-
   // Status text: prefer nowcast when no active strikes
   const statusText = effectiveLevel >= 1
     ? alertLabels[effectiveLevel]
@@ -134,9 +78,10 @@ const LightningCard = ({ data }: Props) => {
     ? 'text-warning-orange'
     : nowcastLevel >= 1
     ? 'text-warning-orange'
-    : nowcastLevel > 0
-    ? 'text-accent'
     : 'text-muted-foreground';
+
+  const showHorizon = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) > 30;
+  const showHorizonClose = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) <= 30;
 
   return (
     <motion.div
@@ -310,9 +255,14 @@ const LightningCard = ({ data }: Props) => {
 
         {/* Safe state (no nowcast activity either) */}
         {effectiveLevel === 0 && nowcastLevel === 0 && (
-          <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-            No lightning activity within 20km for the past 30 minutes.
-          </p>
+          <div className="mt-1 space-y-1.5">
+            <p className="text-xs text-muted-foreground/60 leading-relaxed">
+              No lightning activity within 20km for the past 30 minutes.
+            </p>
+            <p className="text-xs text-muted-foreground/40 leading-relaxed">
+              We will notify you if we predict activity coming in your chosen area.
+            </p>
+          </div>
         )}
       </div>
 
