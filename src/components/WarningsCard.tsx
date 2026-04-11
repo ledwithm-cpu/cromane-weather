@@ -10,8 +10,8 @@ interface Props {
 }
 
 const levelColor: Record<string, string> = {
-  yellow: 'bg-warning-yellow text-warning-yellow/10',
-  orange: 'bg-warning-orange text-warning-orange/10',
+  yellow: 'bg-warning-yellow text-black',
+  orange: 'bg-warning-orange text-black',
   red: 'bg-warning-red text-destructive-foreground',
 };
 
