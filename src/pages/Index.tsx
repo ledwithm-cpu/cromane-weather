@@ -62,12 +62,13 @@ const Index = () => {
             </div>
 
             <Select value={location.id} onValueChange={setLocationById}>
-              <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/40 bg-card/50 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/60 active:scale-[0.97] transition-all">
+              <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/50 bg-card/60 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/70 active:scale-[0.97] transition-all">
                 <SelectValue>
                   <span className="text-xl font-normal tracking-wide text-foreground">
                     {location.name}
                   </span>
                 </SelectValue>
+                <span className="text-muted-foreground/50 text-xs ml-0.5">▾</span>
               </SelectTrigger>
               <SelectContent className="max-h-80">
                 {Object.entries(grouped).map(([county, locs]) => (
@@ -97,21 +98,22 @@ const Index = () => {
               </p>
             ) : lastUpdatedStr ? (
               <p className="text-[10px] text-muted-foreground/40 mt-1 tracking-wider uppercase">
-                Updated {lastUpdatedStr}
+                Live · {lastUpdatedStr}
               </p>
             ) : null}
+            <p className="text-[10px] text-muted-foreground/30 mt-2 tracking-wide">
+              Live tides, weather & warnings for Irish coastal saunas
+            </p>
           </motion.header>
 
           {/* Card Stack */}
-          {tides && wind && <TideCard tideData={tides} wind={wind} warnings={warnings} />}
-          <div className="border-t border-border/30" />
-          {wind && <ConditionsCard wind={wind} warnings={warnings} />}
-          <div className="border-t border-border/30" />
-          {lightning && <LightningCard data={lightning} />}
-          <div className="border-t border-border/30" />
-          <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
-          <div className="border-t border-border/30" />
-          <MarineCard marine={marine} />
+          <div className="space-y-3">
+            {tides && wind && <TideCard tideData={tides} wind={wind} warnings={warnings} />}
+            {wind && <ConditionsCard wind={wind} warnings={warnings} />}
+            {lightning && <LightningCard data={lightning} />}
+            <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
+            <MarineCard marine={marine} />
+          </div>
 
           {/* Footer */}
           <AppFooter delay={0.6} />
