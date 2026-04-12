@@ -30,7 +30,7 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Saunas to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real time lightning alerts, especially if you have pets outside.
+            We built Irish Saunas to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real-time lightning alerts, especially if you have pets outside.
             {' '}Pick your location from over 40 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
           </p>
         </motion.header>
@@ -60,7 +60,7 @@ const HowItWorks = () => {
               Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Where there's a sauna nearby, you'll find a booking link right below the tide chart. We've mapped saunas from Samhradh's in Cromane to Salt & Ember in Bundoran, so wherever you are on the coast, you can check the tides and book a warm up in one place.
+              Where there's a sauna nearby, you'll find a booking link right below the tide chart. We've mapped saunas from Samhradh's in Cromane to Salt & Ember in Bundoran, so wherever you are on the coast, you can check the tides and book a warm-up in one place.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Your selected location is remembered between visits. When you switch, all five cards re-fetch with the new coordinates.
@@ -96,10 +96,10 @@ const HowItWorks = () => {
               Open-Meteo Weather
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speed, direction, temperature, cloud cover, and precipitation all come from Open-Meteo's open source weather API. We request data pinned to your selected location's exact coordinates, so you're not getting a generic county forecast. You're getting <em>this</em> stretch of coast.
+              Wind speed, direction, temperature, cloud cover, and precipitation all come from Open-Meteo's open-source weather API. We request data pinned to your selected location's exact coordinates, so you're not getting a generic county forecast. You're getting <em>this</em> stretch of coast.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speeds are converted to knots and mapped onto the Beaufort scale with plain language labels. The weather icon beside the compass reflects current conditions at a glance: sun, cloud, rain, snow, fog, or thunderstorm. Water temperature comes from the marine API, and the feels like reading is sourced from the nearest Met Éireann observation station (Valentia for Kerry, Roches Point for Cork, Shannon for Clare, and so on). This card refreshes every 15 minutes.
+              Wind speeds are converted to knots and mapped onto the Beaufort scale with plain-language labels. The weather icon beside the compass reflects current conditions at a glance: sun, cloud, rain, snow, fog, or thunderstorm. Water temperature comes from the marine API, and the "feels like" reading is calculated using wind chill data from the nearest Met Éireann observation station (Valentia for Kerry, Roches Point for Cork, Shannon for Clare, and so on). This card refreshes every 15 minutes.
             </p>
           </motion.section>
 
@@ -114,7 +114,7 @@ const HowItWorks = () => {
               Blitzortung Community Network + Storm Intelligence
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Lightning detection uses a sensor direct approach. We connect to the Blitzortung community network, a global array of volunteer operated lightning detectors, via real time WebSocket feeds. Strikes within 20km of your selected location are cached with a 30 minute rolling window.
+              Lightning detection uses a sensor-direct approach. We connect to the Blitzortung community network, a global array of volunteer-operated lightning detectors, via real-time WebSocket feeds. Strikes within 20km of your selected location are cached with a 30-minute rolling window.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               On top of raw strike data, a custom <strong className="text-foreground font-normal">Storm Intelligence engine</strong> tracks heavy rainfall cells across a spatial grid of 16 polling points at 50km and 100km radii around your location. It calculates velocity vectors and estimates arrival times. This is further enhanced by Open-Meteo's Lightning Potential Index (LPI) and CAPE values for predictive nowcasting.
@@ -135,10 +135,10 @@ const HowItWorks = () => {
               Met Éireann Warnings
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Weather warnings are scraped directly from Met Éireann's official warnings page (met.ie/warnings) using pattern based parsing. We chose this approach deliberately: the official JSON and XML feeds can be stale or inconsistent, but the public facing HTML page is always current.
+              Weather warnings are pulled directly from Met Éireann's official warnings page (met.ie/warnings) using pattern-based parsing. We chose this approach deliberately: the official JSON and XML feeds can be stale or inconsistent, but the public-facing HTML page is always current.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Warnings are filtered to match your selected location's county and province. If you've chosen Bundoran, you'll see warnings for Donegal and Ulster. If you've chosen Lahinch, you'll see Clare and Munster. National warnings that mention all of Ireland are always shown regardless. The colour coded levels (yellow, orange, red) match Met Éireann's own system exactly. This refreshes every 5 minutes.
+              Warnings are filtered to match your selected location's county and province. If you've chosen Bundoran, you'll see warnings for Donegal and Ulster. If you've chosen Lahinch, you'll see Clare and Munster. National warnings that mention all of Ireland are always shown regardless. The colour-coded levels (yellow, orange, red) match Met Éireann's own system exactly. This refreshes every 5 minutes.
             </p>
           </motion.section>
 
@@ -175,20 +175,20 @@ const HowItWorks = () => {
             </p>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Atmosphere Charging</strong> — conditions are becoming favourable for thunderstorms. The Lightning Potential Index or CAPE values have crossed a threshold. This is a heads up, not an alarm.
+                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · Conditions are becoming favourable for thunderstorms. The Lightning Potential Index or CAPE values have crossed a threshold. This is a heads-up, not an alarm.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Storm Approaching</strong> — the Storm Intelligence engine has detected a heavy rainfall cell moving toward your location. You'll see the direction it's coming from and an estimated arrival time, typically within 60 minutes.
+                <strong className="text-foreground font-normal">Storm Approaching</strong> · The Storm Intelligence engine has detected a heavy rainfall cell moving toward your location. You'll see the direction it's coming from and an estimated arrival time, typically within 60 minutes.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Lightning Warning</strong> — real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
+                <strong className="text-foreground font-normal">Lightning Warning</strong> · Real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> — lightning has struck within 5km. The message is simple: seek shelter. If you have pets outside, bring them in now.
+                <strong className="text-foreground font-normal">Immediate Danger</strong> · Lightning has struck within 5km. The message is simple: seek shelter. If you have pets outside, bring them in now.
               </li>
             </ul>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              There's a 15 minute cooldown between notifications of the same type, so you won't be bombarded. Alerts only escalate; you won't get a lower level notification if you've already received a higher one recently.
+              There's a 15-minute cooldown between notifications of the same type, so you won't be bombarded. Alerts only escalate; you won't get a lower-level notification if you've already received a higher one recently.
             </p>
           </motion.section>
 
@@ -200,7 +200,7 @@ const HowItWorks = () => {
               </p>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              All external API calls run through backend functions. The app never contacts third party services directly from your browser. This means your data stays private, requests are rate limited and cached, and the app continues to work with locally cached data if your connection drops.
+              All external API calls run through backend functions. The app never contacts third-party services directly from your browser. This means your data stays private, requests are rate-limited and cached, and the app continues to work with locally cached data if your connection drops.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               When you pull to refresh, every data source is re-fetched simultaneously. When you don't, each card manages its own polling interval: fast for lightning, relaxed for tides. You're never waiting for data you don't need.
