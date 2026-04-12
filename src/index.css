@@ -7,10 +7,10 @@
 @layer base {
   :root {
     /* Calm coastal — soft fog, pale sand, quiet sea */
-    --background: 200 20% 97%;
+    --background: 200 15% 93%;
     --foreground: 210 15% 20%;
 
-    --card: 200 25% 98%;
+    --card: 200 18% 95%;
     --card-foreground: 210 15% 20%;
 
     --popover: 200 25% 98%;
