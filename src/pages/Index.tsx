@@ -61,7 +61,7 @@ const Index = () => {
               <ThemeToggle />
             </div>
 
-            <p className="text-[10px] text-muted-foreground/30 mb-2 tracking-wide">
+            <p className="text-xs text-muted-foreground/50 mb-2 tracking-wide">
               Live tides, weather & warnings for Irish coastal saunas
             </p>
 
