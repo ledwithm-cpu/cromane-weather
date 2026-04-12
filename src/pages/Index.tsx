@@ -61,6 +61,10 @@ const Index = () => {
               <ThemeToggle />
             </div>
 
+            <p className="text-[10px] text-muted-foreground/30 mb-2 tracking-wide">
+              Live tides, weather & warnings for Irish coastal saunas
+            </p>
+
             <Select value={location.id} onValueChange={setLocationById}>
               <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/50 bg-card/60 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/70 active:scale-[0.97] transition-all">
                 <SelectValue>
@@ -101,9 +105,6 @@ const Index = () => {
                 Live · {lastUpdatedStr}
               </p>
             ) : null}
-            <p className="text-[10px] text-muted-foreground/30 mt-2 tracking-wide">
-              Live tides, weather & warnings for Irish coastal saunas
-            </p>
           </motion.header>
 
           {/* Card Stack */}
