@@ -6,99 +6,100 @@
 
 @layer base {
   :root {
-    /* Cromane Clear — pale frosted coastal blues */
-    --background: 210 30% 96%;
-    --foreground: 215 25% 15%;
+    /* Calm coastal — soft fog, pale sand, quiet sea */
+    --background: 200 20% 97%;
+    --foreground: 210 15% 20%;
 
-    --card: 210 40% 98%;
-    --card-foreground: 215 25% 15%;
+    --card: 200 25% 98%;
+    --card-foreground: 210 15% 20%;
 
-    --popover: 210 40% 98%;
-    --popover-foreground: 215 25% 15%;
+    --popover: 200 25% 98%;
+    --popover-foreground: 210 15% 20%;
 
-    --primary: 210 60% 45%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 200 35% 50%;
+    --primary-foreground: 200 30% 98%;
 
-    --secondary: 210 20% 90%;
-    --secondary-foreground: 215 25% 25%;
+    --secondary: 200 12% 92%;
+    --secondary-foreground: 210 12% 30%;
 
-    --muted: 210 15% 92%;
-    --muted-foreground: 215 12% 50%;
+    --muted: 200 10% 93%;
+    --muted-foreground: 200 8% 50%;
 
-    --accent: 35 90% 55%;
-    --accent-foreground: 35 95% 15%;
+    --accent: 32 40% 60%;
+    --accent-foreground: 32 50% 15%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 55% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 25% 88%;
-    --input: 210 25% 88%;
-    --ring: 210 60% 45%;
+    --border: 200 15% 90%;
+    --input: 200 15% 90%;
+    --ring: 200 35% 50%;
 
     --radius: 1rem;
 
-    /* Cromane custom tokens */
-    --glass-bg: 210 40% 98% / 0.6;
-    --glass-border: 210 40% 90% / 0.4;
+    /* Coastal glass tokens */
+    --glass-bg: 200 25% 98% / 0.55;
+    --glass-border: 200 20% 88% / 0.35;
     --glass-blur: 20px;
 
-    --warning-yellow: 48 96% 53%;
-    --warning-orange: 25 95% 55%;
-    --warning-red: 0 80% 50%;
+    --warning-yellow: 48 80% 53%;
+    --warning-orange: 25 80% 55%;
+    --warning-red: 0 65% 50%;
 
-    --marine-teal: 185 55% 42%;
-    --tide-blue: 215 65% 55%;
+    --marine-teal: 185 35% 45%;
+    --tide-blue: 200 40% 55%;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-foreground: 210 10% 30%;
+    --sidebar-primary: 200 35% 50%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 200 8% 95%;
+    --sidebar-accent-foreground: 210 10% 15%;
+    --sidebar-border: 200 12% 91%;
+    --sidebar-ring: 200 35% 55%;
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 210 20% 90%;
+    /* Deep ocean night — calm, not harsh */
+    --background: 210 18% 11%;
+    --foreground: 200 15% 88%;
 
-    --card: 220 18% 13%;
-    --card-foreground: 210 20% 90%;
+    --card: 210 15% 14%;
+    --card-foreground: 200 15% 88%;
 
-    --popover: 220 18% 13%;
-    --popover-foreground: 210 20% 90%;
+    --popover: 210 15% 14%;
+    --popover-foreground: 200 15% 88%;
 
-    --primary: 210 55% 55%;
-    --primary-foreground: 220 20% 10%;
+    --primary: 200 30% 58%;
+    --primary-foreground: 210 18% 11%;
 
-    --secondary: 220 15% 18%;
-    --secondary-foreground: 210 15% 80%;
+    --secondary: 210 10% 18%;
+    --secondary-foreground: 200 10% 78%;
 
-    --muted: 220 15% 16%;
-    --muted-foreground: 215 12% 55%;
+    --muted: 210 10% 16%;
+    --muted-foreground: 200 8% 52%;
 
-    --accent: 35 85% 50%;
-    --accent-foreground: 35 95% 90%;
+    --accent: 32 35% 50%;
+    --accent-foreground: 32 40% 90%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 210 55% 55%;
+    --border: 210 10% 20%;
+    --input: 210 10% 20%;
+    --ring: 200 30% 58%;
 
-    --glass-bg: 220 18% 14% / 0.7;
-    --glass-border: 220 15% 22% / 0.5;
+    --glass-bg: 210 15% 14% / 0.65;
+    --glass-border: 210 10% 22% / 0.45;
 
-    --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 210 55% 55%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 15% 16%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 210 55% 55%;
+    --sidebar-background: 210 18% 11%;
+    --sidebar-foreground: 200 15% 88%;
+    --sidebar-primary: 200 30% 58%;
+    --sidebar-primary-foreground: 210 18% 11%;
+    --sidebar-accent: 210 10% 16%;
+    --sidebar-accent-foreground: 200 15% 88%;
+    --sidebar-border: 210 10% 20%;
+    --sidebar-ring: 200 30% 58%;
   }
 
   /* Warning state — deep charcoal with amber tint */
