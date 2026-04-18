@@ -121,7 +121,7 @@ export const LOCATIONS: Location[] = [
     tideStation: 'Fenit', tideOffsetMinutes: 22,
     metEireannStation: 'valentia',
     saunaName: 'Rossbeigh Sauna',
-    saunaUrl: 'https://www.instagram.com/rossbeigh_sauna',
+    saunaUrl: 'https://flutterwbdev.azurewebsites.net/#/tenantDetails?tenantName=Rosspoint_Sauna&utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnN5gt-zOXQch7ufPfA6tWtZUB3E_RZjCxqSEiAakljLACfi9cwvxc8ZSQLM0_aem_vvfRTry1Bc9XMMe2r54bzg',
   },
   {
     id: 'cahersiveen',
