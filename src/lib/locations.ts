@@ -8,6 +8,8 @@ export interface Location {
   province: string;
   tideStation: string;
   tideOffsetMinutes: number;
+  /** OD Malin → Chart Datum (LAT) offset in metres. Defaults to 2.55 if omitted. Fenit ≈ 2.67. */
+  chartDatumOffset?: number;
   metEireannStation?: string;
   saunaName?: string;
   saunaUrl?: string;
