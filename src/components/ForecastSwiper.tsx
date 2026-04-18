@@ -533,30 +533,6 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
         </div>
       </div>
 
-      {/* Day pagination dots / quick nav */}
-      <div className="flex items-center justify-center gap-1.5 pt-1">
-        {days.map((d, i) => {
-          const active = i === currentDayIndex;
-          const today = i === 0;
-          return (
-            <button
-              key={d.key}
-              onClick={() => jumpTo(i)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md transition-all ${
-                active ? 'bg-primary/15 scale-105' : 'hover:bg-card/60 opacity-60'
-              }`}
-              aria-label={`Go to ${shortDay(d.date)} ${dayNumber(d.date)}`}
-            >
-              <span className={`text-[9px] uppercase tracking-wider ${active ? 'text-primary' : 'text-muted-foreground'}`}>
-                {today ? 'Today' : shortDay(d.date)}
-              </span>
-              <span className={`text-xs tabular-nums ${active ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                {dayNumber(d.date)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
     </motion.div>
   );
 };
