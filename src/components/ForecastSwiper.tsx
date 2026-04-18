@@ -310,11 +310,17 @@ const TideDayCard = ({
       padY + (1 - (yMeters - minH) / rangeH) * usableH;
     const projectX = (xMin: number) => (xMin / 1440) * W;
 
-    // Build polyline path
+    // Build polyline path (stroke)
     let d = `M${projectX(samples[0].x).toFixed(2)},${projectY(samples[0].y).toFixed(2)}`;
     for (let i = 1; i < samples.length; i++) {
       d += ` L${projectX(samples[i].x).toFixed(2)},${projectY(samples[i].y).toFixed(2)}`;
     }
+
+    // Closed area path (for fill below curve)
+    const baselineY = H - 2;
+    const firstX = projectX(samples[0].x).toFixed(2);
+    const lastX = projectX(samples[samples.length - 1].x).toFixed(2);
+    const dArea = `${d} L${lastX},${baselineY} L${firstX},${baselineY} Z`;
 
     const markers = pts.map(p => ({
       x: projectX(p.x),
@@ -341,7 +347,7 @@ const TideDayCard = ({
       }
     }
 
-    return { d, markers, W, H, now };
+    return { d, dArea, markers, W, H, now };
   })();
 
   return (
