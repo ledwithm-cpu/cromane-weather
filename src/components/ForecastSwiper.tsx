@@ -230,8 +230,10 @@ const TideDayCard = ({
 
     const extrema = [beforeFirst, ...pts, afterLast];
 
-    // Sample sinusoidally between consecutive extrema, clipped to [0, 1440]
-    const SAMPLES_PER_SEG = 16;
+    // Sample sinusoidally between consecutive extrema. Clamp x into [0, 1440]
+    // so the curve always reaches both edges (instead of being clipped when the
+    // first/last real event sits well inside the day window).
+    const SAMPLES_PER_SEG = 24;
     const samples: { x: number; y: number }[] = [];
     for (let i = 0; i < extrema.length - 1; i++) {
       const a = extrema[i];
@@ -242,9 +244,31 @@ const TideDayCard = ({
         const t = s / SAMPLES_PER_SEG;
         const x = a.x + (b.x - a.x) * t;
         const y = mid + amp * Math.cos(Math.PI * t);
-        if (x >= 0 && x <= 1440) samples.push({ x, y });
+        if (x < 0 || x > 1440) continue;
+        samples.push({ x, y });
       }
     }
+
+    // Ensure we explicitly include endpoints at x=0 and x=1440 by
+    // interpolating across whichever segment spans them.
+    const interpAt = (xTarget: number): number | null => {
+      for (let i = 0; i < extrema.length - 1; i++) {
+        const a = extrema[i];
+        const b = extrema[i + 1];
+        if (xTarget >= a.x && xTarget <= b.x) {
+          const t = (xTarget - a.x) / (b.x - a.x);
+          const mid = (a.y + b.y) / 2;
+          const amp = (a.y - b.y) / 2;
+          return mid + amp * Math.cos(Math.PI * t);
+        }
+      }
+      return null;
+    };
+    const y0 = interpAt(0);
+    const y1440 = interpAt(1440);
+    if (y0 != null) samples.unshift({ x: 0, y: y0 });
+    if (y1440 != null) samples.push({ x: 1440, y: y1440 });
+    samples.sort((a, b) => a.x - b.x);
 
     if (samples.length === 0) return null;
 
@@ -274,7 +298,26 @@ const TideDayCard = ({
       type: p.type,
     }));
 
-    return { d, markers, W, H };
+    // "Now" marker — only meaningful for today
+    let now: { x: number; y: number } | null = null;
+    if (isToday) {
+      const nowDate = new Date();
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Dublin',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).formatToParts(nowDate);
+      const hh = Number(parts.find(p => p.type === 'hour')?.value ?? 0);
+      const mm = Number(parts.find(p => p.type === 'minute')?.value ?? 0);
+      const nowMin = hh * 60 + mm;
+      const yNow = interpAt(nowMin);
+      if (yNow != null) {
+        now = { x: projectX(nowMin), y: projectY(yNow) };
+      }
+    }
+
+    return { d, markers, W, H, now };
   })();
 
   return (
