@@ -69,7 +69,7 @@ serve(async (req) => {
     }
 
     const fromTime = new Date(now.getTime() - 2 * 3600 * 1000).toISOString();
-    const toTime = new Date(now.getTime() + 24 * 3600 * 1000).toISOString();
+    const toTime = new Date(now.getTime() + 8 * 24 * 3600 * 1000).toISOString();
     const contFrom = new Date(now.getTime() - 30 * 60 * 1000).toISOString();
     const contTo = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
 
@@ -125,6 +125,9 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     .filter((e: any) => new Date(e.timestamp).getTime() > nowMs - 3600000)
     .slice(0, 4);
 
+  // Build 7-day forecast grouped by local (Europe/Dublin) date
+  const forecast = build7DayForecast(events, now);
+
   const contRows = data.cont?.table?.rows ?? [];
   let currentHeight = 0;
   if (contRows.length > 0) {
@@ -156,7 +159,33 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     }
   }
 
-  return { events: filtered, current_height_m: currentHeight, state };
+  return { events: filtered, current_height_m: currentHeight, state, forecast };
+}
+
+function dublinDateKey(d: Date): string {
+  // YYYY-MM-DD in Europe/Dublin
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Dublin',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(d);
+  const y = parts.find(p => p.type === 'year')?.value;
+  const m = parts.find(p => p.type === 'month')?.value;
+  const day = parts.find(p => p.type === 'day')?.value;
+  return `${y}-${m}-${day}`;
+}
+
+function build7DayForecast(events: any[], now: Date) {
+  const days: { date: string; events: any[] }[] = [];
+  const todayKey = dublinDateKey(now);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now.getTime() + i * 24 * 3600 * 1000);
+    const key = dublinDateKey(d);
+    const dayEvents = events
+      .filter((e: any) => dublinDateKey(new Date(e.timestamp)) === key)
+      .map((e: any) => ({ type: e.type, time: e.time, height_m: e.height_m, timestamp: e.timestamp }));
+    days.push({ date: key, events: dayEvents });
+  }
+  return days;
 }
 
 function formatTime(date: Date): string {
