@@ -327,8 +327,8 @@ const TideDayCard = ({
           Tides · {location.name}
         </p>
         {isToday && (
-          <span className="absolute right-0 text-[10px] uppercase tracking-wider text-muted-foreground">
-            {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
+          <span className="absolute right-0 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+            Now {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
           </span>
         )}
       </div>
@@ -352,6 +352,28 @@ const TideDayCard = ({
                 fill={m.type === 'high' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground) / 0.5)'}
               />
             ))}
+            {sparkPoints.now && (
+              <g>
+                <line
+                  x1={sparkPoints.now.x}
+                  y1={0}
+                  x2={sparkPoints.now.x}
+                  y2={sparkPoints.H - 2}
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="0.75"
+                  strokeOpacity="0.45"
+                  strokeDasharray="2 2"
+                />
+                <circle
+                  cx={sparkPoints.now.x}
+                  cy={sparkPoints.now.y}
+                  r="3.5"
+                  fill="hsl(var(--primary))"
+                  stroke="hsl(var(--background))"
+                  strokeWidth="1.25"
+                />
+              </g>
+            )}
           </svg>
           <div className="flex justify-between text-[9px] text-muted-foreground/60 px-0.5 mt-0.5 tracking-wider">
             <span>00</span>
