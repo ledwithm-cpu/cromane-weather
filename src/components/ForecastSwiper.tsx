@@ -102,12 +102,12 @@ const WeatherDayCard = ({
 
   return (
     <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
-      <div className="flex items-center justify-between">
+      <div className="relative flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Weather
         </p>
         {isToday && (
-          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-foreground/70">
+          <span className="absolute right-0 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-foreground/70">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
@@ -279,12 +279,12 @@ const TideDayCard = ({
 
   return (
     <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
-      <div className="flex items-center justify-between">
+      <div className="relative flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
         </p>
         {isToday && (
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span className="absolute right-0 text-[10px] uppercase tracking-wider text-muted-foreground">
             {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
           </span>
         )}
