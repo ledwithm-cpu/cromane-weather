@@ -17,21 +17,15 @@ const MarineCard = ({ marine }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Marine Warnings · {marine.area}
         </p>
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
-              marine.active ? 'bg-warning-orange animate-pulse' : 'bg-emerald-500'
-            }`}
-            style={marine.active ? { boxShadow: '0 0 8px 3px hsla(25, 95%, 55%, 0.4)' } : undefined}
-          />
-        </div>
+        <div
+          className={`w-2 h-2 rounded-full transition-all duration-500 ${
+            marine.active ? 'bg-warning-orange' : 'bg-emerald-500/70'
+          }`}
+        />
       </div>
 
       <div className="flex items-center gap-2">
         <span className="text-sm font-normal text-foreground">{marine.type}</span>
-        {marine.active && (
-          <span className="text-[10px] uppercase tracking-wider text-warning-orange">Active</span>
-        )}
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">{marine.description}</p>

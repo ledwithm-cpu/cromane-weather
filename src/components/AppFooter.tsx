@@ -19,24 +19,24 @@ const AppFooter = ({ delay = 0.5 }: AppFooterProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
-      className="pt-8 pb-12 text-center space-y-3"
+      className="pt-12 pb-14 text-center space-y-5"
     >
-      <div className="flex items-center justify-center gap-3 flex-wrap">
+      <div className="flex items-center justify-center gap-5 flex-wrap">
         {links.map(({ to, label }) => (
           <Link
             key={to}
             to={to}
-            className={`text-xs tracking-wider uppercase transition-colors ${
+            className={`text-[11px] tracking-[0.18em] uppercase transition-colors ${
               pathname === to
-                ? 'text-foreground pointer-events-none'
-                : 'text-muted-foreground/60 hover:text-foreground'
+                ? 'text-foreground/80 pointer-events-none'
+                : 'text-muted-foreground/45 hover:text-foreground/70'
             }`}
           >
             {label}
           </Link>
         ))}
       </div>
-      <p className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
+      <p className="text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase font-light">
         Irish Saunas · Live
       </p>
     </motion.footer>
