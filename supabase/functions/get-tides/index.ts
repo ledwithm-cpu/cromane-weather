@@ -207,7 +207,8 @@ function generateFallbackTides(now: Date) {
   const nearestHigh = new Date(refHigh + cycles * TIDAL_PERIOD_MS);
 
   const events = [];
-  for (let i = -1; i <= 2; i++) {
+  // Generate ~16 days of events to safely cover 7-day forecast window
+  for (let i = -2; i <= 14; i++) {
     const highTime = new Date(nearestHigh.getTime() + i * TIDAL_PERIOD_MS);
     const lowTime = new Date(highTime.getTime() + TIDAL_PERIOD_MS / 2);
     const springFactor = 1 + 0.15 * Math.cos((highTime.getDate() / 14.76) * Math.PI * 2);
@@ -227,5 +228,6 @@ function generateFallbackTides(now: Date) {
   const currentHeight = parseFloat((mid + amp * Math.cos(phase * 2 * Math.PI)).toFixed(1));
   const state = phase < 0.5 ? 'falling' : 'rising';
 
-  return { events: filtered, current_height_m: currentHeight, state };
+  const forecast = build7DayForecast(events, now);
+  return { events: filtered, current_height_m: currentHeight, state, forecast };
 }
