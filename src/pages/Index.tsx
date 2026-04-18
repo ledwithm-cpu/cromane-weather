@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
@@ -25,6 +26,8 @@ const Index = () => {
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
   const { data: lightning } = useLightning();
   const refreshAll = useRefreshAll();
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+  const isToday = selectedDayIndex === 0;
 
   const warnings = warningData?.warnings ?? [];
   const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
@@ -100,9 +103,11 @@ const Index = () => {
 
           {/* Card Stack */}
           <div className="space-y-3">
-            {wind && tides && <ForecastSwiper wind={wind} tideData={tides} />}
-            {lightning && <LightningCard data={lightning} />}
-            <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
+            {wind && tides && (
+              <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
+            )}
+            {isToday && lightning && <LightningCard data={lightning} />}
+            {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             <MarineCard marine={marine} />
           </div>
 
