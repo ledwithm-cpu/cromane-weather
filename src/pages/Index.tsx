@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
-import ConditionsCard from '@/components/ConditionsCard';
 import WarningsCard from '@/components/WarningsCard';
-import TideCard from '@/components/TideCard';
 import MarineCard from '@/components/MarineCard';
 import LightningCard from '@/components/LightningCard';
+import ForecastSwiper from '@/components/ForecastSwiper';
 import PullToRefresh from '@/components/PullToRefresh';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
@@ -21,9 +20,9 @@ import {
 
 const Index = () => {
   const { location, setLocationById } = useLocation();
-  const { data: wind, isLoading: windLoading, dataUpdatedAt: windUpdatedAt } = useWeather();
-  const { data: tides, isLoading: tidesLoading, dataUpdatedAt: tidesUpdatedAt } = useTides();
-  const { data: warningData, isLoading: warningsLoading, dataUpdatedAt: warningsUpdatedAt } = useWarnings();
+  const { data: wind, isLoading: windLoading } = useWeather();
+  const { data: tides, isLoading: tidesLoading } = useTides();
+  const { data: warningData, isLoading: warningsLoading } = useWarnings();
   const { data: lightning } = useLightning();
   const refreshAll = useRefreshAll();
 
@@ -35,10 +34,6 @@ const Index = () => {
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
-  const lastUpdated = Math.max(windUpdatedAt, tidesUpdatedAt, warningsUpdatedAt);
-  const lastUpdatedStr = lastUpdated
-    ? new Date(lastUpdated).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Dublin' })
-    : null;
 
   // Group locations by county for the dropdown
   const grouped = LOCATIONS.reduce<Record<string, typeof LOCATIONS>>((acc, loc) => {
@@ -100,21 +95,12 @@ const Index = () => {
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
                 Fetching live data…
               </p>
-            ) : lastUpdatedStr ? (
-              <p className="text-[10px] text-muted-foreground/40 mt-1 tracking-wider uppercase inline-flex items-center justify-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                Live · {lastUpdatedStr}
-              </p>
             ) : null}
           </motion.header>
 
           {/* Card Stack */}
           <div className="space-y-3">
-            {tides && wind && <TideCard tideData={tides} wind={wind} warnings={warnings} />}
-            {wind && <ConditionsCard wind={wind} warnings={warnings} />}
+            {wind && tides && <ForecastSwiper wind={wind} tideData={tides} />}
             {lightning && <LightningCard data={lightning} />}
             <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
             <MarineCard marine={marine} />
