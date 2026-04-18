@@ -322,13 +322,14 @@ const TideDayCard = ({
 
   return (
     <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
-      <div className="relative flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
         </p>
         {isToday && (
-          <span className="absolute right-0 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
-            Now {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
+          <span className="inline-flex items-center gap-1 text-[11px] tabular-nums text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
           </span>
         )}
       </div>
