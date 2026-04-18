@@ -1,83 +1,24 @@
 
 
-# Cromane Watch — Implementation Plan
+## Problem
+The tide sparklines render straight or flat-looking segments in some day cards. Three causes:
 
-## Overview
-A minimalist coastal companion app for Cromane, Co. Kerry. Built as a web app with Capacitor for native Android deployment. MVP focuses on the stunning glassmorphism UI with real/free data sources, no authentication required.
+1. **Flat edges** — at 00:00 and 24:00 the curve is anchored to the *same height* as the first/last event of the day, creating a horizontal line into the day boundary.
+2. **Bezier between two points only** — days with just 1 or 2 tide events produce a near-straight line because cubic Bezier with matching Y control points degenerates into something close to a straight segment.
+3. **Bezier shape is wrong for tides** — tides between a high and a low follow a true sinusoid (cosine half-wave), not a generic smooth spline. The current control-point math (`cx, p[i].y` and `cx, p[i+1].y`) creates a flat-topped "S" rather than a proper wave crest.
 
----
+## Fix
+Rewrite the sparkline generator in `TideDayCard` to:
 
-## Phase 1: The Interface — "Quiet Hardware" Design
+1. **Sample the curve as a true tidal sinusoid.** Between every consecutive pair of events (or extrapolated edge anchors), sample ~16 points using `y = mid + amp * cos(π * t)` where `t` goes 0→1 across the segment. This guarantees a real wave shape even with only 2 events.
+2. **Extrapolate edges using tidal period (~6h12m).** Instead of flat-lining to the day boundary, project a virtual extremum before the first event and after the last event using the half-period offset and inverted height (high → low and vice versa). This gives a continuous wave entering and leaving the day.
+3. **Render as a polyline** of the sampled points (no Bezier needed), which will look smooth and physically correct.
+4. **Use a fixed Y-range across all 7 days** for that location (computed from the global min/max of the week) so sparklines are visually comparable day-to-day instead of each being auto-scaled to its own min/max (which can also exaggerate small variations into jagged lines).
+5. **Guard against missing data** — if a day has 0 events, skip the sparkline (already done); if 1 event, still draw a wave by extrapolating both directions.
 
-### Home Screen Layout
-- **Single scrollable view** — no navigation menus, no tabs
-- **Glassmorphism cards** with frosted translucent backgrounds that shift based on weather state:
-  - **Clear conditions**: Pale frosted blue palette
-  - **Warning/Lightning active**: Deep charcoal with subtle amber pulsing border animation
-- **Typography**: Inter Light, large data-first hierarchy — tide time and wind speed readable in under 3 seconds
-- **Swipe gesture support** for refreshing data (pull-to-refresh)
+## Files touched
+- `src/components/ForecastSwiper.tsx` — replace the `sparkPoints` IIFE inside `TideDayCard` and pass a shared `globalMin/globalMax` from the parent so all 7 days share a Y-scale.
 
-### Card Stack (top to bottom)
-1. **Current Conditions Card** — Wind speed (knots + Beaufort), direction, temperature
-2. **Met Éireann Warnings Card** — Yellow/Orange/Red status for Kerry, with color-coded badges
-3. **Tide Card** — Next high/low tide times for Cromane Point, with a minimal tide curve visual
-4. **Marine Card** — Small Craft Warnings for Southwest Coast
-
-### Lifestyle Action Links
-- "Book Sauna" link appears on the Tide Card when conditions are calm
-- "Book Golf" link appears on the Conditions Card when wind < 25kts and no Red/Orange warnings
-- Styled as subtle, elegant text links — not buttons
-
----
-
-## Phase 2: Data Integration (Free/Open Sources)
-
-### Weather & Wind
-- **Open-Meteo API** (free, no key required) — current wind speed, direction, temperature for Cromane's coordinates (51.9356, -9.9067)
-- Wind displayed in knots + Beaufort scale with 3-hour trend arrow
-
-### Tides
-- **WorldTides API** (free tier) or open tide data — high/low predictions for Cromane Point
-- Cache last 12 hours of tide data locally for offline resilience
-
-### Met Éireann Warnings
-- **Met Éireann RSS/XML feed** — parsed for Kerry-specific weather warnings via a backend edge function
-- Small Craft Warnings from the marine forecast feed
-
-### Lightning (Placeholder for MVP)
-- Display a "Lightning monitoring" status indicator
-- Note: Real-time lightning proximity requires a paid API (e.g., Blitzortung, XWeather) — flagged for Phase 3
-
----
-
-## Phase 3: Backend with Lovable Cloud
-
-- **Edge functions** to proxy and parse external API feeds (Met Éireann RSS, Open-Meteo, tides)
-- **Caching layer** — edge functions cache responses to reduce API calls and enable offline-friendly data
-- Periodic data refresh (every 15 minutes for weather, hourly for tides)
-
----
-
-## Phase 4: Native Android via Capacitor
-
-- Capacitor setup for native Android build
-- PWA-style offline caching of last-known data
-- Guidance provided for Android Studio build and Google Play deployment
-- Note: Push notifications (lightning alerts, warning changes) will be scoped for a future phase as they require Firebase Cloud Messaging setup on your end
-
----
-
-## What's Included in MVP
-✅ Glassmorphism UI with weather-reactive theming  
-✅ Real-time wind data (Open-Meteo)  
-✅ Tide times for Cromane  
-✅ Met Éireann warnings for Kerry  
-✅ Contextual booking links (Sauna + Golf)  
-✅ Offline data caching  
-✅ Capacitor Android setup  
-
-## What's Deferred (Post-MVP)
-⏳ Real-time lightning strike notifications (paid API)  
-⏳ Push notifications via Firebase  
-⏳ Google Play Store publishing  
+## Out of scope
+No edge function or data changes — purely a client-side rendering fix.
 
