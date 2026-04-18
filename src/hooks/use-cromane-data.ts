@@ -17,7 +17,11 @@ async function fetchWeather(loc: Location): Promise<WindData> {
 
 async function fetchTides(loc: Location): Promise<TideData> {
   const { data, error } = await supabase.functions.invoke('get-tides', {
-    body: { station: loc.tideStation, offsetMinutes: loc.tideOffsetMinutes },
+    body: {
+      station: loc.tideStation,
+      offsetMinutes: loc.tideOffsetMinutes,
+      chartDatumOffset: loc.chartDatumOffset,
+    },
   });
   if (error) throw error;
   cacheSet(`tides-${loc.id}`, data);

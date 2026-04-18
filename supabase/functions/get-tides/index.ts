@@ -26,8 +26,9 @@ const ERDDAP_BASE = 'https://erddap.marine.ie/erddap/tabledap';
 const DEFAULT_STATION = 'Fenit';
 const DEFAULT_OFFSET_MS = 25 * 60 * 1000;
 
-// OD Malin to LAT offset (metres) — approximate, varies slightly by station
-const OD_MALIN_TO_LAT_OFFSET = 2.53;
+// OD Malin → Chart Datum (LAT) offset in metres. Varies per station.
+// Default ≈ 2.55m. Per-location overrides are passed in from the client (e.g. Fenit ≈ 2.67).
+const DEFAULT_OD_MALIN_TO_LAT_OFFSET = 2.55;
 
 // In-memory cache keyed by station
 const cacheMap = new Map<string, { data: any; fetchedAt: number }>();
@@ -49,11 +50,13 @@ serve(async (req) => {
   try {
     let station = DEFAULT_STATION;
     let offsetMs = DEFAULT_OFFSET_MS;
+    let chartDatumOffset = DEFAULT_OD_MALIN_TO_LAT_OFFSET;
 
     try {
       const body = await req.json();
       if (body.station) station = body.station;
       if (typeof body.offsetMinutes === 'number') offsetMs = body.offsetMinutes * 60 * 1000;
+      if (typeof body.chartDatumOffset === 'number') chartDatumOffset = body.chartDatumOffset;
     } catch {}
 
     const now = new Date();
@@ -62,7 +65,7 @@ serve(async (req) => {
     // Return cached data if fresh
     const cache = cacheMap.get(cacheKey);
     if (cache && (Date.now() - cache.fetchedAt) < CACHE_TTL_MS) {
-      const result = buildResponse(cache.data, now, offsetMs);
+      const result = buildResponse(cache.data, now, offsetMs, chartDatumOffset);
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -88,7 +91,7 @@ serve(async (req) => {
     const data = { hl: hlJson, cont: contJson };
     cacheMap.set(cacheKey, { data, fetchedAt: Date.now() });
 
-    const result = buildResponse(data, now, offsetMs);
+    const result = buildResponse(data, now, offsetMs, chartDatumOffset);
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -102,7 +105,7 @@ serve(async (req) => {
   }
 });
 
-function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number) {
+function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
 
   const hlRows = data.hl?.table?.rows ?? [];
@@ -111,7 +114,7 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     const localTime = new Date(stationTime.getTime() + offsetMs);
     const category = row[1];
     const heightODMalin = row[2] as number;
-    const heightLAT = parseFloat((heightODMalin + OD_MALIN_TO_LAT_OFFSET).toFixed(1));
+    const heightLAT = parseFloat((heightODMalin + chartDatumOffset).toFixed(1));
 
     return {
       type: category === 'HIGH' ? 'high' : 'low',
