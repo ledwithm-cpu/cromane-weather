@@ -335,6 +335,22 @@ const TideDayCard = ({
             className="w-full"
             style={{ height: 32, overflow: 'visible' }}
           >
+            {[6, 12, 18].map(h => {
+              const x = (h / 24) * sparkPoints.W;
+              return (
+                <line
+                  key={h}
+                  x1={x}
+                  y1={0}
+                  x2={x}
+                  y2={sparkPoints.H - 2}
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeWidth="0.4"
+                  strokeOpacity="0.18"
+                  strokeDasharray="1.5 2.5"
+                />
+              );
+            })}
             <line x1={0} y1={sparkPoints.H - 2} x2={sparkPoints.W} y2={sparkPoints.H - 2} stroke="hsl(var(--border))" strokeWidth="0.5" strokeOpacity="0.5" />
             <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
             {sparkPoints.markers.map((m, i) => (
