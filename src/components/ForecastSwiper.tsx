@@ -451,12 +451,52 @@ const ForecastSwiper = ({ wind, tideData }: Props) => {
       className="space-y-3"
     >
       {/* Static date label — does not move when swiping */}
-      <div className="text-center space-y-1">
+      <div className="text-center space-y-2">
         <p className="text-base font-medium text-foreground tracking-wide">
           {formatLongDate(currentDay.date, isToday, isTomorrow)}
         </p>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
-          Day {currentDayIndex + 1} of 7 · swipe to change
+
+        {/* Jony Ive–inspired swipe indicator: precision rail + breathing chevrons */}
+        <div className="flex items-center justify-center gap-3 pt-0.5" aria-hidden>
+          <motion.svg
+            width="14" height="10" viewBox="0 0 14 10"
+            className="text-muted-foreground/40"
+            animate={{ x: [0, -2, 0], opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <path d="M9 1 L4 5 L9 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          </motion.svg>
+
+          <div className="flex items-center gap-[3px]">
+            {days.map((d, i) => {
+              const active = i === currentDayIndex;
+              return (
+                <motion.span
+                  key={`rail-${d.key}`}
+                  className="block rounded-full bg-foreground"
+                  animate={{
+                    width: active ? 18 : 4,
+                    opacity: active ? 0.9 : 0.18,
+                  }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                  style={{ height: 2 }}
+                />
+              );
+            })}
+          </div>
+
+          <motion.svg
+            width="14" height="10" viewBox="0 0 14 10"
+            className="text-muted-foreground/40"
+            animate={{ x: [0, 2, 0], opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <path d="M5 1 L10 5 L5 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          </motion.svg>
+        </div>
+
+        <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground/50 font-light">
+          Swipe · Day {currentDayIndex + 1} of 7
         </p>
       </div>
 
