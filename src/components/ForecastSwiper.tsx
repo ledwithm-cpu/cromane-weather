@@ -184,6 +184,65 @@ const TideDayCard = ({
   const highs = events.filter(e => e.type === 'high');
   const lows = events.filter(e => e.type === 'low');
 
+  // Build sparkline points (x = minutes since 00:00, y = height) for the day
+  const sparkPoints = (() => {
+    if (events.length === 0) return null;
+    const pts = events
+      .map(e => {
+        const ts = e.timestamp ? new Date(e.timestamp) : null;
+        const minutes = ts
+          ? ts.getUTCHours() * 60 + ts.getUTCMinutes() // approx; ERDDAP returns UTC ISO from Dublin local
+          : (() => {
+              const [h, m] = e.time.split(':').map(Number);
+              return h * 60 + m;
+            })();
+        return { x: minutes, y: e.height_m, type: e.type };
+      })
+      .sort((a, b) => a.x - b.x);
+
+    if (pts.length === 0) return null;
+
+    // Anchor curve at day boundaries by extrapolating from first/last event slope
+    const first = pts[0];
+    const last = pts[pts.length - 1];
+    const startY = first.y; // simple anchor; gives smooth wave entry
+    const endY = last.y;
+    const padded = [
+      { x: 0, y: startY, type: 'edge' as const },
+      ...pts,
+      { x: 1440, y: endY, type: 'edge' as const },
+    ];
+
+    const heights = pts.map(p => p.y);
+    const minH = Math.min(...heights);
+    const maxH = Math.max(...heights);
+    const rangeH = maxH - minH || 1;
+
+    const W = 320;
+    const H = 40;
+    const padY = 6;
+    const usableH = H - padY * 2;
+
+    const projected = padded.map(p => ({
+      x: (p.x / 1440) * W,
+      y: padY + (1 - (p.y - minH) / rangeH) * usableH,
+      type: p.type,
+      origY: p.y,
+      time: 'time' in p ? undefined : undefined,
+    }));
+
+    // Smooth cubic Bezier path
+    let d = `M${projected[0].x},${projected[0].y}`;
+    for (let i = 0; i < projected.length - 1; i++) {
+      const cx = (projected[i].x + projected[i + 1].x) / 2;
+      d += ` C${cx},${projected[i].y} ${cx},${projected[i + 1].y} ${projected[i + 1].x},${projected[i + 1].y}`;
+    }
+
+    // Markers only for real events (skip the synthetic edges)
+    const markers = projected.slice(1, -1);
+    return { d, markers, W, H };
+  })();
+
   return (
     <div className="glass-card rounded-lg p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -196,6 +255,40 @@ const TideDayCard = ({
           </span>
         )}
       </div>
+
+      {sparkPoints && (
+        <div className="relative -mx-1">
+          <svg
+            viewBox={`0 0 ${sparkPoints.W} ${sparkPoints.H}`}
+            preserveAspectRatio="none"
+            className="w-full"
+            style={{ height: 40, overflow: 'visible' }}
+          >
+            {/* Subtle baseline */}
+            <line x1={0} y1={sparkPoints.H - 2} x2={sparkPoints.W} y2={sparkPoints.H - 2} stroke="hsl(var(--border))" strokeWidth="0.5" strokeOpacity="0.5" />
+            {/* Wave */}
+            <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+            {/* Event dots */}
+            {sparkPoints.markers.map((m, i) => (
+              <circle
+                key={i}
+                cx={m.x}
+                cy={m.y}
+                r="2.5"
+                fill={m.type === 'high' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground) / 0.5)'}
+              />
+            ))}
+          </svg>
+          {/* Time scale */}
+          <div className="flex justify-between text-[9px] text-muted-foreground/60 px-0.5 mt-0.5 tracking-wider">
+            <span>00</span>
+            <span>06</span>
+            <span>12</span>
+            <span>18</span>
+            <span>24</span>
+          </div>
+        </div>
+      )}
 
       {events.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-6">
