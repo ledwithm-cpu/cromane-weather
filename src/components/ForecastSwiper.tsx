@@ -438,6 +438,11 @@ const ForecastSwiper = ({ wind, tideData }: Props) => {
   const weatherByDate = new Map(weatherForecast.map(d => [d.date, d]));
   const tideByDate = new Map(tideForecast.map(d => [d.date, d]));
 
+  // Shared Y-scale across the week so sparklines are visually comparable
+  const allHeights = tideForecast.flatMap(d => (d.events ?? []).map(e => e.height_m));
+  const globalMinH = allHeights.length ? Math.min(...allHeights) : 0;
+  const globalMaxH = allHeights.length ? Math.max(...allHeights) : 1;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -480,6 +485,8 @@ const ForecastSwiper = ({ wind, tideData }: Props) => {
                 currentHeight={tideData.current_height_m}
                 currentState={tideData.state}
                 isToday={d.key === todayKey}
+                globalMinH={globalMinH}
+                globalMaxH={globalMaxH}
               />
             </div>
           ))}
