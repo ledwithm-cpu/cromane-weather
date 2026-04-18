@@ -101,7 +101,7 @@ const WeatherDayCard = ({
   const dirRotation = (day.wind_direction_degrees + 180) % 360;
 
   return (
-    <div className="glass-card rounded-lg p-6 space-y-4">
+    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
       <div className="flex items-center justify-between">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Weather
@@ -119,51 +119,49 @@ const WeatherDayCard = ({
 
       <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-light tabular-nums text-foreground">
+          <span className="text-4xl font-light tabular-nums text-foreground leading-none">
             {day.temp_max_c}°
           </span>
-          <span className="text-lg text-muted-foreground">/ {day.temp_min_c}°</span>
+          <span className="text-base text-muted-foreground">/ {day.temp_min_c}°</span>
         </div>
         <div className="flex items-center gap-2">
           {getWeatherIcon(day.weather_code)}
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground -mt-2">{weatherLabel(day.weather_code)}</p>
+      <p className="text-xs text-muted-foreground">{weatherLabel(day.weather_code)}</p>
 
-      <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border/40">
-        <div className="flex flex-col items-center gap-1">
-          <Thermometer size={16} className="text-muted-foreground" strokeWidth={1.5} />
-          <span className="text-base tabular-nums text-foreground">{day.feels_like_max_c}°</span>
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Feels</span>
+      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/40">
+        <div className="flex flex-col items-center gap-0.5">
+          <Thermometer size={14} className="text-muted-foreground" strokeWidth={1.5} />
+          <span className="text-sm tabular-nums text-foreground">{day.feels_like_max_c}°</span>
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">Feels</span>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <div className="relative" style={{ width: 16, height: 16 }}>
-            <Wind size={16} className="text-muted-foreground" strokeWidth={1.5} />
-          </div>
-          <span className="text-base tabular-nums text-foreground inline-flex items-center gap-1">
+        <div className="flex flex-col items-center gap-0.5">
+          <Wind size={14} className="text-muted-foreground" strokeWidth={1.5} />
+          <span className="text-sm tabular-nums text-foreground inline-flex items-center gap-1">
             {day.wind_speed_kmh}
             <span
               className="inline-block text-primary"
-              style={{ transform: `rotate(${dirRotation}deg)`, fontSize: 10, lineHeight: 1 }}
+              style={{ transform: `rotate(${dirRotation}deg)`, fontSize: 9, lineHeight: 1 }}
               aria-hidden
             >
               ↑
             </span>
           </span>
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
             km/h · {day.wind_direction}
           </span>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <Droplets size={16} className="text-muted-foreground" strokeWidth={1.5} />
-          <span className="text-base tabular-nums text-foreground">{day.precipitation_probability}%</span>
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Rain</span>
+        <div className="flex flex-col items-center gap-0.5">
+          <Droplets size={14} className="text-muted-foreground" strokeWidth={1.5} />
+          <span className="text-sm tabular-nums text-foreground">{day.precipitation_probability}%</span>
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">Rain</span>
         </div>
       </div>
 
       {(day.sunrise || day.sunset) && (
-        <div className="flex items-center justify-around pt-2 text-xs text-muted-foreground border-t border-border/40">
+        <div className="flex items-center justify-around pt-1.5 text-[11px] text-muted-foreground border-t border-border/40">
           {day.sunrise && <span>☀ {day.sunrise}</span>}
           {day.sunset && <span>☽ {day.sunset}</span>}
         </div>
