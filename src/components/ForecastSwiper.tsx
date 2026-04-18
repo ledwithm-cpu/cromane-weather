@@ -171,51 +171,87 @@ const WeatherDayCard = ({
   );
 };
 
+const TIDE_HALF_PERIOD_MIN = 372; // ~6h12m between consecutive high/low
+
 const TideDayCard = ({
-  day, currentHeight, currentState, isToday,
+  day, currentHeight, currentState, isToday, globalMinH, globalMaxH,
 }: {
   day: TideForecastDay | null;
   currentHeight: number;
   currentState: 'rising' | 'falling';
   isToday: boolean;
+  globalMinH: number;
+  globalMaxH: number;
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
   const highs = events.filter(e => e.type === 'high');
   const lows = events.filter(e => e.type === 'low');
 
-  // Build sparkline points (x = minutes since 00:00, y = height) for the day
+  // Build sparkline using a true tidal sinusoid between events
   const sparkPoints = (() => {
     if (events.length === 0) return null;
+
     const pts = events
       .map(e => {
         const ts = e.timestamp ? new Date(e.timestamp) : null;
         const minutes = ts
-          ? ts.getUTCHours() * 60 + ts.getUTCMinutes() // approx; ERDDAP returns UTC ISO from Dublin local
+          ? ts.getUTCHours() * 60 + ts.getUTCMinutes()
           : (() => {
               const [h, m] = e.time.split(':').map(Number);
               return h * 60 + m;
             })();
-        return { x: minutes, y: e.height_m, type: e.type };
+        return { x: minutes, y: e.height_m, type: e.type as 'high' | 'low' };
       })
       .sort((a, b) => a.x - b.x);
 
-    if (pts.length === 0) return null;
+    // Estimate typical high/low height for this day (used for edge extrapolation)
+    const highHeights = pts.filter(p => p.type === 'high').map(p => p.y);
+    const lowHeights = pts.filter(p => p.type === 'low').map(p => p.y);
+    const avgHigh = highHeights.length
+      ? highHeights.reduce((a, b) => a + b, 0) / highHeights.length
+      : Math.max(...pts.map(p => p.y));
+    const avgLow = lowHeights.length
+      ? lowHeights.reduce((a, b) => a + b, 0) / lowHeights.length
+      : Math.min(...pts.map(p => p.y));
 
-    // Anchor curve at day boundaries by extrapolating from first/last event slope
+    // Extrapolate a virtual extremum before first event and after last event
     const first = pts[0];
     const last = pts[pts.length - 1];
-    const startY = first.y; // simple anchor; gives smooth wave entry
-    const endY = last.y;
-    const padded = [
-      { x: 0, y: startY, type: 'edge' as const },
-      ...pts,
-      { x: 1440, y: endY, type: 'edge' as const },
-    ];
+    const beforeFirst = {
+      x: first.x - TIDE_HALF_PERIOD_MIN,
+      y: first.type === 'high' ? avgLow : avgHigh,
+      type: (first.type === 'high' ? 'low' : 'high') as 'high' | 'low',
+    };
+    const afterLast = {
+      x: last.x + TIDE_HALF_PERIOD_MIN,
+      y: last.type === 'high' ? avgLow : avgHigh,
+      type: (last.type === 'high' ? 'low' : 'high') as 'high' | 'low',
+    };
 
-    const heights = pts.map(p => p.y);
-    const minH = Math.min(...heights);
-    const maxH = Math.max(...heights);
+    const extrema = [beforeFirst, ...pts, afterLast];
+
+    // Sample sinusoidally between consecutive extrema, clipped to [0, 1440]
+    const SAMPLES_PER_SEG = 16;
+    const samples: { x: number; y: number }[] = [];
+    for (let i = 0; i < extrema.length - 1; i++) {
+      const a = extrema[i];
+      const b = extrema[i + 1];
+      const mid = (a.y + b.y) / 2;
+      const amp = (a.y - b.y) / 2; // positive if a high → b low
+      for (let s = 0; s <= SAMPLES_PER_SEG; s++) {
+        const t = s / SAMPLES_PER_SEG;
+        const x = a.x + (b.x - a.x) * t;
+        const y = mid + amp * Math.cos(Math.PI * t);
+        if (x >= 0 && x <= 1440) samples.push({ x, y });
+      }
+    }
+
+    if (samples.length === 0) return null;
+
+    // Use shared Y-scale across all 7 days for visual comparability
+    const minH = globalMinH;
+    const maxH = globalMaxH;
     const rangeH = maxH - minH || 1;
 
     const W = 320;
@@ -223,23 +259,22 @@ const TideDayCard = ({
     const padY = 6;
     const usableH = H - padY * 2;
 
-    const projected = padded.map(p => ({
-      x: (p.x / 1440) * W,
-      y: padY + (1 - (p.y - minH) / rangeH) * usableH,
-      type: p.type,
-      origY: p.y,
-      time: 'time' in p ? undefined : undefined,
-    }));
+    const projectY = (yMeters: number) =>
+      padY + (1 - (yMeters - minH) / rangeH) * usableH;
+    const projectX = (xMin: number) => (xMin / 1440) * W;
 
-    // Smooth cubic Bezier path
-    let d = `M${projected[0].x},${projected[0].y}`;
-    for (let i = 0; i < projected.length - 1; i++) {
-      const cx = (projected[i].x + projected[i + 1].x) / 2;
-      d += ` C${cx},${projected[i].y} ${cx},${projected[i + 1].y} ${projected[i + 1].x},${projected[i + 1].y}`;
+    // Build polyline path
+    let d = `M${projectX(samples[0].x).toFixed(2)},${projectY(samples[0].y).toFixed(2)}`;
+    for (let i = 1; i < samples.length; i++) {
+      d += ` L${projectX(samples[i].x).toFixed(2)},${projectY(samples[i].y).toFixed(2)}`;
     }
 
-    // Markers only for real events (skip the synthetic edges)
-    const markers = projected.slice(1, -1);
+    const markers = pts.map(p => ({
+      x: projectX(p.x),
+      y: projectY(p.y),
+      type: p.type,
+    }));
+
     return { d, markers, W, H };
   })();
 
@@ -403,6 +438,11 @@ const ForecastSwiper = ({ wind, tideData }: Props) => {
   const weatherByDate = new Map(weatherForecast.map(d => [d.date, d]));
   const tideByDate = new Map(tideForecast.map(d => [d.date, d]));
 
+  // Shared Y-scale across the week so sparklines are visually comparable
+  const allHeights = tideForecast.flatMap(d => (d.events ?? []).map(e => e.height_m));
+  const globalMinH = allHeights.length ? Math.min(...allHeights) : 0;
+  const globalMaxH = allHeights.length ? Math.max(...allHeights) : 1;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -445,6 +485,8 @@ const ForecastSwiper = ({ wind, tideData }: Props) => {
                 currentHeight={tideData.current_height_m}
                 currentState={tideData.state}
                 isToday={d.key === todayKey}
+                globalMinH={globalMinH}
+                globalMaxH={globalMaxH}
               />
             </div>
           ))}
