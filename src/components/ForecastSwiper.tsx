@@ -367,6 +367,17 @@ const TideDayCard = ({
                   stroke="hsl(var(--background))"
                   strokeWidth="1.25"
                 />
+                <text
+                  x={Math.max(14, Math.min(sparkPoints.W - 14, sparkPoints.now.x))}
+                  y={Math.max(8, sparkPoints.now.y - 7)}
+                  textAnchor="middle"
+                  fill="hsl(var(--primary))"
+                  fontSize="7.5"
+                  fontWeight="500"
+                  style={{ letterSpacing: '0.05em' }}
+                >
+                  {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
+                </text>
               </g>
             )}
           </svg>
