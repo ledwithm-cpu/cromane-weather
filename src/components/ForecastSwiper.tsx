@@ -357,7 +357,7 @@ const TideDayCard = ({
         </div>
       )}
 
-      {location.saunaUrl && isToday && (
+      {location.saunaUrl && (
         <div className="pt-0.5">
           <button
             onClick={() => window.open(location.saunaUrl!, '_blank', 'noopener,noreferrer')}
