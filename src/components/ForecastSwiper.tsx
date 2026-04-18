@@ -310,11 +310,17 @@ const TideDayCard = ({
       padY + (1 - (yMeters - minH) / rangeH) * usableH;
     const projectX = (xMin: number) => (xMin / 1440) * W;
 
-    // Build polyline path
+    // Build polyline path (stroke)
     let d = `M${projectX(samples[0].x).toFixed(2)},${projectY(samples[0].y).toFixed(2)}`;
     for (let i = 1; i < samples.length; i++) {
       d += ` L${projectX(samples[i].x).toFixed(2)},${projectY(samples[i].y).toFixed(2)}`;
     }
+
+    // Closed area path (for fill below curve)
+    const baselineY = H - 2;
+    const firstX = projectX(samples[0].x).toFixed(2);
+    const lastX = projectX(samples[samples.length - 1].x).toFixed(2);
+    const dArea = `${d} L${lastX},${baselineY} L${firstX},${baselineY} Z`;
 
     const markers = pts.map(p => ({
       x: projectX(p.x),
@@ -341,7 +347,7 @@ const TideDayCard = ({
       }
     }
 
-    return { d, markers, W, H, now };
+    return { d, dArea, markers, W, H, now };
   })();
 
   return (
@@ -360,6 +366,12 @@ const TideDayCard = ({
             className="w-full"
             style={{ height: 32, overflow: 'visible' }}
           >
+            <defs>
+              <linearGradient id="tide-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+              </linearGradient>
+            </defs>
             {[6, 12, 18].map(h => {
               const x = (h / 24) * sparkPoints.W;
               return (
@@ -377,7 +389,8 @@ const TideDayCard = ({
               );
             })}
             <line x1={0} y1={sparkPoints.H - 2} x2={sparkPoints.W} y2={sparkPoints.H - 2} stroke="hsl(var(--border))" strokeWidth="0.5" strokeOpacity="0.5" />
-            <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d={sparkPoints.dArea} fill="url(#tide-fill)" stroke="none" />
+            <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.6)" strokeWidth="1.5" strokeLinecap="round" />
             {sparkPoints.markers.map((m, i) => (
               <circle
                 key={i}
