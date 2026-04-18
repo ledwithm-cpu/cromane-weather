@@ -119,7 +119,7 @@ const WeatherDayCard = ({
 
       <div className="grid grid-cols-3 items-center gap-2">
         <div className="flex items-baseline justify-center gap-1.5">
-          <span className="text-4xl font-light tabular-nums text-foreground leading-none">
+          <span className="text-3xl font-light tabular-nums text-foreground leading-none">
             {day.temp_max_c}°
           </span>
           <span className="text-sm text-muted-foreground">/ {day.temp_min_c}°</span>
