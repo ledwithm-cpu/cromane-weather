@@ -361,14 +361,16 @@ const TideDayCard = ({
                 <circle
                   cx={sparkPoints.now.x}
                   cy={sparkPoints.now.y}
-                  r="3.5"
+                  r="3"
                   fill="hsl(var(--primary))"
                   stroke="hsl(var(--background))"
                   strokeWidth="1.25"
                 />
                 <text
-                  x={Math.max(14, Math.min(sparkPoints.W - 14, sparkPoints.now.x))}
-                  y={Math.max(8, sparkPoints.now.y - 7)}
+                  x={Math.max(18, Math.min(sparkPoints.W - 18, sparkPoints.now.x))}
+                  y={sparkPoints.now.y < sparkPoints.H / 2
+                    ? Math.min(sparkPoints.H - 2, sparkPoints.now.y + 11)
+                    : Math.max(8, sparkPoints.now.y - 8)}
                   textAnchor="middle"
                   fill="hsl(var(--primary))"
                   fontSize="7.5"
