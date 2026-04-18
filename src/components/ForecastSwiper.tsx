@@ -190,18 +190,43 @@ const TideDayCard = ({
   const sparkPoints = (() => {
     if (events.length === 0) return null;
 
+    // Convert each event to minutes-since-midnight in Europe/Dublin.
+    // The `time` field (e.g. "18:55") is already formatted in Dublin local
+    // time by the edge function, so it's the most reliable source. Fall back
+    // to parsing the timestamp via Intl when `time` is missing/malformed.
+    const toDublinMinutes = (e: { time?: string; timestamp?: string }): number | null => {
+      if (e.time && /^\d{1,2}:\d{2}/.test(e.time)) {
+        const [h, m] = e.time.split(':').map(Number);
+        if (Number.isFinite(h) && Number.isFinite(m)) return h * 60 + m;
+      }
+      if (e.timestamp) {
+        const d = new Date(e.timestamp);
+        if (!isNaN(d.getTime())) {
+          const parts = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Europe/Dublin',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).formatToParts(d);
+          const hh = Number(parts.find(p => p.type === 'hour')?.value ?? NaN);
+          const mm = Number(parts.find(p => p.type === 'minute')?.value ?? NaN);
+          if (Number.isFinite(hh) && Number.isFinite(mm)) return hh * 60 + mm;
+        }
+      }
+      return null;
+    };
+
     const pts = events
       .map(e => {
-        const ts = e.timestamp ? new Date(e.timestamp) : null;
-        const minutes = ts
-          ? ts.getUTCHours() * 60 + ts.getUTCMinutes()
-          : (() => {
-              const [h, m] = e.time.split(':').map(Number);
-              return h * 60 + m;
-            })();
-        return { x: minutes, y: e.height_m, type: e.type as 'high' | 'low' };
+        const x = toDublinMinutes(e);
+        return x == null
+          ? null
+          : { x, y: e.height_m, type: e.type as 'high' | 'low' };
       })
+      .filter((p): p is { x: number; y: number; type: 'high' | 'low' } => p !== null)
       .sort((a, b) => a.x - b.x);
+
+    if (pts.length === 0) return null;
 
     // Estimate typical high/low height for this day (used for edge extrapolation)
     const highHeights = pts.filter(p => p.type === 'high').map(p => p.y);
