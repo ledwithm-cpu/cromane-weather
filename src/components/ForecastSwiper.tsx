@@ -117,19 +117,18 @@ const WeatherDayCard = ({
         )}
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-baseline gap-2">
+      <div className="grid grid-cols-3 items-center gap-2">
+        <div className="flex items-baseline justify-center gap-1.5">
           <span className="text-4xl font-light tabular-nums text-foreground leading-none">
             {day.temp_max_c}°
           </span>
-          <span className="text-base text-muted-foreground">/ {day.temp_min_c}°</span>
+          <span className="text-sm text-muted-foreground">/ {day.temp_min_c}°</span>
         </div>
-        <div className="flex items-center gap-2">
+        <p className="text-xs text-muted-foreground text-center">{weatherLabel(day.weather_code)}</p>
+        <div className="flex justify-center">
           {getWeatherIcon(day.weather_code)}
         </div>
       </div>
-
-      <p className="text-xs text-muted-foreground">{weatherLabel(day.weather_code)}</p>
 
       <div className="grid grid-cols-3 gap-2 pt-1">
         <div className="flex flex-col items-center gap-0.5">
