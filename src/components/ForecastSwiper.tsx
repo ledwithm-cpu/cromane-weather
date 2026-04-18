@@ -11,6 +11,7 @@ import { useLocation } from '@/hooks/use-location';
 interface Props {
   wind: WindData;
   tideData: TideData;
+  onDayChange?: (dayIndex: number) => void;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -379,9 +380,14 @@ const TideDayCard = ({
 
 // ─── Main swiper ────────────────────────────────────────────────────────────
 
-const ForecastSwiper = ({ wind, tideData }: Props) => {
+const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const days = useRef(build7Days()).current;
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
+
+  // Notify parent whenever the active day changes
+  useEffect(() => {
+    onDayChange?.(currentDayIndex);
+  }, [currentDayIndex, onDayChange]);
 
   const emblaOptions = { align: 'start' as const, containScroll: 'trimSnaps' as const, loop: false };
   const [weatherRef, weatherApi] = useEmblaCarousel(emblaOptions);
