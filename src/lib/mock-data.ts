@@ -1,5 +1,20 @@
 // Mock data for Cromane Watch MVP
 
+export interface WeatherForecastDay {
+  date: string; // YYYY-MM-DD
+  temp_max_c: number;
+  temp_min_c: number;
+  feels_like_max_c: number;
+  feels_like_min_c: number;
+  wind_speed_kmh: number;
+  wind_direction_degrees: number;
+  wind_direction: string;
+  precipitation_probability: number;
+  weather_code: number;
+  sunrise: string | null;
+  sunset: string | null;
+}
+
 export interface WindData {
   speed_knots: number;
   speed_beaufort: number;
@@ -15,18 +30,26 @@ export interface WindData {
   feels_like_c?: number;
   sunrise?: string;
   sunset?: string;
+  forecast?: WeatherForecastDay[];
 }
 
 export interface TideEvent {
   type: 'high' | 'low';
   time: string;
   height_m: number;
+  timestamp?: string;
+}
+
+export interface TideForecastDay {
+  date: string; // YYYY-MM-DD
+  events: TideEvent[];
 }
 
 export interface TideData {
   events: TideEvent[];
   current_height_m: number;
   state: 'rising' | 'falling';
+  forecast?: TideForecastDay[];
 }
 
 export interface Warning {

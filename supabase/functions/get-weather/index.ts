@@ -61,7 +61,7 @@ serve(async (req) => {
       if (body.metStation) metStation = body.metStation;
     } catch {}
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,apparent_temperature,precipitation,weather_code,cloud_cover&daily=sunrise,sunset&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_hours=0&forecast_days=1`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=wind_speed_10m,wind_direction_10m,temperature_2m,apparent_temperature,precipitation,weather_code,cloud_cover&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,wind_speed_10m_max,wind_direction_10m_dominant,precipitation_probability_max,weather_code&hourly=wind_speed_10m&timezone=Europe%2FDublin&past_hours=3&forecast_days=7`;
     const marineUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&current=sea_surface_temperature&timezone=Europe%2FDublin`;
     const metEireannUrl = MET_STATIONS[metStation] || MET_STATIONS['valentia'];
 
@@ -126,6 +126,27 @@ serve(async (req) => {
     const sunset = data.daily?.sunset?.[0]?.split('T')[1] ?? null;
     const feelsLikeFinal = feelsLike ?? Math.round(current.apparent_temperature);
 
+    // Build 7-day forecast
+    const daily = data.daily ?? {};
+    const dates: string[] = daily.time ?? [];
+    const forecast = dates.slice(0, 7).map((date: string, i: number) => {
+      const dirDeg = daily.wind_direction_10m_dominant?.[i] ?? 0;
+      return {
+        date,
+        temp_max_c: Math.round(daily.temperature_2m_max?.[i] ?? 0),
+        temp_min_c: Math.round(daily.temperature_2m_min?.[i] ?? 0),
+        feels_like_max_c: Math.round(daily.apparent_temperature_max?.[i] ?? 0),
+        feels_like_min_c: Math.round(daily.apparent_temperature_min?.[i] ?? 0),
+        wind_speed_kmh: Math.round(daily.wind_speed_10m_max?.[i] ?? 0),
+        wind_direction_degrees: dirDeg,
+        wind_direction: degreesToCompass(dirDeg),
+        precipitation_probability: daily.precipitation_probability_max?.[i] ?? 0,
+        weather_code: daily.weather_code?.[i] ?? 0,
+        sunrise: daily.sunrise?.[i]?.split('T')[1] ?? null,
+        sunset: daily.sunset?.[i]?.split('T')[1] ?? null,
+      };
+    });
+
     const result = {
       speed_knots: speedKnots,
       speed_beaufort: beaufort,
@@ -141,6 +162,7 @@ serve(async (req) => {
       feels_like_c: feelsLikeFinal,
       sunrise,
       sunset,
+      forecast,
     };
 
     return new Response(JSON.stringify(result), {
