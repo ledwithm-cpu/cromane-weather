@@ -366,6 +366,12 @@ const TideDayCard = ({
             className="w-full"
             style={{ height: 32, overflow: 'visible' }}
           >
+            <defs>
+              <linearGradient id="tide-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+              </linearGradient>
+            </defs>
             {[6, 12, 18].map(h => {
               const x = (h / 24) * sparkPoints.W;
               return (
@@ -383,7 +389,8 @@ const TideDayCard = ({
               );
             })}
             <line x1={0} y1={sparkPoints.H - 2} x2={sparkPoints.W} y2={sparkPoints.H - 2} stroke="hsl(var(--border))" strokeWidth="0.5" strokeOpacity="0.5" />
-            <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d={sparkPoints.dArea} fill="url(#tide-fill)" stroke="none" />
+            <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.6)" strokeWidth="1.5" strokeLinecap="round" />
             {sparkPoints.markers.map((m, i) => (
               <circle
                 key={i}
