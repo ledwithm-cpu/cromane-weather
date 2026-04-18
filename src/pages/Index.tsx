@@ -108,7 +108,7 @@ const Index = () => {
             )}
             {isToday && lightning && <LightningCard data={lightning} />}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
-            <MarineCard marine={marine} />
+            {isToday && <MarineCard marine={marine} />}
           </div>
 
           {/* Footer */}
