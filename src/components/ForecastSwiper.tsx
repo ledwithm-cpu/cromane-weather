@@ -278,7 +278,7 @@ const TideDayCard = ({
   })();
 
   return (
-    <div className="glass-card rounded-lg p-6 space-y-4">
+    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
       <div className="flex items-center justify-between">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
@@ -296,13 +296,10 @@ const TideDayCard = ({
             viewBox={`0 0 ${sparkPoints.W} ${sparkPoints.H}`}
             preserveAspectRatio="none"
             className="w-full"
-            style={{ height: 40, overflow: 'visible' }}
+            style={{ height: 32, overflow: 'visible' }}
           >
-            {/* Subtle baseline */}
             <line x1={0} y1={sparkPoints.H - 2} x2={sparkPoints.W} y2={sparkPoints.H - 2} stroke="hsl(var(--border))" strokeWidth="0.5" strokeOpacity="0.5" />
-            {/* Wave */}
             <path d={sparkPoints.d} fill="none" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
-            {/* Event dots */}
             {sparkPoints.markers.map((m, i) => (
               <circle
                 key={i}
@@ -313,7 +310,6 @@ const TideDayCard = ({
               />
             ))}
           </svg>
-          {/* Time scale */}
           <div className="flex justify-between text-[9px] text-muted-foreground/60 px-0.5 mt-0.5 tracking-wider">
             <span>00</span>
             <span>06</span>
@@ -325,13 +321,13 @@ const TideDayCard = ({
       )}
 
       {events.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-6">
+        <p className="text-sm text-muted-foreground text-center py-4">
           No tide data for this day
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground text-center">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <p className="text-[9px] uppercase tracking-wider text-muted-foreground text-center">
               ▲ High Tide
             </p>
             {highs.length === 0 && (
@@ -339,13 +335,13 @@ const TideDayCard = ({
             )}
             {highs.map((e, i) => (
               <div key={i} className="text-center">
-                <p className="text-xl font-light tabular-nums text-foreground">{e.time}</p>
-                <p className="text-xs text-muted-foreground tabular-nums">{e.height_m}m</p>
+                <p className="text-base font-light tabular-nums text-foreground leading-tight">{e.time}</p>
+                <p className="text-[11px] text-muted-foreground tabular-nums">{e.height_m}m</p>
               </div>
             ))}
           </div>
-          <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground text-center">
+          <div className="space-y-1">
+            <p className="text-[9px] uppercase tracking-wider text-muted-foreground text-center">
               ▼ Low Tide
             </p>
             {lows.length === 0 && (
@@ -353,8 +349,8 @@ const TideDayCard = ({
             )}
             {lows.map((e, i) => (
               <div key={i} className="text-center">
-                <p className="text-xl font-light tabular-nums text-foreground">{e.time}</p>
-                <p className="text-xs text-muted-foreground tabular-nums">{e.height_m}m</p>
+                <p className="text-base font-light tabular-nums text-foreground leading-tight">{e.time}</p>
+                <p className="text-[11px] text-muted-foreground tabular-nums">{e.height_m}m</p>
               </div>
             ))}
           </div>
@@ -362,10 +358,10 @@ const TideDayCard = ({
       )}
 
       {location.saunaUrl && isToday && (
-        <div className="pt-1">
+        <div className="pt-0.5">
           <button
             onClick={() => window.open(location.saunaUrl!, '_blank', 'noopener,noreferrer')}
-            className="flex items-center justify-center gap-2 w-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all rounded-md px-4 py-2.5 tracking-wide"
+            className="flex items-center justify-center gap-2 w-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all rounded-md px-4 py-2 tracking-wide"
           >
             Book {location.saunaName ?? 'Sauna'}
             <span className="text-primary/60">→</span>
