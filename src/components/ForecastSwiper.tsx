@@ -131,7 +131,7 @@ const WeatherDayCard = ({
 
       <p className="text-xs text-muted-foreground">{weatherLabel(day.weather_code)}</p>
 
-      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/40">
+      <div className="grid grid-cols-3 gap-2 pt-1">
         <div className="flex flex-col items-center gap-0.5">
           <Thermometer size={14} className="text-muted-foreground" strokeWidth={1.5} />
           <span className="text-sm tabular-nums text-foreground">{day.feels_like_max_c}°</span>
@@ -161,7 +161,7 @@ const WeatherDayCard = ({
       </div>
 
       {(day.sunrise || day.sunset) && (
-        <div className="flex items-center justify-around pt-1.5 text-[11px] text-muted-foreground border-t border-border/40">
+        <div className="flex items-center justify-around pt-1 text-[11px] text-muted-foreground">
           {day.sunrise && <span>☀ {day.sunrise}</span>}
           {day.sunset && <span>☽ {day.sunset}</span>}
         </div>
@@ -322,16 +322,10 @@ const TideDayCard = ({
 
   return (
     <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
         </p>
-        {isToday && (
-          <span className="inline-flex items-center gap-1 text-[11px] tabular-nums text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
-          </span>
-        )}
       </div>
 
       {sparkPoints && (
@@ -373,6 +367,17 @@ const TideDayCard = ({
                   stroke="hsl(var(--background))"
                   strokeWidth="1.25"
                 />
+                <text
+                  x={Math.max(14, Math.min(sparkPoints.W - 14, sparkPoints.now.x))}
+                  y={Math.max(8, sparkPoints.now.y - 7)}
+                  textAnchor="middle"
+                  fill="hsl(var(--primary))"
+                  fontSize="7.5"
+                  fontWeight="500"
+                  style={{ letterSpacing: '0.05em' }}
+                >
+                  {currentHeight}m {currentState === 'rising' ? '↑' : '↓'}
+                </text>
               </g>
             )}
           </svg>
@@ -561,9 +566,6 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
           </motion.svg>
         </div>
 
-        <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground/50 font-light">
-          Swipe · Day {currentDayIndex + 1} of 7
-        </p>
       </div>
 
       {/* Weather carousel */}
