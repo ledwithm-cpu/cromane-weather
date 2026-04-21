@@ -30,14 +30,14 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Saunas to help you explore Ireland's coastline safely, discover local saunas, and know the exact conditions before heading out.
+            We built Irish Saunas because we love the coast but hate surprises. Whether you're checking the tides for a swim, finding a sauna to warm up after, or keeping an eye on the sky when the kids and dog are with you—this app is here to help.
           </p>
         </motion.header>
 
         {/* Philosophy */}
         <motion.section {...section(0.1)} className="pb-8">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Every card on your dashboard pulls from real, hyper-local data sources. No guesswork, no stale forecasts left over from yesterday. Here is exactly what we track and why you can trust it.
+            Every number you see comes straight from the source. No made-up data, no forecasts from yesterday. Here's what we track and where it comes from.
           </p>
         </motion.section>
 
@@ -50,17 +50,17 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              40+ Coastal Towns & Saunas
+              40+ Spots Along the Coast
             </h2>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Hyper-Local Data</strong> · We don't use generic county forecasts. Every spot has its own exact coordinates, nearest tide station, and local observation point.
+                <strong className="text-foreground font-normal">Pinpoint accuracy</strong> · We don't give you a generic "County Kerry" forecast. Every beach has its own exact coordinates, tide station, and local weather point.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Book a Sauna</strong> · If there's a sauna nearby—from Samhradh's in Cromane to Salt & Ember in Bundoran—you'll find a direct booking link.
+                <strong className="text-foreground font-normal">Saunas nearby</strong> · From Samhradh's in Cromane to Salt & Ember in Bundoran, if there's a sauna close by, you'll see a booking button right there.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Smart Memory</strong> · Your selected location is remembered automatically for your next visit.
+                <strong className="text-foreground font-normal">Remembers where you are</strong> · Pick your spot once and it'll be there waiting next time you open the app.
               </li>
             </ul>
           </motion.section>
@@ -73,17 +73,17 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Marine Institute Live Tides
+              Real Tide Data from the Marine Institute
             </h2>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Local Accuracy</strong> · We calculate the exact time offset for how long it takes the tidal wave to reach your specific beach or harbour.
+                <strong className="text-foreground font-normal">Actually local</strong> · The tide at Dingle isn't the same as Fenit. We calculate exactly how long the tidal wave takes to reach your specific beach.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Real-World Depths</strong> · We apply local datum conversions so the water heights you see match what you actually experience at the shore.
+                <strong className="text-foreground font-normal">Makes sense on the ground</strong> · We convert the raw numbers into depths you'd actually see at the shoreline, not some abstract measurement.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Always Fresh</strong> · The chart updates every hour, showing exactly where you are between high and low tide.
+                <strong className="text-foreground font-normal">Updates every hour</strong> · The chart refreshes regularly so you always know where you are between high and low water.
               </li>
             </ul>
           </motion.section>
@@ -96,17 +96,17 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Pinpoint Weather Data
+              Weather for Your Exact Spot
             </h2>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Exact Coordinates</strong> · Wind, temperature, and rain data are pinned specifically to your stretch of coast via Open-Meteo.
+                <strong className="text-foreground font-normal">Not a county average</strong> · Wind and temperature readings are pinned to your specific stretch of coast via Open-Meteo.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Plain-Language Wind</strong> · We convert wind speeds to knots and display them using the standard, easy-to-read Beaufort scale.
+                <strong className="text-foreground font-normal">Wind you can understand</strong> · We show speeds in knots on the Beaufort scale—so "Force 4" actually means something if you're heading out on the water.
               </li>
               <li>
-                <strong className="text-foreground font-normal">"Feels Like" Temp</strong> · We factor in wind chill data from the nearest Met Éireann observation station to tell you how cold it actually feels.
+                <strong className="text-foreground font-normal">How cold it really feels</strong> · The "feels like" temp factors in wind chill from the nearest Met Éireann station (Valentia, Roches Point, etc.).
               </li>
             </ul>
           </motion.section>
@@ -119,14 +119,14 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Live Pollen Counts
+              Pollen Counts That Matter
             </h2>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Allergy Awareness</strong> · We track Grass and Birch pollen, the most common allergens for Irish coastal activities.
+                <strong className="text-foreground font-normal">The main culprits</strong> · We track Grass and Birch pollen—the two that usually cause trouble for people on Irish coasts.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Clear Status Levels</strong> · Raw pollen grains are translated into simple "Low," "Moderate," "High," or "Very High" warnings.
+                <strong className="text-foreground font-normal">Plain English</strong> · Instead of throwing raw numbers at you, we translate them into simple warnings: Low, Moderate, High, or Very High.
               </li>
             </ul>
           </motion.section>
@@ -139,20 +139,20 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Lightning & Storm Intelligence
+              Lightning & Storm Tracking
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              When you have pets or kids on the beach, minutes matter. We use a dual-approach to keep you safe:
+              When you've got the dog and kids on the beach, you need to know about storms before they arrive. Here's how we watch the sky for you:
             </p>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Live Sensors</strong> · We connect to the Blitzortung community network to track real, active lightning strikes within 20km of your beach.
+                <strong className="text-foreground font-normal">Live lightning sensors</strong> · We're connected to the Blitzortung network, tracking real strikes within 20km of where you are.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Storm Prediction</strong> · Our custom engine tracks heavy rainfall cells across a 100km grid, calculates their speed, and gives you an estimated time of arrival (ETA) before the storm hits.
+                <strong className="text-foreground font-normal">Storm radar</strong> · Our system watches heavy rain cells across a 100km area, figures out how fast they're moving, and tells you roughly when they might hit.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Fastest Updates</strong> · Because storms move fast, this is the quickest card on the site, checking for new danger every 30 seconds.
+                <strong className="text-foreground font-normal">Checks every 30 seconds</strong> · Because storms don't wait, this is the fastest-updating part of the app.
               </li>
             </ul>
           </motion.section>
@@ -165,14 +165,14 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Met Éireann Direct
+              Straight from Met Éireann
             </h2>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Land Warnings</strong> · We pull live, colour-coded warnings directly from Met Éireann, automatically filtering them so you only see alerts relevant to your county.
+                <strong className="text-foreground font-normal">Only what matters to you</strong> · We pull the official warnings and filter them so you see alerts for your county—not a list of things happening 200km away.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Marine Conditions</strong> · We track offshore small craft warnings and sea area forecasts so you have the full picture before swimming.
+                <strong className="text-foreground font-normal">Sea conditions too</strong> · Small craft warnings and offshore forecasts so you know what you're dealing with before you get in the water.
               </li>
             </ul>
           </motion.section>
@@ -185,23 +185,23 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Smart Push Notifications
+              Phone Notifications When It Matters
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              If you allow push notifications, we'll ping your phone when danger approaches, escalating through four clear stages:
+              If you allow notifications, we'll give you a heads-up when conditions change. Four levels, from a gentle reminder to get-the-kids-inside-now:
             </p>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · Conditions are becoming favourable for thunderstorms. A heads-up to keep an eye on the sky.
+                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · The air's getting unstable. Just a quiet nudge to keep an eye on the horizon.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Storm Approaching</strong> · A heavy rainfall cell is heading your way, complete with an ETA.
+                <strong className="text-foreground font-normal">Storm Approaching</strong> · Heavy rain is heading your way with an estimated arrival time.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Lightning Warning</strong> · Real strikes detected within 10km. Time to pack up.
+                <strong className="text-foreground font-normal">Lightning Warning</strong> · Actual strikes detected within 10km. Time to pack up the towels.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> · Strikes within 5km. Seek shelter immediately.
+                <strong className="text-foreground font-normal">Immediate Danger</strong> · Lightning within 5km. Get everyone to shelter now.
               </li>
             </ul>
           </motion.section>
