@@ -126,6 +126,7 @@ const Index = () => {
         </div>
         </PullToRefresh>
         <InstallPrompt />
+        <DebugModeIndicator />
       </div>
     </div>
   );
