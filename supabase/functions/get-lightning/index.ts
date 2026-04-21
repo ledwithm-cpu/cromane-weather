@@ -378,12 +378,11 @@ serve(async (req) => {
       geofence_km: GEOFENCE_KM,
     };
 
-    // Push notifications (only for default Cromane location to avoid spam)
-    if (cacheKey === getCacheKey(DEFAULT_LAT, DEFAULT_LON)) {
-      triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike, locationName).catch(e =>
-        console.error('Push trigger error:', e)
-      );
-    }
+    // Push notifications fire for whichever location the frontend is polling.
+    // The 15-minute cooldown inside triggerPushIfNeeded prevents spam.
+    triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike, locationName).catch(e =>
+      console.error('Push trigger error:', e)
+    );
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
