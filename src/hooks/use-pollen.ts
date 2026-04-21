@@ -1,0 +1,41 @@
+import { useQuery } from '@tanstack/react-query';
+import { useLocation } from '@/hooks/use-location';
+
+export interface PollenCurrent {
+  time: string;
+  interval: number;
+  grass_pollen: number | null;
+  birch_pollen: number | null;
+  alder_pollen: number | null;
+}
+
+interface PollenResponse {
+  latitude: number;
+  longitude: number;
+  current_units: Record<string, string>;
+  current: PollenCurrent;
+}
+
+async function fetchPollen(lat: number, lon: number): Promise<PollenCurrent> {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=grass_pollen,birch_pollen,alder_pollen&timezone=Europe%2FDublin`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Pollen API error: ${res.status}`);
+  const data: PollenResponse = await res.json();
+  return data.current;
+}
+
+export function usePollen() {
+  const { location } = useLocation();
+  const query = useQuery({
+    queryKey: ['pollen', location.id],
+    queryFn: () => fetchPollen(location.lat, location.lon),
+    refetchInterval: 60 * 60 * 1000, // 1 hour
+    staleTime: 30 * 60 * 1000,
+    retry: 2,
+  });
+
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+  };
+}
