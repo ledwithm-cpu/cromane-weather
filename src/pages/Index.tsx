@@ -7,6 +7,7 @@ import MarineCard from '@/components/MarineCard';
 import LightningCard from '@/components/LightningCard';
 import ForecastSwiper from '@/components/ForecastSwiper';
 import PullToRefresh from '@/components/PullToRefresh';
+import InstallPrompt from '@/components/InstallPrompt';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocation } from '@/hooks/use-location';
@@ -119,6 +120,7 @@ const Index = () => {
           <AppFooter delay={0.6} />
         </div>
         </PullToRefresh>
+        <InstallPrompt />
       </div>
     </div>
   );
