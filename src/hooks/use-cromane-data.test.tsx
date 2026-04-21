@@ -66,19 +66,20 @@ afterEach(() => {
 // ─── Tests ───
 
 describe('useWeather', () => {
-  it('starts in loading state then resolves with weather data', async () => {
+  it('starts fetching then resolves with weather data', async () => {
     invokeMock.mockResolvedValueOnce({ data: mockWeatherResponse, error: null });
 
     const { result } = renderHook(() => useWeather(), { wrapper: createWrapper() });
 
-    // React Query exposes isLoading=true for the first fetch
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.data).toBeUndefined();
+    // These hooks use `placeholderData`, so isLoading flips false immediately
+    // while isFetching stays true until the network round-trip resolves.
+    expect(result.current.isFetching).toBe(true);
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(result.current.isFetching).toBe(false));
 
     expect(result.current.data).toEqual(mockWeatherResponse);
     expect(result.current.isSuccess).toBe(true);
+    expect(result.current.isLoading).toBe(false);
     expect(invokeMock).toHaveBeenCalledWith('get-weather', {
       body: {
         lat: mockLocation.lat,
@@ -90,14 +91,14 @@ describe('useWeather', () => {
 });
 
 describe('useTides', () => {
-  it('starts in loading state then resolves with tide data', async () => {
+  it('starts fetching then resolves with tide data', async () => {
     invokeMock.mockResolvedValueOnce({ data: mockTidesResponse, error: null });
 
     const { result } = renderHook(() => useTides(), { wrapper: createWrapper() });
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isFetching).toBe(true);
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(result.current.isFetching).toBe(false));
 
     expect(result.current.data).toEqual(mockTidesResponse);
     expect(result.current.data?.events.length).toBeGreaterThan(0);
@@ -112,13 +113,11 @@ describe('useTides', () => {
 });
 
 describe('useLightning', () => {
-  it('starts in loading state then resolves with strike data', async () => {
+  it('starts fetching then resolves with strike data', async () => {
     invokeMock.mockResolvedValueOnce({ data: mockLightningWithStrikes, error: null });
 
     const { result } = renderHook(() => useLightning(), { wrapper: createWrapper() });
 
-    // Lightning hook sets placeholderData (mockLightning), so it's not "loading" in
-    // the strict sense, but isFetching should be true on first run.
     expect(result.current.isFetching).toBe(true);
 
     await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -145,9 +144,9 @@ describe('useWarnings', () => {
 
     const { result } = renderHook(() => useWarnings(), { wrapper: createWrapper() });
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isFetching).toBe(true);
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(result.current.isFetching).toBe(false));
 
     expect(result.current.data?.warnings).toEqual(mockWarningsResponse);
     expect(result.current.data?.marine).toEqual(mockMarineResponse);
