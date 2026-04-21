@@ -148,18 +148,111 @@ function pruneCache(cache: typeof strikeCaches extends Map<string, infer V> ? V 
 function addStrikeToCache(cache: ReturnType<typeof getStrikeCache>, strike: ReturnType<typeof getStrikeCache>[0]) {
   if (!cache.some(s => s.time_ns === strike.time_ns && s.lat === strike.lat && s.lon === strike.lon)) {
     cache.push(strike);
+    return true;
+  }
+  return false;
+}
+
+// ─── Hybrid Persistence: hydrate from DB on cold start ───
+async function hydrateStrikeCacheFromDb(cacheKey: string, cache: ReturnType<typeof getStrikeCache>) {
+  if (hydratedCaches.has(cacheKey)) return;
+  hydratedCaches.add(cacheKey); // mark first to prevent duplicate hydration on parallel requests
+  if (cache.length > 0) return; // already populated in-memory, no need to hit DB
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return;
+
+  const cutoffNs = (Date.now() - CACHE_TTL_MS) * 1_000_000;
+  try {
+    const { data, error } = await supabase
+      .from('lightning_cache')
+      .select('time_ns, lat, lon, distance_km, bearing_deg, bearing_compass, alert_level')
+      .eq('cache_key', cacheKey)
+      .gte('time_ns', cutoffNs)
+      .order('time_ns', { ascending: false })
+      .limit(200);
+
+    if (error) {
+      console.error('Hydration query error:', error.message);
+      return;
+    }
+    if (data && data.length > 0) {
+      for (const row of data) {
+        addStrikeToCache(cache, {
+          time_ns: Number(row.time_ns),
+          lat: row.lat as number,
+          lon: row.lon as number,
+          distance_km: row.distance_km as number,
+          bearing_deg: row.bearing_deg as number,
+          bearing_compass: row.bearing_compass as string,
+          alert_level: row.alert_level as number,
+        });
+      }
+      console.log(`💧 Hydrated ${data.length} strikes for ${cacheKey} from DB`);
+    }
+  } catch (e) {
+    console.error('Hydration error:', e);
+  }
+}
+
+// ─── Hybrid Persistence: batch insert newly collected strikes ───
+async function persistNewStrikes(cacheKey: string, newStrikes: Strike[]) {
+  if (newStrikes.length === 0) return;
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return;
+
+  const rows = newStrikes.map(s => ({
+    cache_key: cacheKey,
+    time_ns: s.time_ns,
+    lat: s.lat,
+    lon: s.lon,
+    distance_km: s.distance_km,
+    bearing_deg: s.bearing_deg,
+    bearing_compass: s.bearing_compass,
+    alert_level: s.alert_level,
+  }));
+
+  try {
+    // upsert with ignoreDuplicates so the unique constraint dedupes silently
+    const { error } = await supabase
+      .from('lightning_cache')
+      .upsert(rows, { onConflict: 'cache_key,time_ns,lat,lon', ignoreDuplicates: true });
+    if (error) {
+      console.error('Persist strikes error:', error.message);
+    } else {
+      console.log(`💾 Persisted ${rows.length} new strikes for ${cacheKey}`);
+    }
+  } catch (e) {
+    console.error('Persist strikes exception:', e);
   }
 }
 
 // ─── Blitzortung WebSocket ───
-async function fetchStrikesViaWebSocket(homeLat: number, homeLon: number, cache: ReturnType<typeof getStrikeCache>): Promise<void> {
+async function fetchStrikesViaWebSocket(
+  homeLat: number,
+  homeLon: number,
+  cacheKey: string,
+  cache: ReturnType<typeof getStrikeCache>,
+): Promise<void> {
+  // Hydrate from DB before opening the socket so the cache reflects recent history
+  await hydrateStrikeCacheFromDb(cacheKey, cache);
+
   const servers = ['wss://ws1.blitzortung.org/', 'wss://ws7.blitzortung.org/', 'wss://ws2.blitzortung.org/'];
   const serverUrl = servers[Math.floor(Math.random() * servers.length)];
 
+  // Collect strikes added during this socket session for batch persistence
+  const newStrikes: Strike[] = [];
+
   return new Promise((resolve) => {
+    const finish = async () => {
+      // Batch write to DB AFTER socket closes, only the truly new strikes
+      await persistNewStrikes(cacheKey, newStrikes);
+      resolve();
+    };
+
     const timeout = setTimeout(() => {
       try { ws.close(); } catch { /* ignore */ }
-      resolve();
+      finish();
     }, 4000);
 
     let ws: WebSocket;
@@ -168,7 +261,7 @@ async function fetchStrikesViaWebSocket(homeLat: number, homeLon: number, cache:
     } catch (e) {
       console.error('WebSocket creation failed:', e);
       clearTimeout(timeout);
-      resolve();
+      finish();
       return;
     }
 
@@ -187,21 +280,23 @@ async function fetchStrikesViaWebSocket(homeLat: number, homeLon: number, cache:
           if (dist <= GEOFENCE_KM) {
             const brng = bearing(homeLat, homeLon, lat, lon);
             const timeNs = data.time || Date.now() * 1_000_000;
-            addStrikeToCache(cache, {
+            const strike: Strike = {
               time_ns: timeNs, lat, lon,
               distance_km: dist,
               bearing_deg: brng,
               bearing_compass: bearingToCompass(brng),
               alert_level: getAlertLevel(dist),
-            });
+            };
+            const wasNew = addStrikeToCache(cache, strike);
+            if (wasNew) newStrikes.push(strike);
             console.log(`⚡ Strike detected! ${Math.round(dist * 10) / 10}km ${bearingToCompass(brng)}`);
           }
         }
       } catch { /* skip */ }
     };
 
-    ws.onerror = () => { clearTimeout(timeout); resolve(); };
-    ws.onclose = () => { clearTimeout(timeout); resolve(); };
+    ws.onerror = () => { clearTimeout(timeout); finish(); };
+    ws.onclose = () => { clearTimeout(timeout); finish(); };
   });
 }
 
