@@ -88,10 +88,10 @@ describe('bearing', () => {
     expect(brng).toBeLessThan(275);
   });
 
-  it('Dublin → Cork is roughly south-southwest (≈ 200°–215°)', () => {
+  it('Dublin → Cork is roughly southwest (≈ 215°–230°)', () => {
     const brng = bearing(DUBLIN.lat, DUBLIN.lon, CORK.lat, CORK.lon);
-    expect(brng).toBeGreaterThan(198);
-    expect(brng).toBeLessThan(218);
+    expect(brng).toBeGreaterThan(215);
+    expect(brng).toBeLessThan(230);
   });
 });
 
