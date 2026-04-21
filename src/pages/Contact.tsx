@@ -1,48 +1,22 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail } from 'lucide-react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
-import { LOCATIONS } from '@/lib/locations';
 import AppFooter from '@/components/AppFooter';
-import 'leaflet/dist/leaflet.css';
 
-const IRELAND_CENTER: [number, number] = [53.5, -8.0];
-const IRELAND_ZOOM = 7;
-
-const createDotIcon = () =>
-  L.divIcon({
-    className: '',
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    html: `<div style="width:10px;height:10px;background:hsl(210,60%,45%);border:2px solid white;border-radius:50%;opacity:0.5;"></div>`,
-  });
+// Static, low-cost map placeholder of Ireland (CARTO light, no labels).
+// Avoids loading react-leaflet on this route for faster mobile paint.
+const MAP_PLACEHOLDER_URL =
+  'https://a.basemaps.cartocdn.com/light_nolabels/7/61/40.png';
 
 const Contact = () => {
-  const dotIcon = createDotIcon();
-
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Map background */}
-      <div className="absolute inset-0 opacity-[0.35] pointer-events-none z-0">
-        <MapContainer
-          center={IRELAND_CENTER}
-          zoom={IRELAND_ZOOM}
-          zoomControl={false}
-          attributionControl={false}
-          dragging={false}
-          scrollWheelZoom={false}
-          doubleClickZoom={false}
-          touchZoom={false}
-          keyboard={false}
-          className="w-full h-full"
-        >
-          <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png" />
-          {LOCATIONS.map((loc) => (
-            <Marker key={loc.id} position={[loc.lat, loc.lon]} icon={dotIcon} />
-          ))}
-        </MapContainer>
-      </div>
+      {/* Static map background */}
+      <div
+        className="absolute inset-0 opacity-[0.35] pointer-events-none z-0 bg-center bg-cover"
+        style={{ backgroundImage: `url(${MAP_PLACEHOLDER_URL})` }}
+        aria-hidden="true"
+      />
 
       {/* Content */}
       <div className="relative z-10 max-w-md mx-auto px-4 py-8 space-y-6">
