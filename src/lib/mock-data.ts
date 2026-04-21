@@ -40,9 +40,16 @@ export interface TideEvent {
   timestamp?: string;
 }
 
+export interface TidePredictionPoint {
+  time: string;
+  height_m: number;
+  timestamp: string;
+}
+
 export interface TideForecastDay {
   date: string; // YYYY-MM-DD
   events: TideEvent[];
+  points?: TidePredictionPoint[];
 }
 
 export interface TideData {

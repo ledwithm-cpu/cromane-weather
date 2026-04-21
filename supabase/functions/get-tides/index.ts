@@ -73,8 +73,8 @@ serve(async (req) => {
 
     const fromTime = new Date(now.getTime() - 2 * 3600 * 1000).toISOString();
     const toTime = new Date(now.getTime() + 8 * 24 * 3600 * 1000).toISOString();
-    const contFrom = new Date(now.getTime() - 30 * 60 * 1000).toISOString();
-    const contTo = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+    const contFrom = new Date(now.getTime() - 24 * 3600 * 1000).toISOString();
+    const contTo = new Date(now.getTime() + 8 * 24 * 3600 * 1000).toISOString();
 
     const [hlRes, contRes] = await Promise.all([
       fetch(`${ERDDAP_BASE}/IMI_TidePrediction_HighLow.json?time,tide_time_category,Water_Level_ODMalin&stationID=%22${encodeURIComponent(station)}%22&time>=${fromTime}&time<=${toTime}&orderBy(%22time%22)`),
@@ -128,10 +128,22 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     .filter((e: any) => new Date(e.timestamp).getTime() > nowMs - 3600000)
     .slice(0, 4);
 
-  // Build 7-day forecast grouped by local (Europe/Dublin) date
-  const forecast = build7DayForecast(events, now);
-
   const contRows = data.cont?.table?.rows ?? [];
+  const continuousPoints = contRows.map((row: any[]) => {
+    const stationTime = new Date(row[0]);
+    const localTime = new Date(stationTime.getTime() + offsetMs);
+    return {
+      type: 'prediction',
+      time: formatTime(localTime),
+      height_m: parseFloat((row[1] as number).toFixed(2)),
+      timestamp: localTime.toISOString(),
+    };
+  });
+
+  // Build 7-day forecast grouped by local (Europe/Dublin) date, including
+  // continuous prediction points so the client draws the real tide curve.
+  const forecast = build7DayForecast(events, now, continuousPoints);
+
   let currentHeight = 0;
   if (contRows.length > 0) {
     let closest = contRows[0];
@@ -177,8 +189,8 @@ function dublinDateKey(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-function build7DayForecast(events: any[], now: Date) {
-  const days: { date: string; events: any[] }[] = [];
+function build7DayForecast(events: any[], now: Date, points: any[] = []) {
+  const days: { date: string; events: any[]; points: any[] }[] = [];
   const todayKey = dublinDateKey(now);
   for (let i = 0; i < 7; i++) {
     const d = new Date(now.getTime() + i * 24 * 3600 * 1000);
@@ -186,7 +198,10 @@ function build7DayForecast(events: any[], now: Date) {
     const dayEvents = events
       .filter((e: any) => dublinDateKey(new Date(e.timestamp)) === key)
       .map((e: any) => ({ type: e.type, time: e.time, height_m: e.height_m, timestamp: e.timestamp }));
-    days.push({ date: key, events: dayEvents });
+    const dayPoints = points
+      .filter((p: any) => dublinDateKey(new Date(p.timestamp)) === key)
+      .map((p: any) => ({ time: p.time, height_m: p.height_m, timestamp: p.timestamp }));
+    days.push({ date: key, events: dayEvents, points: dayPoints });
   }
   return days;
 }

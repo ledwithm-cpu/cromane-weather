@@ -169,10 +169,8 @@ const WeatherDayCard = ({
   );
 };
 
-const TIDE_HALF_PERIOD_MIN = 372; // ~6h12m between consecutive high/low
-
 const TideDayCard = ({
-  day, currentHeight, currentState, isToday, globalMinH, globalMaxH, typicalLowH, typicalHighH,
+  day, currentHeight, currentState, isToday, globalMinH, globalMaxH,
 }: {
   day: TideForecastDay | null;
   currentHeight: number;
@@ -180,136 +178,46 @@ const TideDayCard = ({
   isToday: boolean;
   globalMinH: number;
   globalMaxH: number;
-  typicalLowH: number;
-  typicalHighH: number;
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
+  const predictionPoints = day?.points ?? [];
   const highs = events.filter(e => e.type === 'high');
   const lows = events.filter(e => e.type === 'low');
 
-  // Build sparkline using a true tidal sinusoid between events
+  const toDublinMinutes = (p: { time?: string; timestamp?: string }): number | null => {
+    if (p.time && /^\d{1,2}:\d{2}/.test(p.time)) {
+      const [h, m] = p.time.split(':').map(Number);
+      if (Number.isFinite(h) && Number.isFinite(m)) return h * 60 + m;
+    }
+    if (p.timestamp) {
+      const d = new Date(p.timestamp);
+      if (!isNaN(d.getTime())) {
+        const parts = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Europe/Dublin',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).formatToParts(d);
+        const hh = Number(parts.find(part => part.type === 'hour')?.value ?? NaN);
+        const mm = Number(parts.find(part => part.type === 'minute')?.value ?? NaN);
+        if (Number.isFinite(hh) && Number.isFinite(mm)) return hh * 60 + mm;
+      }
+    }
+    return null;
+  };
+
+  // Build sparkline from live continuous tide prediction points.
   const sparkPoints = (() => {
-    if (events.length === 0) return null;
-
-    // Convert each event to minutes-since-midnight in Europe/Dublin.
-    // The `time` field (e.g. "18:55") is already formatted in Dublin local
-    // time by the edge function, so it's the most reliable source. Fall back
-    // to parsing the timestamp via Intl when `time` is missing/malformed.
-    const toDublinMinutes = (e: { time?: string; timestamp?: string }): number | null => {
-      if (e.time && /^\d{1,2}:\d{2}/.test(e.time)) {
-        const [h, m] = e.time.split(':').map(Number);
-        if (Number.isFinite(h) && Number.isFinite(m)) return h * 60 + m;
-      }
-      if (e.timestamp) {
-        const d = new Date(e.timestamp);
-        if (!isNaN(d.getTime())) {
-          const parts = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Europe/Dublin',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          }).formatToParts(d);
-          const hh = Number(parts.find(p => p.type === 'hour')?.value ?? NaN);
-          const mm = Number(parts.find(p => p.type === 'minute')?.value ?? NaN);
-          if (Number.isFinite(hh) && Number.isFinite(mm)) return hh * 60 + mm;
-        }
-      }
-      return null;
-    };
-
-    const pts = events
-      .map(e => {
-        const x = toDublinMinutes(e);
-        return x == null
-          ? null
-          : { x, y: e.height_m, type: e.type as 'high' | 'low' };
+    const samples = predictionPoints
+      .map(point => {
+        const x = toDublinMinutes(point);
+        return x == null ? null : { x, y: point.height_m };
       })
-      .filter((p): p is { x: number; y: number; type: 'high' | 'low' } => p !== null)
+      .filter((point): point is { x: number; y: number } => point !== null && point.x >= 0 && point.x <= 1440)
       .sort((a, b) => a.x - b.x);
 
-    if (pts.length === 0) return null;
-
-    // Estimate typical high/low height for this day, falling back to the whole
-    // week so single-event days still produce a visible tidal wave.
-    const highHeights = pts.filter(p => p.type === 'high').map(p => p.y);
-    const lowHeights = pts.filter(p => p.type === 'low').map(p => p.y);
-    let avgHigh = highHeights.length
-      ? highHeights.reduce((a, b) => a + b, 0) / highHeights.length
-      : typicalHighH;
-    let avgLow = lowHeights.length
-      ? lowHeights.reduce((a, b) => a + b, 0) / lowHeights.length
-      : typicalLowH;
-
-    if (avgHigh - avgLow < 0.8) {
-      const centre = (avgHigh + avgLow) / 2;
-      const halfRange = Math.max((globalMaxH - globalMinH) / 2, 0.9);
-      avgHigh = centre + halfRange;
-      avgLow = centre - halfRange;
-    }
-
-    const oppositeExtremum = (
-      point: { x: number; type: 'high' | 'low' },
-      direction: -1 | 1,
-    ): { x: number; y: number; type: 'high' | 'low' } => {
-      const type: 'high' | 'low' = point.type === 'high' ? 'low' : 'high';
-      return {
-        x: point.x + direction * TIDE_HALF_PERIOD_MIN,
-        y: type === 'high' ? avgHigh : avgLow,
-        type,
-      };
-    };
-
-    // Extrapolate enough virtual extrema to cover the full 00→24 timeline.
-    const extrema = [...pts];
-    while (extrema[0].x > 0) {
-      extrema.unshift(oppositeExtremum(extrema[0], -1));
-    }
-    while (extrema[extrema.length - 1].x < 1440) {
-      extrema.push(oppositeExtremum(extrema[extrema.length - 1], 1));
-    }
-
-    // Sample sinusoidally between consecutive extrema. Clamp x into [0, 1440]
-    // so the curve always reaches both edges (instead of being clipped when the
-    // first/last real event sits well inside the day window).
-    const SAMPLES_PER_SEG = 24;
-    const samples: { x: number; y: number }[] = [];
-    for (let i = 0; i < extrema.length - 1; i++) {
-      const a = extrema[i];
-      const b = extrema[i + 1];
-      const mid = (a.y + b.y) / 2;
-      const amp = (a.y - b.y) / 2; // positive if a high → b low
-      for (let s = 0; s <= SAMPLES_PER_SEG; s++) {
-        const t = s / SAMPLES_PER_SEG;
-        const x = a.x + (b.x - a.x) * t;
-        const y = mid + amp * Math.cos(Math.PI * t);
-        if (x < 0 || x > 1440) continue;
-        samples.push({ x, y });
-      }
-    }
-
-    // Ensure we explicitly include endpoints at x=0 and x=1440 by
-    // interpolating across whichever segment spans them.
-    const interpAt = (xTarget: number): number | null => {
-      for (let i = 0; i < extrema.length - 1; i++) {
-        const a = extrema[i];
-        const b = extrema[i + 1];
-        if (xTarget >= a.x && xTarget <= b.x) {
-          const t = (xTarget - a.x) / (b.x - a.x);
-          const mid = (a.y + b.y) / 2;
-          const amp = (a.y - b.y) / 2;
-          return mid + amp * Math.cos(Math.PI * t);
-        }
-      }
-      return null;
-    };
-    const y0 = interpAt(0);
-    const y1440 = interpAt(1440);
-    if (y0 != null) samples.unshift({ x: 0, y: y0 });
-    if (y1440 != null) samples.push({ x: 1440, y: y1440 });
-    samples.sort((a, b) => a.x - b.x);
-
-    if (samples.length === 0) return null;
+    if (samples.length < 2) return null;
 
     // Use shared Y-scale across all 7 days for visual comparability
     const minH = globalMinH;
@@ -337,11 +245,12 @@ const TideDayCard = ({
     const lastX = projectX(samples[samples.length - 1].x).toFixed(2);
     const dArea = `${d} L${lastX},${baselineY} L${firstX},${baselineY} Z`;
 
-    const markers = pts.map(p => ({
-      x: projectX(p.x),
-      y: projectY(p.y),
-      type: p.type,
-    }));
+    const markers = events
+      .map(event => {
+        const x = toDublinMinutes(event);
+        return x == null ? null : { x: projectX(x), y: projectY(event.height_m), type: event.type };
+      })
+      .filter((marker): marker is { x: number; y: number; type: 'high' | 'low' } => marker !== null);
 
     // "Now" marker — only meaningful for today
     let now: { x: number; y: number } | null = null;
@@ -356,10 +265,7 @@ const TideDayCard = ({
       const hh = Number(parts.find(p => p.type === 'hour')?.value ?? 0);
       const mm = Number(parts.find(p => p.type === 'minute')?.value ?? 0);
       const nowMin = hh * 60 + mm;
-      const yNow = interpAt(nowMin);
-      if (yNow != null) {
-        now = { x: projectX(nowMin), y: projectY(yNow) };
-      }
+      now = { x: projectX(nowMin), y: projectY(currentHeight) };
     }
 
     return { d, dArea, markers, W, H, now };
@@ -581,13 +487,12 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const tideByDate = new Map(tideForecast.map(d => [d.date, d]));
 
   // Shared Y-scale across the week so sparklines are visually comparable
-  const allHeights = tideForecast.flatMap(d => (d.events ?? []).map(e => e.height_m));
-  const allHighs = tideForecast.flatMap(d => (d.events ?? []).filter(e => e.type === 'high').map(e => e.height_m));
-  const allLows = tideForecast.flatMap(d => (d.events ?? []).filter(e => e.type === 'low').map(e => e.height_m));
+  const allHeights = tideForecast.flatMap(d => [
+    ...(d.points ?? []).map(p => p.height_m),
+    ...(d.events ?? []).map(e => e.height_m),
+  ]);
   const globalMinH = allHeights.length ? Math.min(...allHeights) : 0;
   const globalMaxH = allHeights.length ? Math.max(...allHeights) : 1;
-  const typicalHighH = allHighs.length ? allHighs.reduce((a, b) => a + b, 0) / allHighs.length : globalMaxH;
-  const typicalLowH = allLows.length ? allLows.reduce((a, b) => a + b, 0) / allLows.length : globalMinH;
 
   return (
     <motion.div
@@ -670,8 +575,6 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 isToday={d.key === todayKey}
                 globalMinH={globalMinH}
                 globalMaxH={globalMaxH}
-                typicalLowH={typicalLowH}
-                typicalHighH={typicalHighH}
               />
             </div>
           ))}
