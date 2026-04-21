@@ -8,8 +8,10 @@ import LightningCard from '@/components/LightningCard';
 import ForecastSwiper from '@/components/ForecastSwiper';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
+import PollenCard from '@/components/PollenCard';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
+import { usePollen } from '@/hooks/use-pollen';
 import { useLocation } from '@/hooks/use-location';
 import { LOCATIONS } from '@/lib/locations';
 import {
