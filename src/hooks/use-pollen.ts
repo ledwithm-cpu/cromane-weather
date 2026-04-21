@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from '@/hooks/use-location';
+import { useDebugMode } from '@/hooks/use-debug-mode';
 
 export interface PollenCurrent {
   time: string;
@@ -8,6 +9,15 @@ export interface PollenCurrent {
   birch_pollen: number | null;
   alder_pollen: number | null;
 }
+
+// Extreme mock used when Debug Mode is enabled
+const DEBUG_POLLEN: PollenCurrent = {
+  time: new Date().toISOString(),
+  interval: 3600,
+  grass_pollen: 600,
+  birch_pollen: 320,
+  alder_pollen: 180,
+};
 
 interface PollenResponse {
   latitude: number;
