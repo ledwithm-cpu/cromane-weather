@@ -172,7 +172,7 @@ const WeatherDayCard = ({
 const TIDE_HALF_PERIOD_MIN = 372; // ~6h12m between consecutive high/low
 
 const TideDayCard = ({
-  day, currentHeight, currentState, isToday, globalMinH, globalMaxH,
+  day, currentHeight, currentState, isToday, globalMinH, globalMaxH, typicalLowH, typicalHighH,
 }: {
   day: TideForecastDay | null;
   currentHeight: number;
@@ -180,6 +180,8 @@ const TideDayCard = ({
   isToday: boolean;
   globalMinH: number;
   globalMaxH: number;
+  typicalLowH: number;
+  typicalHighH: number;
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
@@ -228,31 +230,41 @@ const TideDayCard = ({
 
     if (pts.length === 0) return null;
 
-    // Estimate typical high/low height for this day (used for edge extrapolation)
+    // Estimate typical high/low height for this day, falling back to the whole
+    // week so single-event days still produce a visible tidal wave.
     const highHeights = pts.filter(p => p.type === 'high').map(p => p.y);
     const lowHeights = pts.filter(p => p.type === 'low').map(p => p.y);
-    const avgHigh = highHeights.length
+    let avgHigh = highHeights.length
       ? highHeights.reduce((a, b) => a + b, 0) / highHeights.length
-      : Math.max(...pts.map(p => p.y));
-    const avgLow = lowHeights.length
+      : typicalHighH;
+    let avgLow = lowHeights.length
       ? lowHeights.reduce((a, b) => a + b, 0) / lowHeights.length
-      : Math.min(...pts.map(p => p.y));
+      : typicalLowH;
 
-    // Extrapolate a virtual extremum before first event and after last event
-    const first = pts[0];
-    const last = pts[pts.length - 1];
-    const beforeFirst = {
-      x: first.x - TIDE_HALF_PERIOD_MIN,
-      y: first.type === 'high' ? avgLow : avgHigh,
-      type: (first.type === 'high' ? 'low' : 'high') as 'high' | 'low',
-    };
-    const afterLast = {
-      x: last.x + TIDE_HALF_PERIOD_MIN,
-      y: last.type === 'high' ? avgLow : avgHigh,
-      type: (last.type === 'high' ? 'low' : 'high') as 'high' | 'low',
+    if (avgHigh - avgLow < 0.8) {
+      const centre = (avgHigh + avgLow) / 2;
+      const halfRange = Math.max((globalMaxH - globalMinH) / 2, 0.9);
+      avgHigh = centre + halfRange;
+      avgLow = centre - halfRange;
+    }
+
+    const oppositeExtremum = (point: { x: number; type: 'high' | 'low' }, direction: -1 | 1) => {
+      const type = point.type === 'high' ? 'low' : 'high';
+      return {
+        x: point.x + direction * TIDE_HALF_PERIOD_MIN,
+        y: type === 'high' ? avgHigh : avgLow,
+        type,
+      };
     };
 
-    const extrema = [beforeFirst, ...pts, afterLast];
+    // Extrapolate enough virtual extrema to cover the full 00→24 timeline.
+    const extrema = [...pts];
+    while (extrema[0].x > 0) {
+      extrema.unshift(oppositeExtremum(extrema[0], -1));
+    }
+    while (extrema[extrema.length - 1].x < 1440) {
+      extrema.push(oppositeExtremum(extrema[extrema.length - 1], 1));
+    }
 
     // Sample sinusoidally between consecutive extrema. Clamp x into [0, 1440]
     // so the curve always reaches both edges (instead of being clipped when the
