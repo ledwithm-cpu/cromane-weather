@@ -32,9 +32,13 @@ function parseLocations() {
   while ((m = blockRegex.exec(body)) !== null) {
     const block = m[1];
     const get = (key) => {
-      const re = new RegExp(`${key}\\s*:\\s*['"\`]([^'"\`]+)['"\`]`);
+      // Match a quoted value, allowing escaped quotes (e.g. "Samhradh\\'s Sauna").
+      const re = new RegExp(
+        `${key}\\s*:\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|'((?:[^'\\\\]|\\\\.)*)'|\`((?:[^\`\\\\]|\\\\.)*)\`)`
+      );
       const r = block.match(re);
-      return r ? r[1] : undefined;
+      const raw = r ? (r[1] ?? r[2] ?? r[3]) : undefined;
+      return raw ? raw.replace(/\\(['"`\\])/g, '$1') : undefined;
     };
     const id = get('id');
     if (!id) continue;
