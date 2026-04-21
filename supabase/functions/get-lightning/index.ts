@@ -439,7 +439,9 @@ serve(async (req) => {
 
   try {
     const [_, nowcast] = await Promise.all([
-      testMode ? injectTestStrike(homeLat, homeLon, strikeCache) : fetchStrikesViaWebSocket(homeLat, homeLon, strikeCache),
+      testMode
+        ? injectTestStrike(homeLat, homeLon, strikeCache).then(() => persistNewStrikes(cacheKey, strikeCache.slice(-1)))
+        : fetchStrikesViaWebSocket(homeLat, homeLon, cacheKey, strikeCache),
       fetchNowcast(homeLat, homeLon, cacheKey),
     ]);
 
