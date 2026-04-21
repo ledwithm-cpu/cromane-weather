@@ -56,6 +56,45 @@ export type Database = {
         }
         Relationships: []
       }
+      lightning_cache: {
+        Row: {
+          alert_level: number
+          bearing_compass: string
+          bearing_deg: number
+          cache_key: string
+          created_at: string
+          distance_km: number
+          id: string
+          lat: number
+          lon: number
+          time_ns: number
+        }
+        Insert: {
+          alert_level: number
+          bearing_compass: string
+          bearing_deg: number
+          cache_key: string
+          created_at?: string
+          distance_km: number
+          id?: string
+          lat: number
+          lon: number
+          time_ns: number
+        }
+        Update: {
+          alert_level?: number
+          bearing_compass?: string
+          bearing_deg?: number
+          cache_key?: string
+          created_at?: string
+          distance_km?: number
+          id?: string
+          lat?: number
+          lon?: number
+          time_ns?: number
+        }
+        Relationships: []
+      }
       push_notification_log: {
         Row: {
           alert_level: number
