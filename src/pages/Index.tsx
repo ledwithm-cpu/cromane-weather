@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
@@ -38,11 +38,15 @@ const Index = () => {
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
 
-  // Group locations by county for the dropdown
-  const grouped = LOCATIONS.reduce<Record<string, typeof LOCATIONS>>((acc, loc) => {
-    (acc[loc.county] ??= []).push(loc);
-    return acc;
-  }, {});
+  // Group locations by county for the dropdown (static — computed once)
+  const grouped = useMemo(
+    () =>
+      LOCATIONS.reduce<Record<string, typeof LOCATIONS>>((acc, loc) => {
+        (acc[loc.county] ??= []).push(loc);
+        return acc;
+      }, {}),
+    []
+  );
 
   return (
     <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`} data-storm-approaching={stormApproaching || undefined}>
