@@ -30,18 +30,14 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Saunas to help people explore Ireland's coastline, discover local saunas, know the weather before heading out, and stay safe with real-time lightning alerts, especially if you have pets outside.
-            {' '}Pick your location from over 40 Irish coastal towns, beaches, and swimming spots, and every card updates with live data for that spot.
+            We built Irish Saunas to help you explore Ireland's coastline safely, discover local saunas, and know the exact conditions before heading out.
           </p>
         </motion.header>
 
         {/* Philosophy */}
         <motion.section {...section(0.1)} className="pb-8">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Every card on the dashboard pulls from a real data source. No guesswork, no stale
-            forecasts left over from yesterday. The app polls these sources continuously so you're
-            always looking at the freshest picture available. Here's exactly where each piece comes
-            from and why we trust it.
+            Every card on your dashboard pulls from real, hyper-local data sources. No guesswork, no stale forecasts left over from yesterday. Here is exactly what we track and why you can trust it.
           </p>
         </motion.section>
 
@@ -54,17 +50,19 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              40+ Coastal Towns, Beaches & Local Saunas
+              40+ Coastal Towns & Saunas
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Tap the location name at the top of the screen to switch between spots along the Irish coast. The app covers Kerry, Cork, Clare, Galway, Mayo, Sligo, Donegal, Dublin, Wicklow, Waterford, Wexford, and Louth. Each location has its own coordinates, its nearest tide station, and a local Met Éireann observation point, so the data you see is genuinely tied to that stretch of coastline.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Where there's a sauna nearby, you'll find a booking link right below the tide chart. We've mapped saunas from Samhradh's in Cromane to Salt & Ember in Bundoran, so wherever you are on the coast, you can check the tides and book a warm-up in one place.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Your selected location is remembered between visits. When you switch, all five cards re-fetch with the new coordinates.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Hyper-Local Data</strong> · We don't use generic county forecasts. Every spot has its own exact coordinates, nearest tide station, and local observation point.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Book a Sauna</strong> · If there's a sauna nearby—from Samhradh's in Cromane to Salt & Ember in Bundoran—you'll find a direct booking link.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Smart Memory</strong> · Your selected location is remembered automatically for your next visit.
+              </li>
+            </ul>
           </motion.section>
 
           {/* Tides */}
@@ -75,14 +73,19 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Marine Institute ERDDAP
+              Marine Institute Live Tides
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Tide predictions come directly from Ireland's Marine Institute via their ERDDAP scientific data server. Each location is mapped to its nearest monitored station (Fenit, Galway, Ballyglass, Cobh, and others), with a time offset applied to account for how long it takes the tidal wave to reach that particular harbour or beach.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              A <strong className="text-foreground font-normal">+2.53m datum conversion</strong> translates the raw readings into heights you'd actually recognise at the shore. The tide graph shows your current position between known high and low events, and it refreshes every hour.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Local Accuracy</strong> · We calculate the exact time offset for how long it takes the tidal wave to reach your specific beach or harbour.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Real-World Depths</strong> · We apply local datum conversions so the water heights you see match what you actually experience at the shore.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Always Fresh</strong> · The chart updates every hour, showing exactly where you are between high and low tide.
+              </li>
+            </ul>
           </motion.section>
 
           {/* Conditions */}
@@ -93,118 +96,114 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Open-Meteo Weather
+              Pinpoint Weather Data
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speed, direction, temperature, cloud cover, and precipitation all come from Open-Meteo's open-source weather API. We request data pinned to your selected location's exact coordinates, so you're not getting a generic county forecast. You're getting <em>this</em> stretch of coast.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Wind speeds are converted to knots and mapped onto the Beaufort scale with plain-language labels. The weather icon beside the compass reflects current conditions at a glance: sun, cloud, rain, snow, fog, or thunderstorm. Water temperature comes from the marine API, and the "feels like" reading is calculated using wind chill data from the nearest Met Éireann observation station (Valentia for Kerry, Roches Point for Cork, Shannon for Clare, and so on). This card refreshes every 15 minutes.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Exact Coordinates</strong> · Wind, temperature, and rain data are pinned specifically to your stretch of coast via Open-Meteo.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Plain-Language Wind</strong> · We convert wind speeds to knots and display them using the standard, easy-to-read Beaufort scale.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">"Feels Like" Temp</strong> · We factor in wind chill data from the nearest Met Éireann observation station to tell you how cold it actually feels.
+              </li>
+            </ul>
           </motion.section>
 
-          {/* Lightning */}
+          {/* Pollen */}
           <motion.section {...section(0.25)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Lightning
+                Air Quality
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Blitzortung Community Network + Storm Intelligence
+              Live Pollen Counts
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Lightning detection uses a sensor-direct approach. We connect to the Blitzortung community network, a global array of volunteer-operated lightning detectors, via real-time WebSocket feeds. Strikes within 20km of your selected location are cached with a 30-minute rolling window.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              On top of raw strike data, a custom <strong className="text-foreground font-normal">Storm Intelligence engine</strong> tracks heavy rainfall cells across a spatial grid of 16 polling points at 50km and 100km radii around your location. It calculates velocity vectors and estimates arrival times. This is further enhanced by Open-Meteo's Lightning Potential Index (LPI) and CAPE values for predictive nowcasting.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              This card polls every 30 seconds, the fastest refresh rate in the app, because when lightning is approaching, minutes matter.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Allergy Awareness</strong> · We track Grass and Birch pollen, the most common allergens for Irish coastal activities.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Clear Status Levels</strong> · Raw pollen grains are translated into simple "Low," "Moderate," "High," or "Very High" warnings.
+              </li>
+            </ul>
           </motion.section>
 
-          {/* Warnings */}
+          {/* Lightning */}
           <motion.section {...section(0.3)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Met Éireann Warnings
+                Safety First
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Met Éireann Warnings
+              Lightning & Storm Intelligence
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Weather warnings are pulled directly from Met Éireann's official warnings page (met.ie/warnings) using pattern-based parsing. We chose this approach deliberately: the official JSON and XML feeds can be stale or inconsistent, but the public-facing HTML page is always current.
+              When you have pets or kids on the beach, minutes matter. We use a dual-approach to keep you safe:
             </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Warnings are filtered to match your selected location's county and province. If you've chosen Bundoran, you'll see warnings for Donegal and Ulster. If you've chosen Lahinch, you'll see Clare and Munster. National warnings that mention all of Ireland are always shown regardless. The colour-coded levels (yellow, orange, red) match Met Éireann's own system exactly. This refreshes every 5 minutes.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Live Sensors</strong> · We connect to the Blitzortung community network to track real, active lightning strikes within 20km of your beach.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Storm Prediction</strong> · Our custom engine tracks heavy rainfall cells across a 100km grid, calculates their speed, and gives you an estimated time of arrival (ETA) before the storm hits.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Fastest Updates</strong> · Because storms move fast, this is the quickest card on the site, checking for new danger every 30 seconds.
+              </li>
+            </ul>
           </motion.section>
 
-          {/* Marine */}
+          {/* Warnings & Marine */}
           <motion.section {...section(0.35)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Marine Forecast
+                Official Warnings
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Marine Warnings
+              Met Éireann Direct
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              The marine card pulls the current small craft warning and sea area forecast from the same Met Éireann parsing pipeline as the warnings card. It tells you whether conditions offshore are noteworthy, useful context even if you're staying on the beach.
-            </p>
+            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
+              <li>
+                <strong className="text-foreground font-normal">Land Warnings</strong> · We pull live, colour-coded warnings directly from Met Éireann, automatically filtering them so you only see alerts relevant to your county.
+              </li>
+              <li>
+                <strong className="text-foreground font-normal">Marine Conditions</strong> · We track offshore small craft warnings and sea area forecasts so you have the full picture before swimming.
+              </li>
+            </ul>
           </motion.section>
 
           {/* Push Notifications */}
           <motion.section {...section(0.37)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Push Notifications
+                Alerts
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Lightning Alerts Sent to Your Phone
+              Smart Push Notifications
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              When you first open the app, it asks permission to send push notifications. If you allow it, the app registers your device so it can reach you even when your browser is closed.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Notifications are triggered automatically based on the lightning monitoring system. There are four escalation stages, each with a clear message so you know exactly what's happening:
+              If you allow push notifications, we'll ping your phone when danger approaches, escalating through four clear stages:
             </p>
             <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
               <li>
-                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · Conditions are becoming favourable for thunderstorms. The Lightning Potential Index or CAPE values have crossed a threshold. This is a heads-up, not an alarm.
+                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · Conditions are becoming favourable for thunderstorms. A heads-up to keep an eye on the sky.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Storm Approaching</strong> · The Storm Intelligence engine has detected a heavy rainfall cell moving toward your location. You'll see the direction it's coming from and an estimated arrival time, typically within 60 minutes.
+                <strong className="text-foreground font-normal">Storm Approaching</strong> · A heavy rainfall cell is heading your way, complete with an ETA.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Lightning Warning</strong> · Real strikes have been detected within 10km by the Blitzortung sensor network. Time to pay attention.
+                <strong className="text-foreground font-normal">Lightning Warning</strong> · Real strikes detected within 10km. Time to pack up.
               </li>
               <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> · Lightning has struck within 5km. The message is simple: seek shelter. If you have pets outside, bring them in now.
+                <strong className="text-foreground font-normal">Immediate Danger</strong> · Strikes within 5km. Seek shelter immediately.
               </li>
             </ul>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              There's a 15-minute cooldown between notifications of the same type, so you won't be bombarded. Alerts only escalate; you won't get a lower-level notification if you've already received a higher one recently.
-            </p>
-          </motion.section>
-
-          {/* Architecture note */}
-          <motion.section {...section(0.4)} className="space-y-3">
-            <div className="border-t border-border/30 pt-6">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Under the Hood
-              </p>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              All external API calls run through backend functions. The app never contacts third-party services directly from your browser. This means your data stays private, requests are rate-limited and cached, and the app continues to work with locally cached data if your connection drops.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              When you pull to refresh, every data source is re-fetched simultaneously. When you don't, each card manages its own polling interval: fast for lightning, relaxed for tides. You're never waiting for data you don't need.
-            </p>
           </motion.section>
         </div>
 
