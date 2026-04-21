@@ -9,6 +9,7 @@ import ForecastSwiper from '@/components/ForecastSwiper';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import PollenCard from '@/components/PollenCard';
+import DebugModeIndicator from '@/components/DebugModeIndicator';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { usePollen } from '@/hooks/use-pollen';
@@ -125,6 +126,7 @@ const Index = () => {
         </div>
         </PullToRefresh>
         <InstallPrompt />
+        <DebugModeIndicator />
       </div>
     </div>
   );

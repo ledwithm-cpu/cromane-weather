@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from '@/hooks/use-location';
+import { useDebugMode } from '@/hooks/use-debug-mode';
 
 export interface PollenCurrent {
   time: string;
@@ -8,6 +9,15 @@ export interface PollenCurrent {
   birch_pollen: number | null;
   alder_pollen: number | null;
 }
+
+// Extreme mock used when Debug Mode is enabled
+const DEBUG_POLLEN: PollenCurrent = {
+  time: new Date().toISOString(),
+  interval: 3600,
+  grass_pollen: 600,
+  birch_pollen: 320,
+  alder_pollen: 180,
+};
 
 interface PollenResponse {
   latitude: number;
@@ -26,12 +36,17 @@ async function fetchPollen(lat: number, lon: number): Promise<PollenCurrent> {
 
 export function usePollen() {
   const { location } = useLocation();
+  const { isDebugMode } = useDebugMode();
+
   const query = useQuery({
-    queryKey: ['pollen', location.id],
-    queryFn: () => fetchPollen(location.lat, location.lon),
-    refetchInterval: 60 * 60 * 1000, // 1 hour
+    queryKey: ['pollen', location.id, isDebugMode ? 'debug' : 'live'],
+    queryFn: async () => {
+      if (isDebugMode) return DEBUG_POLLEN;
+      return fetchPollen(location.lat, location.lon);
+    },
+    refetchInterval: isDebugMode ? false : 60 * 60 * 1000, // 1 hour
     staleTime: 30 * 60 * 1000,
-    retry: 2,
+    retry: isDebugMode ? 0 : 2,
   });
 
   return {
