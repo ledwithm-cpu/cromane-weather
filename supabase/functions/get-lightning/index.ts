@@ -12,7 +12,7 @@ const DEFAULT_LON = -9.8856;
 const GEOFENCE_KM = 20;
 
 // ─── Strike Cache (persists across warm invocations, keyed by location) ───
-const strikeCaches = new Map<string, Array<{
+type Strike = {
   time_ns: number;
   lat: number;
   lon: number;
@@ -20,8 +20,25 @@ const strikeCaches = new Map<string, Array<{
   bearing_deg: number;
   bearing_compass: string;
   alert_level: number;
-}>>();
+};
+const strikeCaches = new Map<string, Array<Strike>>();
+// Tracks whether a given cacheKey has been hydrated from the DB this warm cycle
+const hydratedCaches = new Set<string>();
 const CACHE_TTL_MS = 30 * 60 * 1000;
+
+// Lazy Supabase admin client (service role) — initialized once per warm worker
+let _supabaseAdmin: ReturnType<typeof createClient> | null = null;
+function getSupabaseAdmin() {
+  if (_supabaseAdmin) return _supabaseAdmin;
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) return null;
+  _supabaseAdmin = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  return _supabaseAdmin;
+}
+
 
 // ─── Nowcast Cache (keyed by location) ───
 const nowcastCaches = new Map<string, { result: NowcastResult; time: number }>();
