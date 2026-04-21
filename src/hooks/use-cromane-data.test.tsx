@@ -154,12 +154,16 @@ describe('useWarnings', () => {
 });
 
 describe('error handling', () => {
-  it('useWeather surfaces invoke errors', async () => {
+  it('useWeather surfaces invoke errors via failureCount', async () => {
     invokeMock.mockResolvedValueOnce({ data: null, error: new Error('boom') });
 
     const { result } = renderHook(() => useWeather(), { wrapper: createWrapper() });
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error).toBeInstanceOf(Error);
+    // With placeholderData set, React Query keeps `isError` false (placeholder
+    // is treated as a successful fallback). The signal that fetch threw is
+    // failureCount incrementing.
+    await waitFor(() => expect(result.current.failureCount).toBeGreaterThan(0));
+    expect(result.current.failureReason).toBeInstanceOf(Error);
+    expect((result.current.failureReason as Error).message).toBe('boom');
   });
 });
