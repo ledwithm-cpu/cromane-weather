@@ -185,6 +185,7 @@ const TideDayCard = ({
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
+  const predictionPoints = day?.points ?? [];
   const highs = events.filter(e => e.type === 'high');
   const lows = events.filter(e => e.type === 'low');
 
