@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
@@ -25,6 +26,16 @@ import {
 
 const Index = () => {
   const { location, setLocationById } = useLocation();
+  const navigate = useNavigate();
+
+  // Keep the URL in sync with the selected location. LocationPage.tsx
+  // listens for the :locationId param and updates the LocationContext,
+  // so navigating is enough to sync state + URL together.
+  const handleLocationChange = (id: string) => {
+    setLocationById(id);
+    navigate(`/${id}`);
+  };
+
   const { data: wind, isLoading: windLoading } = useWeather();
   const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
@@ -72,7 +83,7 @@ const Index = () => {
               Live tides, weather & warnings for Irish coastal saunas
             </p>
 
-            <Select value={location.id} onValueChange={setLocationById}>
+            <Select value={location.id} onValueChange={handleLocationChange}>
               <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/50 bg-card/60 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/70 active:scale-[0.97] transition-all">
                 <SelectValue>
                   <span className="text-xl font-normal tracking-wide text-foreground">
