@@ -487,13 +487,12 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const tideByDate = new Map(tideForecast.map(d => [d.date, d]));
 
   // Shared Y-scale across the week so sparklines are visually comparable
-  const allHeights = tideForecast.flatMap(d => (d.events ?? []).map(e => e.height_m));
-  const allHighs = tideForecast.flatMap(d => (d.events ?? []).filter(e => e.type === 'high').map(e => e.height_m));
-  const allLows = tideForecast.flatMap(d => (d.events ?? []).filter(e => e.type === 'low').map(e => e.height_m));
+  const allHeights = tideForecast.flatMap(d => [
+    ...(d.points ?? []).map(p => p.height_m),
+    ...(d.events ?? []).map(e => e.height_m),
+  ]);
   const globalMinH = allHeights.length ? Math.min(...allHeights) : 0;
   const globalMaxH = allHeights.length ? Math.max(...allHeights) : 1;
-  const typicalHighH = allHighs.length ? allHighs.reduce((a, b) => a + b, 0) / allHighs.length : globalMaxH;
-  const typicalLowH = allLows.length ? allLows.reduce((a, b) => a + b, 0) / allLows.length : globalMinH;
 
   return (
     <motion.div
@@ -576,8 +575,6 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 isToday={d.key === todayKey}
                 globalMinH={globalMinH}
                 globalMaxH={globalMaxH}
-                typicalLowH={typicalLowH}
-                typicalHighH={typicalHighH}
               />
             </div>
           ))}
