@@ -117,13 +117,18 @@ export function useWarnings() {
 
 export function useLightning() {
   const { location } = useLocation();
+  const { isDebugMode } = useDebugMode();
   return useQuery({
-    queryKey: ['lightning', location.id],
-    queryFn: () => fetchLightning(location),
-    refetchInterval: 30 * 1000,
+    queryKey: ['lightning', location.id, isDebugMode ? 'debug' : 'live'],
+    queryFn: async () => {
+      if (isDebugMode) return DEBUG_LIGHTNING;
+      return fetchLightning(location);
+    },
+    refetchInterval: isDebugMode ? false : 30 * 1000,
     staleTime: 15 * 1000,
-    placeholderData: () => cacheGet<LightningData>(`lightning-${location.id}`) ?? mockLightning,
-    retry: 2,
+    placeholderData: () =>
+      isDebugMode ? DEBUG_LIGHTNING : (cacheGet<LightningData>(`lightning-${location.id}`) ?? mockLightning),
+    retry: isDebugMode ? 0 : 2,
   });
 }
 
