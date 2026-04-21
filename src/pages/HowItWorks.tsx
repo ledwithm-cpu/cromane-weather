@@ -52,17 +52,11 @@ const HowItWorks = () => {
             <h2 className="text-base font-normal text-foreground">
               40+ Spots Along the Coast
             </h2>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Pinpoint accuracy</strong> · We don't give you a generic "County Kerry" forecast. Every beach has its own exact coordinates, tide station, and local weather point.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Saunas nearby</strong> · From Samhradh's in Cromane to Salt & Ember in Bundoran, if there's a sauna close by, you'll see a booking button right there.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Remembers where you are</strong> · Pick your spot once and it'll be there waiting next time you open the app.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Pinpoint accuracy.</strong> We don't give you a generic "County Kerry" forecast. Every beach has its own exact coordinates, tide station, and local weather point.</p>
+              <p><strong className="text-foreground font-normal">Saunas nearby.</strong> From Samhradh's in Cromane to Salt & Ember in Bundoran, if there's a sauna close by, you'll see a booking button right there.</p>
+              <p><strong className="text-foreground font-normal">Remembers where you are.</strong> Pick your spot once and it'll be there waiting next time you open the app.</p>
+            </div>
           </motion.section>
 
           {/* Tides */}
@@ -75,17 +69,11 @@ const HowItWorks = () => {
             <h2 className="text-base font-normal text-foreground">
               Real Tide Data from the Marine Institute
             </h2>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Actually local</strong> · The tide at Dingle isn't the same as Fenit. We calculate exactly how long the tidal wave takes to reach your specific beach.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Makes sense on the ground</strong> · We convert the raw numbers into depths you'd actually see at the shoreline, not some abstract measurement.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Updates every hour</strong> · The chart refreshes regularly so you always know where you are between high and low water.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Actually local.</strong> The tide at Dingle isn't the same as Fenit. We calculate exactly how long the tidal wave takes to reach your specific beach.</p>
+              <p><strong className="text-foreground font-normal">Makes sense on the ground.</strong> We convert the raw numbers into depths you'd actually see at the shoreline, not some abstract measurement.</p>
+              <p><strong className="text-foreground font-normal">Updates every hour.</strong> The chart refreshes regularly so you always know where you are between high and low water.</p>
+            </div>
           </motion.section>
 
           {/* Conditions */}
@@ -98,17 +86,11 @@ const HowItWorks = () => {
             <h2 className="text-base font-normal text-foreground">
               Weather for Your Exact Spot
             </h2>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Not a county average</strong> · Wind and temperature readings are pinned to your specific stretch of coast via Open-Meteo.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Wind you can understand</strong> · We show speeds in knots on the Beaufort scale—so "Force 4" actually means something if you're heading out on the water.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">How cold it really feels</strong> · The "feels like" temp factors in wind chill from the nearest Met Éireann station (Valentia, Roches Point, etc.).
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Not a county average.</strong> Wind and temperature readings are pinned to your specific stretch of coast via Open-Meteo.</p>
+              <p><strong className="text-foreground font-normal">Wind you can understand.</strong> We show speeds in knots on the Beaufort scale—so "Force 4" actually means something if you're heading out on the water.</p>
+              <p><strong className="text-foreground font-normal">How cold it really feels.</strong> The "feels like" temp factors in wind chill from the nearest Met Éireann station (Valentia, Roches Point, etc.).</p>
+            </div>
           </motion.section>
 
           {/* Pollen */}
@@ -121,14 +103,10 @@ const HowItWorks = () => {
             <h2 className="text-base font-normal text-foreground">
               Pollen Counts That Matter
             </h2>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">The main culprits</strong> · We track Grass and Birch pollen—the two that usually cause trouble for people on Irish coasts.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Plain English</strong> · Instead of throwing raw numbers at you, we translate them into simple warnings: Low, Moderate, High, or Very High.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">The main culprits.</strong> We track Grass and Birch pollen—the two that usually cause trouble for people on Irish coasts.</p>
+              <p><strong className="text-foreground font-normal">Plain English.</strong> Instead of throwing raw numbers at you, we translate them into simple warnings: Low, Moderate, High, or Very High.</p>
+            </div>
           </motion.section>
 
           {/* Lightning */}
@@ -144,17 +122,11 @@ const HowItWorks = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">
               When you've got the dog and kids on the beach, you need to know about storms before they arrive. Here's how we watch the sky for you:
             </p>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Live lightning sensors</strong> · We're connected to the Blitzortung network, tracking real strikes within 20km of where you are.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Storm radar</strong> · Our system watches heavy rain cells across a 100km area, figures out how fast they're moving, and tells you roughly when they might hit.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Checks every 30 seconds</strong> · Because storms don't wait, this is the fastest-updating part of the app.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3 mt-2">
+              <p><strong className="text-foreground font-normal">Live lightning sensors.</strong> We're connected to the Blitzortung network, tracking real strikes within 20km of where you are.</p>
+              <p><strong className="text-foreground font-normal">Storm radar.</strong> Our system watches heavy rain cells across a 100km area, figures out how fast they're moving, and tells you roughly when they might hit.</p>
+              <p><strong className="text-foreground font-normal">Checks every 30 seconds.</strong> Because storms don't wait, this is the fastest-updating part of the app.</p>
+            </div>
           </motion.section>
 
           {/* Warnings & Marine */}
@@ -167,14 +139,10 @@ const HowItWorks = () => {
             <h2 className="text-base font-normal text-foreground">
               Straight from Met Éireann
             </h2>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Only what matters to you</strong> · We pull the official warnings and filter them so you see alerts for your county—not a list of things happening 200km away.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Sea conditions too</strong> · Small craft warnings and offshore forecasts so you know what you're dealing with before you get in the water.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Only what matters to you.</strong> We pull the official warnings and filter them so you see alerts for your county—not a list of things happening 200km away.</p>
+              <p><strong className="text-foreground font-normal">Sea conditions too.</strong> Small craft warnings and offshore forecasts so you know what you're dealing with before you get in the water.</p>
+            </div>
           </motion.section>
 
           {/* Push Notifications */}
@@ -190,20 +158,12 @@ const HowItWorks = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">
               If you allow notifications, we'll give you a heads-up when conditions change. Four levels, from a gentle reminder to get-the-kids-inside-now:
             </p>
-            <ul className="text-sm text-muted-foreground leading-relaxed space-y-2 pl-1">
-              <li>
-                <strong className="text-foreground font-normal">Atmosphere Charging</strong> · The air's getting unstable. Just a quiet nudge to keep an eye on the horizon.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Storm Approaching</strong> · Heavy rain is heading your way with an estimated arrival time.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Lightning Warning</strong> · Actual strikes detected within 10km. Time to pack up the towels.
-              </li>
-              <li>
-                <strong className="text-foreground font-normal">Immediate Danger</strong> · Lightning within 5km. Get everyone to shelter now.
-              </li>
-            </ul>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3 mt-2">
+              <p><strong className="text-foreground font-normal">Atmosphere Charging.</strong> The air's getting unstable. Just a quiet nudge to keep an eye on the horizon.</p>
+              <p><strong className="text-foreground font-normal">Storm Approaching.</strong> Heavy rain is heading your way with an estimated arrival time.</p>
+              <p><strong className="text-foreground font-normal">Lightning Warning.</strong> Actual strikes detected within 10km. Time to pack up the towels.</p>
+              <p><strong className="text-foreground font-normal">Immediate Danger.</strong> Lightning within 5km. Get everyone to shelter now.</p>
+            </div>
           </motion.section>
         </div>
 
