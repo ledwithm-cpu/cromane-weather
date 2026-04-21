@@ -36,12 +36,17 @@ async function fetchPollen(lat: number, lon: number): Promise<PollenCurrent> {
 
 export function usePollen() {
   const { location } = useLocation();
+  const { isDebugMode } = useDebugMode();
+
   const query = useQuery({
-    queryKey: ['pollen', location.id],
-    queryFn: () => fetchPollen(location.lat, location.lon),
-    refetchInterval: 60 * 60 * 1000, // 1 hour
+    queryKey: ['pollen', location.id, isDebugMode ? 'debug' : 'live'],
+    queryFn: async () => {
+      if (isDebugMode) return DEBUG_POLLEN;
+      return fetchPollen(location.lat, location.lon);
+    },
+    refetchInterval: isDebugMode ? false : 60 * 60 * 1000, // 1 hour
     staleTime: 30 * 60 * 1000,
-    retry: 2,
+    retry: isDebugMode ? 0 : 2,
   });
 
   return {
