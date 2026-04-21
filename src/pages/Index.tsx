@@ -28,6 +28,7 @@ const Index = () => {
   const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
   const { data: lightning } = useLightning();
+  const { data: pollen, isLoading: pollenLoading } = usePollen();
   const refreshAll = useRefreshAll();
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const isToday = selectedDayIndex === 0;
@@ -39,7 +40,7 @@ const Index = () => {
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
-  const isLoading = windLoading || tidesLoading || warningsLoading;
+  const isLoading = windLoading || tidesLoading || warningsLoading || pollenLoading;
 
   // Group locations by county for the dropdown (static — computed once)
   const grouped = useMemo(
