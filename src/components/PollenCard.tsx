@@ -72,9 +72,6 @@ const PollenCard = ({ data }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Pollen Count
         </p>
-        <div
-          className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${grassStatus.dotClassName}`}
-        />
       </div>
 
       {/* Headline: Grass pollen — most common allergen in Ireland */}

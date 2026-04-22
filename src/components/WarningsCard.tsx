@@ -31,9 +31,6 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
             Met Éireann Warnings
           </p>
-          <div
-            className="w-2.5 h-2.5 rounded-full transition-all duration-500 bg-emerald-500"
-          />
         </div>
         <p className="text-sm text-muted-foreground">No active warnings for {location.county}</p>
       </motion.div>
@@ -51,24 +48,6 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Met Éireann Warnings
         </p>
-        <div
-          className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
-            warnings.some(w => w.level === 'red') ? 'bg-warning-red animate-pulse' :
-            warnings.some(w => w.level === 'orange') ? 'bg-warning-orange animate-pulse' :
-            warnings.some(w => w.level === 'yellow') ? 'bg-warning-yellow animate-pulse' :
-            thunderActive ? 'bg-warning-orange animate-pulse' :
-            'bg-emerald-500'
-          }`}
-          style={
-            warnings.some(w => w.level === 'red')
-              ? { boxShadow: '0 0 12px 5px hsla(0, 80%, 50%, 0.7)' }
-              : warnings.some(w => w.level === 'orange') || thunderActive
-              ? { boxShadow: '0 0 8px 3px hsla(25, 95%, 55%, 0.4)' }
-              : warnings.some(w => w.level === 'yellow')
-              ? { boxShadow: '0 0 8px 3px hsla(45, 95%, 55%, 0.3)' }
-              : undefined
-          }
-        />
       </div>
 
       {thunderActive && (
