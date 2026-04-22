@@ -80,7 +80,7 @@ describe('<Index /> dashboard', () => {
     expect(screen.getByText(mockLocation.name)).toBeInTheDocument();
     expect(screen.getByText('Tap the location name to change beach')).toBeInTheDocument();
     if (mockLocation.saunaName) {
-      expect(screen.getByText(mockLocation.saunaName)).toBeInTheDocument();
+      expect(screen.getByText(`Book ${mockLocation.saunaName}`)).toBeInTheDocument();
     }
   });
 
