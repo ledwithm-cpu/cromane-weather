@@ -21,6 +21,17 @@ function isRateLimited(ip: string): boolean {
 }
 
 const ERDDAP_BASE = 'https://erddap.marine.ie/erddap/tabledap';
+const TIDE_POINT_INTERVAL_MS = 30 * 60 * 1000;
+const TIME_FORMATTER = new Intl.DateTimeFormat('en-IE', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+  timeZone: 'Europe/Dublin',
+});
+const DATE_KEY_FORMATTER = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Dublin',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+});
 
 // Default to Fenit if station not specified
 const DEFAULT_STATION = 'Fenit';
@@ -107,6 +118,8 @@ serve(async (req) => {
 
 function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
+  const toChartDatumHeight = (heightODMalin: number, precision: number) =>
+    parseFloat((heightODMalin + chartDatumOffset).toFixed(precision));
 
   const hlRows = data.hl?.table?.rows ?? [];
   const events = hlRows.map((row: any[]) => {
@@ -114,7 +127,7 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     const localTime = new Date(stationTime.getTime() + offsetMs);
     const category = row[1];
     const heightODMalin = row[2] as number;
-    const heightLAT = parseFloat((heightODMalin + chartDatumOffset).toFixed(1));
+    const heightLAT = toChartDatumHeight(heightODMalin, 1);
 
     return {
       type: category === 'HIGH' ? 'high' : 'low',
@@ -129,53 +142,54 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     .slice(0, 4);
 
   const contRows = data.cont?.table?.rows ?? [];
-  const toChartDatumHeight = (heightODMalin: number, precision: number) =>
-    parseFloat((heightODMalin + chartDatumOffset).toFixed(precision));
+  const continuousPoints = [];
+  let currentHeight = 0;
+  let state: 'rising' | 'falling' = 'falling';
+  let closestHeightOD: number | null = null;
+  let closestDiff = Infinity;
+  let previousPastHeight: number | null = null;
+  let latestPastHeight: number | null = null;
+  let lastIncludedPointAt = -Infinity;
 
-  const continuousPoints = contRows.map((row: any[]) => {
-    const stationTime = new Date(row[0]);
-    const localTime = new Date(stationTime.getTime() + offsetMs);
-    return {
-      type: 'prediction',
-      time: formatTime(localTime),
-      height_m: toChartDatumHeight(row[1] as number, 2),
-      timestamp: localTime.toISOString(),
-    };
-  });
+  for (const row of contRows) {
+    const localMs = new Date(row[0]).getTime() + offsetMs;
+    const heightOD = row[1] as number;
+    const diff = Math.abs(localMs - nowMs);
+
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closestHeightOD = heightOD;
+    }
+
+    if (localMs <= nowMs) {
+      previousPastHeight = latestPastHeight;
+      latestPastHeight = heightOD;
+    }
+
+    if (localMs - lastIncludedPointAt >= TIDE_POINT_INTERVAL_MS) {
+      const localTime = new Date(localMs);
+      continuousPoints.push({
+        time: formatTime(localTime),
+        height_m: toChartDatumHeight(heightOD, 2),
+        timestamp: localTime.toISOString(),
+      });
+      lastIncludedPointAt = localMs;
+    }
+  }
+
+  if (closestHeightOD !== null) {
+    currentHeight = toChartDatumHeight(closestHeightOD, 1);
+  }
+
+  if (previousPastHeight !== null && latestPastHeight !== null) {
+    state = latestPastHeight >= previousPastHeight ? 'rising' : 'falling';
+  } else if (filtered.length > 0) {
+    state = filtered[0].type === 'high' ? 'rising' : 'falling';
+  }
 
   // Build 7-day forecast grouped by local (Europe/Dublin) date, including
-  // continuous prediction points so the client draws the real tide curve.
+  // sampled continuous prediction points so the client draws the real tide curve.
   const forecast = build7DayForecast(events, now, continuousPoints);
-
-  let currentHeight = 0;
-  if (contRows.length > 0) {
-    let closest = contRows[0];
-    let closestDiff = Infinity;
-    for (const row of contRows) {
-      const t = new Date(row[0]).getTime() + offsetMs;
-      const diff = Math.abs(t - nowMs);
-      if (diff < closestDiff) {
-        closestDiff = diff;
-        closest = row;
-      }
-    }
-    currentHeight = toChartDatumHeight(closest[1] as number, 1);
-  }
-
-  let state: 'rising' | 'falling' = 'falling';
-  if (contRows.length >= 2) {
-    const recent = contRows.filter((r: any[]) => {
-      const t = new Date(r[0]).getTime() + offsetMs;
-      return t <= nowMs;
-    });
-    if (recent.length >= 2) {
-      const last = recent[recent.length - 1][1] as number;
-      const prev = recent[recent.length - 2][1] as number;
-      state = last >= prev ? 'rising' : 'falling';
-    } else if (filtered.length > 0) {
-      state = filtered[0].type === 'high' ? 'rising' : 'falling';
-    }
-  }
 
   return { events: filtered, current_height_m: currentHeight, state, forecast };
 }
