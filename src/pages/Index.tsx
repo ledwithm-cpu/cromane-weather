@@ -117,9 +117,11 @@ const Index = () => {
               <button
                 type="button"
                 onClick={handleBookingClick}
-                className="text-sm text-primary font-medium mt-1.5 hover:text-primary/80 transition-colors"
+                className="group mt-1 inline-flex min-h-8 items-center px-2 text-sm font-medium text-primary/90 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Book {location.saunaName}
+                <span className="border-b border-primary/25 pb-0.5 transition-colors group-hover:border-primary/60">
+                  Book {location.saunaName}
+                </span>
               </button>
             )}
             {isLoading ? (
