@@ -196,10 +196,7 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
 
 function dublinDateKey(d: Date): string {
   // YYYY-MM-DD in Europe/Dublin
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Dublin',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(d);
+  const parts = DATE_KEY_FORMATTER.formatToParts(d);
   const y = parts.find(p => p.type === 'year')?.value;
   const m = parts.find(p => p.type === 'month')?.value;
   const day = parts.find(p => p.type === 'day')?.value;
@@ -224,12 +221,7 @@ function build7DayForecast(events: any[], now: Date, points: any[] = []) {
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString('en-IE', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Europe/Dublin',
-  });
+  return TIME_FORMATTER.format(date);
 }
 
 function generateFallbackTides(now: Date) {
