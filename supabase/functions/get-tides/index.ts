@@ -129,13 +129,16 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
     .slice(0, 4);
 
   const contRows = data.cont?.table?.rows ?? [];
+  const toChartDatumHeight = (heightODMalin: number, precision: number) =>
+    parseFloat((heightODMalin + chartDatumOffset).toFixed(precision));
+
   const continuousPoints = contRows.map((row: any[]) => {
     const stationTime = new Date(row[0]);
     const localTime = new Date(stationTime.getTime() + offsetMs);
     return {
       type: 'prediction',
       time: formatTime(localTime),
-      height_m: parseFloat((row[1] as number).toFixed(2)),
+      height_m: toChartDatumHeight(row[1] as number, 2),
       timestamp: localTime.toISOString(),
     };
   });
@@ -156,7 +159,7 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
         closest = row;
       }
     }
-    currentHeight = parseFloat((closest[1] as number).toFixed(1));
+    currentHeight = toChartDatumHeight(closest[1] as number, 1);
   }
 
   let state: 'rising' | 'falling' = 'falling';
