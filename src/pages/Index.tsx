@@ -8,11 +8,9 @@ import MarineCard from '@/components/MarineCard';
 import ForecastSwiper from '@/components/ForecastSwiper';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
-import PollenCard from '@/components/PollenCard';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
-import { usePollen } from '@/hooks/use-pollen';
 import { useLocation } from '@/hooks/use-location';
 import { LOCATIONS } from '@/lib/locations';
 import {
@@ -39,7 +37,6 @@ const Index = () => {
   const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
   const { data: lightning } = useLightning();
-  const { data: pollen, isLoading: pollenLoading } = usePollen();
   const refreshAll = useRefreshAll();
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const isToday = selectedDayIndex === 0;
@@ -51,7 +48,7 @@ const Index = () => {
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
-  const isLoading = windLoading || tidesLoading || warningsLoading || pollenLoading;
+  const isLoading = windLoading || tidesLoading || warningsLoading;
 
   // Group locations by county for the dropdown (static — computed once)
   const grouped = useMemo(
@@ -127,7 +124,6 @@ const Index = () => {
             )}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             {isToday && <MarineCard marine={marine} />}
-            {isToday && pollen && <PollenCard data={pollen} />}
           </div>
 
           {/* Footer */}
