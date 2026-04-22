@@ -159,18 +159,12 @@ const WeatherDayCard = ({
         </div>
       </div>
 
-      {(day.sunrise || day.sunset) && (
-        <div className="flex items-center justify-around pt-1 text-[11px] text-muted-foreground">
-          {day.sunrise && <span>☀ {day.sunrise}</span>}
-          {day.sunset && <span>☽ {day.sunset}</span>}
-        </div>
-      )}
     </div>
   );
 };
 
 const TideDayCard = ({
-  day, currentHeight, currentState, isToday, globalMinH, globalMaxH,
+  day, currentHeight, currentState, isToday, globalMinH, globalMaxH, sunrise, sunset,
 }: {
   day: TideForecastDay | null;
   currentHeight: number;
@@ -178,6 +172,8 @@ const TideDayCard = ({
   isToday: boolean;
   globalMinH: number;
   globalMaxH: number;
+  sunrise?: string;
+  sunset?: string;
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
@@ -405,6 +401,13 @@ const TideDayCard = ({
         </div>
       )}
 
+      {(sunrise || sunset) && (
+        <div className="flex items-center justify-center gap-8 pt-1 text-[11px] text-muted-foreground">
+          {sunrise && <span>☀ {sunrise}</span>}
+          {sunset && <span>☽ {sunset}</span>}
+        </div>
+      )}
+
       {location.saunaUrl && (
         <div className="pt-0.5">
           <button
@@ -566,7 +569,10 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       {/* Tide carousel */}
       <div className="overflow-hidden" ref={tideRef}>
         <div className="flex">
-          {days.map((d) => (
+          {days.map((d) => {
+            const weatherDay = weatherByDate.get(d.key) ?? null;
+
+            return (
             <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
               <TideDayCard
                 day={tideByDate.get(d.key) ?? null}
@@ -575,9 +581,12 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 isToday={d.key === todayKey}
                 globalMinH={globalMinH}
                 globalMaxH={globalMaxH}
+                sunrise={weatherDay?.sunrise}
+                sunset={weatherDay?.sunset}
               />
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
