@@ -402,9 +402,19 @@ const TideDayCard = ({
       )}
 
       {(sunrise || sunset) && (
-        <div className="flex items-center justify-center gap-8 pt-1 text-[11px] text-muted-foreground">
-          {sunrise && <span>☀ {sunrise}</span>}
-          {sunset && <span>☽ {sunset}</span>}
+        <div className="flex items-center justify-center gap-7 pt-2 text-[11px] font-medium tracking-[0.08em] text-foreground/75">
+          {sunrise && (
+            <span className="inline-flex items-center gap-1.5 tabular-nums">
+              <span className="text-muted-foreground/70" aria-hidden>☀</span>
+              {sunrise}
+            </span>
+          )}
+          {sunset && (
+            <span className="inline-flex items-center gap-1.5 tabular-nums">
+              <span className="text-muted-foreground/70" aria-hidden>☽</span>
+              {sunset}
+            </span>
+          )}
         </div>
       )}
 
