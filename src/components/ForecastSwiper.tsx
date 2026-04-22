@@ -569,7 +569,10 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       {/* Tide carousel */}
       <div className="overflow-hidden" ref={tideRef}>
         <div className="flex">
-          {days.map((d) => (
+          {days.map((d) => {
+            const weatherDay = weatherByDate.get(d.key) ?? null;
+
+            return (
             <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
               <TideDayCard
                 day={tideByDate.get(d.key) ?? null}
@@ -578,9 +581,12 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 isToday={d.key === todayKey}
                 globalMinH={globalMinH}
                 globalMaxH={globalMaxH}
+                sunrise={weatherDay?.sunrise}
+                sunset={weatherDay?.sunset}
               />
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
