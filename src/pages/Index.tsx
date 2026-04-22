@@ -107,8 +107,8 @@ const Index = () => {
             {location.saunaName && (
               <p className="text-sm text-primary font-medium mt-0.5">{location.saunaName}</p>
             )}
-            <p className="text-xs text-muted-foreground/50 tracking-[0.12em] uppercase mt-1.5">
-              {location.subtitle}
+            <p className="text-[11px] text-muted-foreground/50 tracking-[0.08em] mt-1.5">
+              Tap the location name to change beach
             </p>
             {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
