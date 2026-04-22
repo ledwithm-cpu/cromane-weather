@@ -111,7 +111,7 @@ const Index = () => {
             </Select>
 
             <p className="text-[11px] text-muted-foreground/50 tracking-[0.08em] mt-1.5">
-              Tap the location name to change beach
+              Tap the location to change sauna
             </p>
             {location.saunaName && location.saunaUrl && (
               <button
