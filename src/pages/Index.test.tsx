@@ -104,9 +104,9 @@ describe('<Index /> dashboard', () => {
     expect(screen.getByText('Met Éireann Warnings')).toBeInTheDocument();
     expect(screen.getByText(mockWarningsResponse[0].headline)).toBeInTheDocument();
 
-    // ForecastSwiper / Marine / Pollen stubs all mounted
+    // ForecastSwiper / Marine stubs mounted; pollen is currently hidden
     expect(screen.getByTestId('forecast-swiper')).toBeInTheDocument();
     expect(screen.getByTestId('marine-card')).toBeInTheDocument();
-    expect(screen.getByTestId('pollen-card')).toBeInTheDocument();
+    expect(screen.queryByTestId('pollen-card')).not.toBeInTheDocument();
   });
 });
