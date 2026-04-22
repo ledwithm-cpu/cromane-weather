@@ -25,9 +25,9 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass-card rounded-lg p-6"
+        className="glass-card rounded-lg p-6 text-center"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
             Met Éireann Warnings
           </p>
@@ -42,9 +42,9 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="glass-card rounded-lg p-6 space-y-4"
+      className="glass-card rounded-lg p-6 space-y-4 text-center"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Met Éireann Warnings
         </p>
@@ -52,7 +52,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
 
       {thunderActive && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <CloudLightning size={14} className="text-accent" />
             <span className="text-sm font-normal text-foreground">Thunderstorm Activity Detected</span>
           </div>
@@ -64,7 +64,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
 
       {warnings.map((w, i) => (
         <div key={i} className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Badge className={`${levelColor[w.level]} border-0 text-xs uppercase font-medium`}>
               {w.elevated ? '⚡ ' : ''}{w.level}
             </Badge>
