@@ -159,18 +159,12 @@ const WeatherDayCard = ({
         </div>
       </div>
 
-      {(day.sunrise || day.sunset) && (
-        <div className="flex items-center justify-around pt-1 text-[11px] text-muted-foreground">
-          {day.sunrise && <span>☀ {day.sunrise}</span>}
-          {day.sunset && <span>☽ {day.sunset}</span>}
-        </div>
-      )}
     </div>
   );
 };
 
 const TideDayCard = ({
-  day, currentHeight, currentState, isToday, globalMinH, globalMaxH,
+  day, currentHeight, currentState, isToday, globalMinH, globalMaxH, sunrise, sunset,
 }: {
   day: TideForecastDay | null;
   currentHeight: number;
@@ -178,6 +172,8 @@ const TideDayCard = ({
   isToday: boolean;
   globalMinH: number;
   globalMaxH: number;
+  sunrise?: string;
+  sunset?: string;
 }) => {
   const { location } = useLocation();
   const events = day?.events ?? [];
@@ -402,6 +398,13 @@ const TideDayCard = ({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {(sunrise || sunset) && (
+        <div className="flex items-center justify-center gap-8 pt-1 text-[11px] text-muted-foreground">
+          {sunrise && <span>☀ {sunrise}</span>}
+          {sunset && <span>☽ {sunset}</span>}
         </div>
       )}
 
