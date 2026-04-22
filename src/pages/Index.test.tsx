@@ -8,7 +8,6 @@ import {
   mockTidesResponse,
   mockWarningsResponse,
   mockMarineResponse,
-  mockLightningWithStrikes,
   mockPollenLow,
 } from '@/tests/setup/mockData';
 
@@ -53,14 +52,6 @@ vi.mock('@/components/MarineCard', () => ({
 vi.mock('@/components/PollenCard', () => ({
   default: () => <div data-testid="pollen-card" />,
 }));
-// Stub LightningCard with a sentinel so we can assert it rendered without
-// dealing with its internal timers / vibration / motion logic.
-vi.mock('@/components/LightningCard', () => ({
-  default: ({ data }: { data: { alert_level: number } }) => (
-    <div data-testid="lightning-card">level:{data.alert_level}</div>
-  ),
-}));
-
 // Now import the page under test
 import Index from './Index';
 
@@ -79,7 +70,7 @@ beforeEach(() => {
     data: { warnings: mockWarningsResponse, marine: mockMarineResponse },
     isLoading: false,
   });
-  useLightningMock.mockReturnValue({ data: mockLightningWithStrikes });
+  useLightningMock.mockReturnValue({ data: { alert_level: 0, nowcast: { nowcast_level: 0 } } });
   usePollenMock.mockReturnValue({ data: mockPollenLow, isLoading: false });
 });
 
@@ -104,13 +95,10 @@ describe('<Index /> dashboard', () => {
     expect(screen.queryByText(/Fetching live data/i)).not.toBeInTheDocument();
   });
 
-  it('renders the LightningCard and WarningsCard when data is present', () => {
+  it('renders warnings and hides the lightning card when data is present', () => {
     renderPage();
 
-    // LightningCard stub
-    const lightning = screen.getByTestId('lightning-card');
-    expect(lightning).toBeInTheDocument();
-    expect(lightning.textContent).toBe(`level:${mockLightningWithStrikes.alert_level}`);
+    expect(screen.queryByTestId('lightning-card')).not.toBeInTheDocument();
 
     // WarningsCard renders inline (not stubbed) so we assert on its visible content
     expect(screen.getByText('Met Éireann Warnings')).toBeInTheDocument();
