@@ -6,6 +6,8 @@ interface Props {
 }
 
 const MarineCard = ({ marine }: Props) => {
+  const isEmptyState = marine.type.toLowerCase() === 'no warnings';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +25,9 @@ const MarineCard = ({ marine }: Props) => {
         <span className="text-sm font-normal text-foreground">{marine.type}</span>
       </div>
 
-      <p className="text-xs text-muted-foreground leading-relaxed">{marine.description}</p>
+      {!isEmptyState && (
+        <p className="text-xs text-muted-foreground leading-relaxed">{marine.description}</p>
+      )}
 
     </motion.div>
   );
