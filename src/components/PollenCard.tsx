@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { Flower2 } from 'lucide-react';
 import type { PollenCurrent } from '@/hooks/use-pollen';
 
 interface Props {
@@ -67,27 +66,24 @@ const PollenCard = ({ data }: Props) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.45 }}
-      className="glass-card rounded-lg p-6 space-y-4"
+      className="glass-card rounded-lg p-6 space-y-4 min-h-[168px]"
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Flower2 className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.75} />
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-            Pollen Count
-          </p>
-        </div>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+          Pollen Count
+        </p>
         <div
-          className={`w-2 h-2 rounded-full transition-all duration-500 ${grassStatus.dotClassName}`}
+          className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${grassStatus.dotClassName}`}
         />
       </div>
 
       {/* Headline: Grass pollen — most common allergen in Ireland */}
-      <div className="space-y-1">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+      <div className="space-y-2">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground/70 font-medium">
           Grass Pollen
         </p>
         <div className="flex items-baseline gap-3">
-          <span className="text-4xl font-light tracking-tight text-foreground">
+          <span className="text-5xl font-light tabular-nums text-foreground">
             {formatValue(grass)}
           </span>
           <span className={`text-sm font-medium ${grassStatus.className}`}>
@@ -100,7 +96,7 @@ const PollenCard = ({ data }: Props) => {
       </div>
 
       {/* Secondary: birch + alder */}
-      <div className="grid grid-cols-2 gap-3 pt-1">
+      <div className="grid grid-cols-2 gap-3 pt-1 text-sm text-muted-foreground">
         <div className="space-y-0.5">
           <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70">
             Birch
