@@ -33,6 +33,12 @@ const Index = () => {
     navigate(`/${id}`);
   };
 
+  const handleBookingClick = () => {
+    if (location.saunaUrl) {
+      window.open(location.saunaUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const { data: wind, isLoading: windLoading } = useWeather();
   const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading } = useWarnings();
@@ -104,12 +110,18 @@ const Index = () => {
               </SelectContent>
             </Select>
 
-            {location.saunaName && (
-              <p className="text-sm text-primary font-medium mt-0.5">{location.saunaName}</p>
-            )}
             <p className="text-[11px] text-muted-foreground/50 tracking-[0.08em] mt-1.5">
               Tap the location name to change beach
             </p>
+            {location.saunaName && location.saunaUrl && (
+              <button
+                type="button"
+                onClick={handleBookingClick}
+                className="text-sm text-primary font-medium mt-1.5 hover:text-primary/80 transition-colors"
+              >
+                Book {location.saunaName}
+              </button>
+            )}
             {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
                 Fetching live data…
