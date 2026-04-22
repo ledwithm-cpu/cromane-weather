@@ -17,11 +17,6 @@ const MarineCard = ({ marine }: Props) => {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Marine Warnings · {marine.area}
         </p>
-        <div
-          className={`w-2 h-2 rounded-full transition-all duration-500 ${
-            marine.active ? 'bg-warning-orange' : 'bg-emerald-500/70'
-          }`}
-        />
       </div>
 
       <div className="flex items-center gap-2">
