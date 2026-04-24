@@ -30,6 +30,8 @@ const App = () => {
   const locationState = useLocationState();
 
   useEffect(() => {
+    let unsubscribeForeground: (() => void) | undefined;
+
     registerForPushNotifications().then(token => {
       if (token) {
         console.log('Push notifications enabled');
@@ -38,7 +40,13 @@ const App = () => {
 
     onForegroundMessage(({ title, body }) => {
       toast(title, { description: body, duration: 8000 });
+    }).then(unsubscribe => {
+      unsubscribeForeground = unsubscribe;
     });
+
+    return () => {
+      unsubscribeForeground?.();
+    };
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 import { supabase } from '@/integrations/supabase/client';
 
 const firebaseConfig = {
@@ -16,10 +16,15 @@ const app = initializeApp(firebaseConfig);
 
 let messagingInstance: ReturnType<typeof getMessaging> | null = null;
 
-function getMessagingInstance() {
+async function getMessagingInstance() {
+  if (!(await isSupported())) {
+    return null;
+  }
+
   if (!messagingInstance) {
     messagingInstance = getMessaging(app);
   }
+
   return messagingInstance;
 }
 
@@ -44,7 +49,11 @@ export async function registerForPushNotifications(): Promise<string | null> {
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     console.log('Service worker registered:', registration.scope);
 
-    const messaging = getMessagingInstance();
+    const messaging = await getMessagingInstance();
+    if (!messaging) {
+      console.log('Push notifications not supported in this browser');
+      return null;
+    }
     
     // Get FCM token — you may need to add a VAPID key here
     // For now, try without (works for some Firebase projects)
@@ -81,10 +90,14 @@ export async function registerForPushNotifications(): Promise<string | null> {
 /**
  * Listen for foreground messages and show a toast/notification.
  */
-export function onForegroundMessage(callback: (payload: { title: string; body: string }) => void) {
+export async function onForegroundMessage(callback: (payload: { title: string; body: string }) => void) {
   try {
-    const messaging = getMessagingInstance();
-    onMessage(messaging, (payload) => {
+    const messaging = await getMessagingInstance();
+    if (!messaging) {
+      return undefined;
+    }
+
+    return onMessage(messaging, (payload) => {
       console.log('Foreground message:', payload);
       callback({
         title: payload.notification?.title || '⚡ Irish Saunas',
@@ -93,5 +106,6 @@ export function onForegroundMessage(callback: (payload: { title: string; body: s
     });
   } catch (e) {
     console.error('Foreground message listener error:', e);
+    return undefined;
   }
 }

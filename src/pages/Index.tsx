@@ -6,6 +6,7 @@ import AppFooter from '@/components/AppFooter';
 import WarningsCard from '@/components/WarningsCard';
 import MarineCard from '@/components/MarineCard';
 import ForecastSwiper from '@/components/ForecastSwiper';
+import LightningCard from '@/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
@@ -136,6 +137,7 @@ const Index = () => {
             {wind && tides && (
               <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
             )}
+            {isToday && lightning && <LightningCard data={lightning} />}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             {isToday && <MarineCard marine={marine} />}
           </div>
