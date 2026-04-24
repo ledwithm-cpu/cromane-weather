@@ -40,6 +40,9 @@ vi.mock('@/hooks/use-location', () => ({
 vi.mock('@/components/ForecastSwiper', () => ({
   default: () => <div data-testid="forecast-swiper" />,
 }));
+vi.mock('@/components/LightningCard', () => ({
+  default: () => <div data-testid="lightning-card" />,
+}));
 vi.mock('@/components/PullToRefresh', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -95,10 +98,10 @@ describe('<Index /> dashboard', () => {
     expect(screen.queryByText(/Fetching live data/i)).not.toBeInTheDocument();
   });
 
-  it('renders warnings and hides the lightning card when data is present', () => {
+  it('renders warnings and the lightning card when data is present', () => {
     renderPage();
 
-    expect(screen.queryByTestId('lightning-card')).not.toBeInTheDocument();
+    expect(screen.getByTestId('lightning-card')).toBeInTheDocument();
 
     // WarningsCard renders inline (not stubbed) so we assert on its visible content
     expect(screen.getByText('Met Éireann Warnings')).toBeInTheDocument();
