@@ -118,8 +118,13 @@ serve(async (req) => {
 
 function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
+  // HighLow dataset reports Water_Level_ODMalin (relative to OD Malin) → add offset to get LAT.
   const toChartDatumHeight = (heightODMalin: number, precision: number) =>
     parseFloat((heightODMalin + chartDatumOffset).toFixed(precision));
+  // Continuous imiTidePrediction dataset reports Water_Level which is ALREADY on local LAT
+  // (sea surface height above local Lowest Astronomical Tide). Do NOT add the offset again.
+  const roundLAT = (heightLAT: number, precision: number) =>
+    parseFloat(heightLAT.toFixed(precision));
 
   const hlRows = data.hl?.table?.rows ?? [];
   const events = hlRows.map((row: any[]) => {
