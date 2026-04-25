@@ -116,7 +116,7 @@ serve(async (req) => {
   }
 });
 
-function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
+export function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
   // HighLow dataset reports Water_Level_ODMalin (relative to OD Malin) → add offset to get LAT.
   const toChartDatumHeight = (heightODMalin: number, precision: number) =>
