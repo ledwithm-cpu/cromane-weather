@@ -118,8 +118,13 @@ serve(async (req) => {
 
 function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
+  // HighLow dataset reports Water_Level_ODMalin (relative to OD Malin) → add offset to get LAT.
   const toChartDatumHeight = (heightODMalin: number, precision: number) =>
     parseFloat((heightODMalin + chartDatumOffset).toFixed(precision));
+  // Continuous imiTidePrediction dataset reports Water_Level which is ALREADY on local LAT
+  // (sea surface height above local Lowest Astronomical Tide). Do NOT add the offset again.
+  const roundLAT = (heightLAT: number, precision: number) =>
+    parseFloat(heightLAT.toFixed(precision));
 
   const hlRows = data.hl?.table?.rows ?? [];
   const events = hlRows.map((row: any[]) => {
@@ -145,7 +150,7 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
   const continuousPoints = [];
   let currentHeight = 0;
   let state: 'rising' | 'falling' = 'falling';
-  let closestHeightOD: number | null = null;
+  let closestHeightLAT: number | null = null;
   let closestDiff = Infinity;
   let previousPastHeight: number | null = null;
   let latestPastHeight: number | null = null;
@@ -153,32 +158,32 @@ function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number
 
   for (const row of contRows) {
     const localMs = new Date(row[0]).getTime() + offsetMs;
-    const heightOD = row[1] as number;
+    const heightLAT = row[1] as number; // Water_Level is already on local LAT (Chart Datum)
     const diff = Math.abs(localMs - nowMs);
 
     if (diff < closestDiff) {
       closestDiff = diff;
-      closestHeightOD = heightOD;
+      closestHeightLAT = heightLAT;
     }
 
     if (localMs <= nowMs) {
       previousPastHeight = latestPastHeight;
-      latestPastHeight = heightOD;
+      latestPastHeight = heightLAT;
     }
 
     if (localMs - lastIncludedPointAt >= TIDE_POINT_INTERVAL_MS) {
       const localTime = new Date(localMs);
       continuousPoints.push({
         time: formatTime(localTime),
-        height_m: toChartDatumHeight(heightOD, 2),
+        height_m: roundLAT(heightLAT, 2),
         timestamp: localTime.toISOString(),
       });
       lastIncludedPointAt = localMs;
     }
   }
 
-  if (closestHeightOD !== null) {
-    currentHeight = toChartDatumHeight(closestHeightOD, 1);
+  if (closestHeightLAT !== null) {
+    currentHeight = roundLAT(closestHeightLAT, 1);
   }
 
   if (previousPastHeight !== null && latestPastHeight !== null) {
