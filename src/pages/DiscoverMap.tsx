@@ -1,12 +1,14 @@
 import { useState, useCallback, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { LOCATIONS, Location } from '@/lib/locations';
 import MapLocationDrawer from '@/components/MapLocationDrawer';
+import MapActionSheet from '@/components/MapActionSheet';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useIsMobile } from '@/hooks/use-mobile';
 import 'leaflet/dist/leaflet.css';
 
 // Fix default marker icon issue with bundlers
@@ -30,7 +32,6 @@ const createSaunaIcon = (hasSauna: boolean) =>
   });
 
 const saunaIcon = createSaunaIcon(true);
-const noSaunaIcon = createSaunaIcon(false);
 
 // Center of Ireland
 const IRELAND_CENTER: [number, number] = [53.5, -8.0];
@@ -47,17 +48,34 @@ function FlyToLocation({ location, resetToOverview }: { location: Location | nul
 }
 
 const DiscoverMap = () => {
+  const isMobile = useIsMobile();
+  // Mobile: tap dot → preview (name popup); tap preview → action sheet
+  const [preview, setPreview] = useState<Location | null>(null);
+  const [sheetLocation, setSheetLocation] = useState<Location | null>(null);
+  // Desktop: keep existing drawer behavior
   const [selected, setSelected] = useState<Location | null>(null);
   const [hasClosedDrawer, setHasClosedDrawer] = useState(false);
 
-  const handleMarkerClick = useCallback((loc: Location) => {
-    setSelected(loc);
-    setHasClosedDrawer(false);
-  }, []);
+  const handleMarkerClick = useCallback(
+    (loc: Location) => {
+      if (isMobile) {
+        setPreview(loc);
+      } else {
+        setSelected(loc);
+        setHasClosedDrawer(false);
+      }
+    },
+    [isMobile]
+  );
 
-  const handleClose = useCallback(() => {
+  const handleCloseDrawer = useCallback(() => {
     setSelected(null);
     setHasClosedDrawer(true);
+  }, []);
+
+  const handleOpenSheet = useCallback((loc: Location) => {
+    setSheetLocation(loc);
+    setPreview(null);
   }, []);
 
   const saunaLocations = useMemo(() => LOCATIONS.filter((loc) => loc.saunaUrl), []);
@@ -72,9 +90,26 @@ const DiscoverMap = () => {
           eventHandlers={{
             click: () => handleMarkerClick(loc),
           }}
-        />
+        >
+          {isMobile && (
+            <Popup
+              closeButton={false}
+              autoPan={true}
+              offset={[0, -8]}
+              className="sauna-name-popup"
+            >
+              <button
+                onClick={() => handleOpenSheet(loc)}
+                className="block px-1 py-0.5 text-sm font-medium text-foreground active:opacity-70 transition-opacity"
+              >
+                {loc.saunaName ?? loc.name}
+                <span className="ml-1.5 text-primary">→</span>
+              </button>
+            </Popup>
+          )}
+        </Marker>
       )),
-    [saunaLocations, handleMarkerClick]
+    [saunaLocations, handleMarkerClick, handleOpenSheet, isMobile]
   );
 
   return (
@@ -126,10 +161,17 @@ const DiscoverMap = () => {
         </p>
       </div>
 
-      {/* Location drawer */}
+      {/* Desktop drawer */}
       <AnimatePresence>
-        {selected && (
-          <MapLocationDrawer location={selected} onClose={handleClose} />
+        {selected && !isMobile && (
+          <MapLocationDrawer location={selected} onClose={handleCloseDrawer} />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile action sheet */}
+      <AnimatePresence>
+        {sheetLocation && (
+          <MapActionSheet location={sheetLocation} onClose={() => setSheetLocation(null)} />
         )}
       </AnimatePresence>
     </div>
