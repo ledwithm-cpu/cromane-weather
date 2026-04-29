@@ -601,8 +601,41 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
           </div>
         </div>
 
-        {/* Hairline divider */}
-        <div className="mx-5 h-px bg-border/60" aria-hidden />
+        {/* Hairline divider with subtle Weather ↔ Tides swipe indicator */}
+        <div className="relative mx-5 h-px bg-border/60" aria-hidden>
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="flex items-center gap-1.5 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/80 font-medium shadow-sm">
+              <motion.span
+                animate={{
+                  opacity: swipeDir === -1 ? 1 : 0.55,
+                  color: swipeDir === -1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                Weather
+              </motion.span>
+              <motion.span
+                className="text-foreground/50"
+                animate={{
+                  x: swipeDir === 1 ? 1.5 : swipeDir === -1 ? -1.5 : 0,
+                  opacity: swipeDir === 0 ? 0.5 : 0.9,
+                }}
+                transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+              >
+                ↔
+              </motion.span>
+              <motion.span
+                animate={{
+                  opacity: swipeDir === 1 ? 1 : 0.55,
+                  color: swipeDir === 1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                Tides
+              </motion.span>
+            </div>
+          </div>
+        </div>
 
         {/* Tide carousel */}
         <div className="overflow-hidden" ref={tideRef}>
