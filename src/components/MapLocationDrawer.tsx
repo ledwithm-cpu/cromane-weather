@@ -110,7 +110,19 @@ function MiniTideTimeline({ tides, currentHeight }: { tides: TideEvent[]; curren
   );
 }
 
-const MapLocationDrawer = ({ location, onClose }: Props) => {
+const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
+  const { has: isInBucket, add: addBucket, remove: removeBucket } = useBucketList();
+  const saved = isInBucket(location.id);
+
+  const handleBucketToggle = () => {
+    if (saved) {
+      removeBucket(location.id);
+    } else {
+      addBucket(location.id);
+      onAddToBucketList?.();
+    }
+  };
+
   const isMobile = useIsMobile();
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
   const [tideData, setTideData] = useState<TideData | null>(null);
