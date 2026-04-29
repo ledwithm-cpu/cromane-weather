@@ -150,15 +150,6 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
   return (
     <>
-      {!isMobile && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 z-[1001] bg-background/20 backdrop-blur-[2px]"
-        />
-      )}
 
       <motion.div
         {...panelVariants}
