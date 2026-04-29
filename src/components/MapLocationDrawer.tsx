@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Location } from '@/lib/locations';
+import { openExternal } from '@/lib/open-external';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -273,7 +274,7 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
           {/* Sauna Info */}
           {location.saunaUrl && (
             <button
-              onClick={() => window.open(location.saunaUrl, '_blank', 'noopener,noreferrer')}
+              onClick={() => openExternal(location.saunaUrl!)}
               className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 p-5 group active:scale-[0.98] transition-all text-left"
             >
               <div>
@@ -285,7 +286,7 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
           {/* Directions */}
           <button
-            onClick={() => window.open(directionsUrl, '_blank', 'noopener,noreferrer')}
+            onClick={() => openExternal(directionsUrl)}
             className="flex items-center justify-center gap-2 w-full rounded-2xl bg-foreground text-background py-3.5 text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
           >
             <Navigation className="w-4 h-4" />
