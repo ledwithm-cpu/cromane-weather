@@ -30,7 +30,7 @@ const BucketListPanel = ({ open, onClose }: Props) => {
         county: loc.county,
       };
     })
-    .filter((r): r is RowData => r !== null);
+    .filter((r) => r !== null) as RowData[];
 
   const handleReorder = (next: RowData[]) => {
     reorder(
