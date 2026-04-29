@@ -192,13 +192,13 @@ const DiscoverMap = () => {
       <MapContainer
         center={IRELAND_CENTER}
         zoom={IRELAND_ZOOM}
-        className="h-full w-full z-0"
+        className="h-full w-full z-0 sage-map"
         zoomControl={false}
         attributionControl={false}
-        style={{ background: 'hsl(210, 30%, 96%)' }}
+        style={{ background: 'hsl(85, 16%, 88%)' }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
         />
         {markers}
