@@ -7,56 +7,57 @@
 @layer base {
   :root {
     /* Calm coastal — soft fog, pale sand, quiet sea */
-    --background: 200 15% 93%;
-    --foreground: 210 15% 20%;
+    /* Calm coastal sage — soft moss, pale linen, quiet meadow */
+    --background: 80 12% 92%;
+    --foreground: 100 12% 18%;
 
-    --card: 200 18% 95%;
-    --card-foreground: 210 15% 20%;
+    --card: 85 14% 94%;
+    --card-foreground: 100 12% 18%;
 
-    --popover: 200 25% 98%;
-    --popover-foreground: 210 15% 20%;
+    --popover: 85 18% 97%;
+    --popover-foreground: 100 12% 18%;
 
-    --primary: 200 35% 50%;
-    --primary-foreground: 200 30% 98%;
+    --primary: 110 20% 45%;
+    --primary-foreground: 90 25% 97%;
 
-    --secondary: 200 12% 92%;
-    --secondary-foreground: 210 12% 30%;
+    --secondary: 85 10% 90%;
+    --secondary-foreground: 100 10% 28%;
 
-    --muted: 200 10% 93%;
-    --muted-foreground: 200 8% 50%;
+    --muted: 85 8% 91%;
+    --muted-foreground: 95 6% 45%;
 
-    --accent: 32 40% 60%;
-    --accent-foreground: 32 50% 15%;
+    --accent: 95 25% 55%;
+    --accent-foreground: 95 35% 14%;
 
     --destructive: 0 55% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 15% 90%;
-    --input: 200 15% 90%;
-    --ring: 200 35% 50%;
+    --border: 85 12% 87%;
+    --input: 85 12% 87%;
+    --ring: 110 20% 45%;
 
     --radius: 1rem;
 
-    /* Coastal glass tokens */
-    --glass-bg: 200 25% 98% / 0.55;
-    --glass-border: 200 20% 88% / 0.35;
+    /* Sage glass tokens */
+    --glass-bg: 85 18% 97% / 0.55;
+    --glass-border: 90 15% 85% / 0.35;
     --glass-blur: 20px;
 
     --warning-yellow: 48 80% 53%;
     --warning-orange: 25 80% 55%;
     --warning-red: 0 65% 50%;
 
-    --marine-teal: 185 35% 45%;
-    --tide-blue: 200 40% 55%;
+    --marine-teal: 165 25% 42%;
+    --tide-blue: 110 22% 50%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 210 10% 30%;
-    --sidebar-primary: 200 35% 50%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 200 8% 95%;
-    --sidebar-accent-foreground: 210 10% 15%;
-    --sidebar-border: 200 12% 91%;
-    --sidebar-ring: 200 35% 55%;
+    --sidebar-background: 85 14% 97%;
+    --sidebar-foreground: 100 10% 28%;
+    --sidebar-primary: 110 20% 45%;
+    --sidebar-primary-foreground: 90 25% 97%;
+    --sidebar-accent: 85 10% 93%;
+    --sidebar-accent-foreground: 100 12% 15%;
+    --sidebar-border: 85 12% 88%;
+    --sidebar-ring: 110 22% 50%;
   }
 
   .dark {
