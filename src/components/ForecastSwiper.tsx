@@ -101,7 +101,7 @@ const WeatherDayCard = ({
   const dirRotation = (day.wind_direction_degrees + 180) % 360;
 
   return (
-    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
+    <div className="px-5 py-4 space-y-2.5">
       <div className="relative flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Weather
@@ -268,7 +268,7 @@ const TideDayCard = ({
   })();
 
   return (
-    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
+    <div className="px-5 py-4 space-y-2.5">
       <div className="flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
@@ -561,42 +561,47 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
 
       </div>
 
-      {/* Weather carousel */}
-      <div className="overflow-hidden" ref={weatherRef}>
-        <div className="flex">
-          {days.map((d, i) => (
-            <div key={`w-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
-              <WeatherDayCard
-                day={weatherByDate.get(d.key) ?? null}
-                fallbackWind={wind}
-                isToday={d.key === todayKey}
-              />
-            </div>
-          ))}
+      {/* Stitched weather + tide card — single glass surface, hairline divider between */}
+      <div className="glass-card rounded-lg overflow-hidden">
+        {/* Weather carousel */}
+        <div className="overflow-hidden" ref={weatherRef}>
+          <div className="flex">
+            {days.map((d) => (
+              <div key={`w-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
+                <WeatherDayCard
+                  day={weatherByDate.get(d.key) ?? null}
+                  fallbackWind={wind}
+                  isToday={d.key === todayKey}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Tide carousel */}
-      <div className="overflow-hidden" ref={tideRef}>
-        <div className="flex">
-          {days.map((d) => {
-            const weatherDay = weatherByDate.get(d.key) ?? null;
+        {/* Hairline divider */}
+        <div className="mx-5 h-px bg-border/60" aria-hidden />
 
-            return (
-            <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
-              <TideDayCard
-                day={tideByDate.get(d.key) ?? null}
-                currentHeight={tideData.current_height_m}
-                currentState={tideData.state}
-                isToday={d.key === todayKey}
-                globalMinH={globalMinH}
-                globalMaxH={globalMaxH}
-                sunrise={weatherDay?.sunrise}
-                sunset={weatherDay?.sunset}
-              />
-            </div>
-            );
-          })}
+        {/* Tide carousel */}
+        <div className="overflow-hidden" ref={tideRef}>
+          <div className="flex">
+            {days.map((d) => {
+              const weatherDay = weatherByDate.get(d.key) ?? null;
+              return (
+                <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
+                  <TideDayCard
+                    day={tideByDate.get(d.key) ?? null}
+                    currentHeight={tideData.current_height_m}
+                    currentState={tideData.state}
+                    isToday={d.key === todayKey}
+                    globalMinH={globalMinH}
+                    globalMaxH={globalMaxH}
+                    sunrise={weatherDay?.sunrise}
+                    sunset={weatherDay?.sunset}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
