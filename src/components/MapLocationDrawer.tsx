@@ -34,6 +34,7 @@ interface TideData {
 interface Props {
   location: Location;
   onClose: () => void;
+  onAddToBucketList?: () => void;
 }
 
 function getConditionLabel(code: number, windKnots: number): { label: string; color: string } {
