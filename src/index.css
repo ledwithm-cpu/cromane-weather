@@ -170,3 +170,14 @@
   background: hsl(var(--background) / 0.96);
   box-shadow: none;
 }
+
+/* ── Sage-toned map (Discover) ───────────────────────────────────────────────
+   CARTO 'light_nolabels' tiles are neutral grey. We tint them toward the
+   project's sage palette using a hue-rotate + saturate filter on the tile
+   pane only — UI overlays, markers, and popups are unaffected. */
+.sage-map .leaflet-tile-pane {
+  filter: hue-rotate(55deg) saturate(0.55) brightness(1.02);
+}
+.dark .sage-map .leaflet-tile-pane {
+  filter: hue-rotate(55deg) saturate(0.45) brightness(0.55) invert(0.88);
+}

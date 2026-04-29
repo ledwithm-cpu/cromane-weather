@@ -19,10 +19,10 @@ delete (L.Icon.Default.prototype as any)._getIconUrl;
 // Marker styles: blue (default sauna), grey (no sauna), gold + bookmark badge (saved).
 const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
   const baseColor = opts.saved
-    ? 'hsl(42, 92%, 52%)' // gold
+    ? 'hsl(42, 92%, 52%)' // gold (saved)
     : opts.hasSauna
-    ? 'hsl(210, 60%, 45%)'
-    : 'hsl(215, 12%, 50%)';
+    ? 'hsl(110, 28%, 38%)' // sage primary
+    : 'hsl(95, 8%, 48%)';   // muted sage-grey
 
   // Tiny bookmark glyph for saved markers
   const badge = opts.saved
@@ -192,13 +192,13 @@ const DiscoverMap = () => {
       <MapContainer
         center={IRELAND_CENTER}
         zoom={IRELAND_ZOOM}
-        className="h-full w-full z-0"
+        className="h-full w-full z-0 sage-map"
         zoomControl={false}
         attributionControl={false}
-        style={{ background: 'hsl(210, 30%, 96%)' }}
+        style={{ background: 'hsl(85, 16%, 88%)' }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
         />
         {markers}
