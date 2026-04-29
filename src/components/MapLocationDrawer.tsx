@@ -276,35 +276,64 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
             )}
           </div>
 
-          {/* Sauna Info */}
+          {/* Sauna Info — featured booking card stays distinct */}
           {location.saunaUrl && (
             <button
               onClick={() => openExternal(location.saunaUrl!)}
-              className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 p-5 group active:scale-[0.98] transition-all text-left"
+              className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 px-5 py-4 group active:scale-[0.98] transition-all text-left"
             >
-              <div>
-                <p className="text-sm font-medium text-foreground">{location.saunaName}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Book a session →</p>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{location.saunaName}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Book a session</p>
               </div>
+              <ArrowRight className="w-4 h-4 text-primary shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" />
             </button>
           )}
 
-          {/* Directions */}
-          <button
-            onClick={() => openExternal(directionsUrl)}
-            className="flex items-center justify-center gap-2 w-full rounded-2xl bg-foreground text-background py-3.5 text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
-          >
-            <Navigation className="w-4 h-4" />
-            Open in Google Maps
-          </button>
+          {/* Action buttons — unified stack */}
+          <div className="space-y-2 pt-1">
+            {/* Primary: Directions */}
+            <button
+              onClick={() => openExternal(directionsUrl)}
+              className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-foreground text-background text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
+            >
+              <Navigation className="w-4 h-4" strokeWidth={2} />
+              Open in Google Maps
+            </button>
 
-          {/* View full location page */}
-          <Link
-            to={`/${location.id}`}
-            className="flex items-center justify-center gap-2 w-full rounded-2xl bg-muted/40 border border-border/30 py-3.5 text-sm font-medium text-foreground hover:bg-muted/60 active:scale-[0.98] transition-all"
-          >
-            View full details →
-          </Link>
+            {/* Secondary row: bucket list + details */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleBucketToggle}
+                aria-pressed={saved}
+                className={`flex items-center justify-center gap-1.5 h-12 rounded-2xl border text-sm font-medium active:scale-[0.98] transition-all ${
+                  saved
+                    ? 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/15'
+                    : 'bg-muted/40 border-border/30 text-foreground hover:bg-muted/60'
+                }`}
+              >
+                {saved ? (
+                  <>
+                    <BookmarkCheck className="w-4 h-4" strokeWidth={2} />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4" strokeWidth={1.75} />
+                    Bucket list
+                  </>
+                )}
+              </button>
+
+              <Link
+                to={`/${location.id}`}
+                className="flex items-center justify-center gap-1.5 h-12 rounded-2xl bg-muted/40 border border-border/30 text-sm font-medium text-foreground hover:bg-muted/60 active:scale-[0.98] transition-all"
+              >
+                Details
+                <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
+              </Link>
+            </div>
+          </div>
 
           <p className="text-center text-[10px] text-muted-foreground/50 tracking-wider tabular-nums">
             {location.lat.toFixed(4)}°N · {Math.abs(location.lon).toFixed(4)}°W
