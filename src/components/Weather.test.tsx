@@ -29,6 +29,15 @@ beforeEach(() => {
     // @ts-expect-error - polyfill
     globalThis.IntersectionObserver = IO;
   }
+  if (!('ResizeObserver' in globalThis)) {
+    class RO {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+    // @ts-expect-error - polyfill
+    globalThis.ResizeObserver = RO;
+  }
 });
 afterEach(() => {
   vi.useRealTimers();
