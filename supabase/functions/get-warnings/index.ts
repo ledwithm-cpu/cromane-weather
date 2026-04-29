@@ -26,7 +26,7 @@ function cleanHtml(s: string): string {
   return s.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
 }
 
-function parseWarningsHtml(html: string, county: string, province: string): { warnings: any[]; marine: any } {
+export function parseWarningsHtml(html: string, county: string, province: string): { warnings: any[]; marine: any } {
   const warnings: any[] = [];
   let marine = { type: 'No warnings', area: 'Irish Coast', description: 'No active marine warnings.', active: false };
 
