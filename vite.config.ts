@@ -4,6 +4,19 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 // @ts-expect-error - plain ESM plugin without type declarations
 import staticSeoPlugin from "./scripts/vite-plugin-static-seo.mjs";
+// @ts-expect-error - plain ESM module without type declarations
+import { validateManifestIcons } from "./scripts/validate-manifest-icons.mjs";
+
+// Fails the production build if public/manifest.webmanifest references missing
+// icons, non-PNGs, or files whose real dimensions don't match `sizes`.
+const manifestIconValidatorPlugin = () => ({
+  name: "validate-manifest-icons",
+  apply: "build" as const,
+  async buildStart() {
+    const { count } = await validateManifestIcons();
+    this.info(`✓ Manifest icons valid (${count} checked)`);
+  },
+});
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
