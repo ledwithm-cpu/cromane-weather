@@ -251,7 +251,11 @@ const DiscoverMap = () => {
       {/* Desktop drawer */}
       <AnimatePresence>
         {selected && !isMobile && (
-          <MapLocationDrawer location={selected} onClose={handleCloseDrawer} />
+          <MapLocationDrawer
+            location={selected}
+            onClose={handleCloseDrawer}
+            onAddToBucketList={() => setBucketOpen(true)}
+          />
         )}
       </AnimatePresence>
 
