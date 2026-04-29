@@ -1,14 +1,18 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Navigation, MapPin, Ticket, ArrowRight } from 'lucide-react';
+import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Location } from '@/lib/locations';
+import { useBucketList } from '@/hooks/use-bucket-list';
 
 interface Props {
   location: Location;
   onClose: () => void;
+  onAddedToBucketList?: () => void;
 }
 
-const MapActionSheet = ({ location, onClose }: Props) => {
+const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
+  const { has, add, remove } = useBucketList();
+  const saved = has(location.id);
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lon}`;
   // Apple Maps universal link — opens Apple Maps on iOS, falls back to maps.apple.com on others
   const appleMapsUrl = `https://maps.apple.com/?daddr=${location.lat},${location.lon}&dirflg=d`;
@@ -74,6 +78,33 @@ const MapActionSheet = ({ location, onClose }: Props) => {
                 <ArrowRight className="w-4 h-4 text-primary" />
               </button>
             )}
+
+            <button
+              onClick={() => {
+                if (saved) {
+                  remove(location.id);
+                } else {
+                  add(location.id);
+                  onAddedToBucketList?.();
+                  onClose();
+                }
+              }}
+              className={`flex items-center gap-3 w-full rounded-2xl border px-4 py-3.5 text-left active:scale-[0.98] transition-all ${
+                saved
+                  ? 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/15'
+                  : 'bg-muted/40 border-border/30 hover:bg-muted/60'
+              }`}
+            >
+              {saved ? (
+                <BookmarkCheck className="w-5 h-5 text-amber-500" />
+              ) : (
+                <Bookmark className="w-5 h-5 text-foreground/70" />
+              )}
+              <span className="text-sm font-medium text-foreground flex-1">
+                {saved ? 'Saved to Bucket List' : 'Add to Bucket List'}
+              </span>
+              <ArrowRight className={`w-4 h-4 ${saved ? 'text-amber-500' : 'text-muted-foreground'}`} />
+            </button>
 
             <Link
               to={`/${location.id}`}

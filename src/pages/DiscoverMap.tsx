@@ -3,35 +3,61 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
 import { LOCATIONS, Location } from '@/lib/locations';
 import MapLocationDrawer from '@/components/MapLocationDrawer';
 import MapActionSheet from '@/components/MapActionSheet';
+import BucketListPanel from '@/components/BucketListPanel';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useBucketList } from '@/hooks/use-bucket-list';
 import 'leaflet/dist/leaflet.css';
 
 // Fix default marker icon issue with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
-const createSaunaIcon = (hasSauna: boolean) =>
-  L.divIcon({
+// Marker styles: blue (default sauna), grey (no sauna), gold + bookmark badge (saved).
+const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
+  const baseColor = opts.saved
+    ? 'hsl(42, 92%, 52%)' // gold
+    : opts.hasSauna
+    ? 'hsl(210, 60%, 45%)'
+    : 'hsl(215, 12%, 50%)';
+
+  // Tiny bookmark glyph for saved markers
+  const badge = opts.saved
+    ? `<div style="
+        position: absolute; top: -4px; right: -4px;
+        width: 14px; height: 14px;
+        display: flex; align-items: center; justify-content: center;
+        background: hsl(0, 0%, 100%);
+        border: 1.5px solid hsl(42, 92%, 52%);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      ">
+        <svg width="7" height="7" viewBox="0 0 24 24" fill="hsl(42, 92%, 52%)" stroke="hsl(42, 92%, 52%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+        </svg>
+      </div>`
+    : '';
+
+  return L.divIcon({
     className: '',
     iconSize: [32, 32],
     iconAnchor: [16, 16],
-    html: `<div style="
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: ${hasSauna ? 'hsl(210, 60%, 45%)' : 'hsl(215, 12%, 50%)'};
-      border: 2.5px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-    "></div>`,
+    html: `<div style="position: relative; width: 28px; height: 28px;">
+      <div style="
+        width: 28px; height: 28px;
+        background: ${baseColor};
+        border: 2.5px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        transition: background 0.2s ease;
+      "></div>
+      ${badge}
+    </div>`,
   });
-
-const saunaIcon = createSaunaIcon(true);
+};
 
 // Center of Ireland
 const IRELAND_CENTER: [number, number] = [53.5, -8.0];
@@ -49,12 +75,16 @@ function FlyToLocation({ location, resetToOverview }: { location: Location | nul
 
 const DiscoverMap = () => {
   const isMobile = useIsMobile();
+  const { items: bucketItems, has: isSaved, add: addToBucket, remove: removeFromBucket } = useBucketList();
+
   // Mobile: tap dot → preview (name popup); tap preview → action sheet
   const [preview, setPreview] = useState<Location | null>(null);
   const [sheetLocation, setSheetLocation] = useState<Location | null>(null);
   // Desktop: keep existing drawer behavior
   const [selected, setSelected] = useState<Location | null>(null);
   const [hasClosedDrawer, setHasClosedDrawer] = useState(false);
+  // Bucket list panel
+  const [bucketOpen, setBucketOpen] = useState(false);
 
   const handleMarkerClick = useCallback(
     (loc: Location) => {
@@ -80,36 +110,80 @@ const DiscoverMap = () => {
 
   const saunaLocations = useMemo(() => LOCATIONS.filter((loc) => loc.saunaUrl), []);
 
+  // Memoise saved-id set so marker icons re-render when bucket list changes
+  const savedIds = useMemo(() => new Set(bucketItems.map((i) => i.locationId)), [bucketItems]);
+
   const markers = useMemo(
     () =>
-      saunaLocations.map((loc) => (
-        <Marker
-          key={loc.id}
-          position={[loc.lat, loc.lon]}
-          icon={saunaIcon}
-          eventHandlers={{
-            click: () => handleMarkerClick(loc),
-          }}
-        >
-          {isMobile && (
-            <Popup
-              closeButton={false}
-              autoPan={true}
-              offset={[0, -8]}
-              className="sauna-name-popup"
-            >
-              <button
-                onClick={() => handleOpenSheet(loc)}
-                className="block px-1 py-0.5 text-sm font-medium text-foreground active:opacity-70 transition-opacity"
+      saunaLocations.map((loc) => {
+        const saved = savedIds.has(loc.id);
+        const icon = createSaunaIcon({ hasSauna: true, saved });
+        return (
+          <Marker
+            key={`${loc.id}-${saved ? 'saved' : 'unsaved'}`}
+            position={[loc.lat, loc.lon]}
+            icon={icon}
+            eventHandlers={{
+              click: () => handleMarkerClick(loc),
+            }}
+          >
+            {isMobile && (
+              <Popup
+                closeButton={false}
+                autoPan={true}
+                offset={[0, -8]}
+                className="sauna-name-popup"
               >
-                {loc.saunaName ?? loc.name}
-                <span className="ml-1.5 text-primary">→</span>
-              </button>
-            </Popup>
-          )}
-        </Marker>
-      )),
-    [saunaLocations, handleMarkerClick, handleOpenSheet, isMobile]
+                <button
+                  onClick={() => handleOpenSheet(loc)}
+                  className="block px-1 py-0.5 text-sm font-medium text-foreground active:opacity-70 transition-opacity"
+                >
+                  {loc.saunaName ?? loc.name}
+                  <span className="ml-1.5 text-primary">→</span>
+                </button>
+              </Popup>
+            )}
+            {!isMobile && (
+              <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
+                <div className="flex flex-col gap-1.5 px-1 py-0.5">
+                  <p className="text-sm font-medium text-foreground">
+                    {loc.saunaName ?? loc.name}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {loc.name} · Co. {loc.county}
+                  </p>
+                  <button
+                    onClick={() => {
+                      if (saved) {
+                        removeFromBucket(loc.id);
+                      } else {
+                        addToBucket(loc.id);
+                        setBucketOpen(true);
+                      }
+                    }}
+                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                      saved
+                        ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'
+                    }`}
+                  >
+                    {saved ? (
+                      <>
+                        <BookmarkCheck className="w-3 h-3" /> Saved
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark className="w-3 h-3" /> Add to Bucket List
+                      </>
+                    )}
+                  </button>
+                </div>
+              </Popup>
+            )}
+          </Marker>
+        );
+      }),
+    [saunaLocations, handleMarkerClick, handleOpenSheet, isMobile, savedIds, addToBucket, removeFromBucket]
   );
 
   return (
@@ -147,6 +221,19 @@ const DiscoverMap = () => {
                 Discover Saunas
               </span>
             </div>
+            <button
+              onClick={() => setBucketOpen((o) => !o)}
+              aria-label="Toggle bucket list"
+              aria-expanded={bucketOpen}
+              className="relative glass-card rounded-full p-2.5 shadow-lg hover:bg-card/90 active:scale-[0.97] transition-all"
+            >
+              <ListChecks className="w-4 h-4 text-foreground" />
+              {bucketItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-amber-500 text-[10px] font-semibold text-white tabular-nums shadow">
+                  {bucketItems.length}
+                </span>
+              )}
+            </button>
             <div className="glass-card rounded-full shadow-lg">
               <ThemeToggle />
             </div>
@@ -171,9 +258,16 @@ const DiscoverMap = () => {
       {/* Mobile action sheet */}
       <AnimatePresence>
         {sheetLocation && (
-          <MapActionSheet location={sheetLocation} onClose={() => setSheetLocation(null)} />
+          <MapActionSheet
+            location={sheetLocation}
+            onClose={() => setSheetLocation(null)}
+            onAddedToBucketList={() => setBucketOpen(true)}
+          />
         )}
       </AnimatePresence>
+
+      {/* Bucket list panel — desktop right sidebar / mobile bottom sheet */}
+      <BucketListPanel open={bucketOpen} onClose={() => setBucketOpen(false)} />
     </div>
   );
 };
