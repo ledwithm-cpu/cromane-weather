@@ -268,7 +268,7 @@ const TideDayCard = ({
   })();
 
   return (
-    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
+    <div className="px-5 py-4 space-y-2.5">
       <div className="flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Tides · {location.name}
