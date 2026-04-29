@@ -79,6 +79,33 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
               </button>
             )}
 
+            <button
+              onClick={() => {
+                if (saved) {
+                  remove(location.id);
+                } else {
+                  add(location.id);
+                  onAddedToBucketList?.();
+                  onClose();
+                }
+              }}
+              className={`flex items-center gap-3 w-full rounded-2xl border px-4 py-3.5 text-left active:scale-[0.98] transition-all ${
+                saved
+                  ? 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/15'
+                  : 'bg-muted/40 border-border/30 hover:bg-muted/60'
+              }`}
+            >
+              {saved ? (
+                <BookmarkCheck className="w-5 h-5 text-amber-500" />
+              ) : (
+                <Bookmark className="w-5 h-5 text-foreground/70" />
+              )}
+              <span className="text-sm font-medium text-foreground flex-1">
+                {saved ? 'Saved to Bucket List' : 'Add to Bucket List'}
+              </span>
+              <ArrowRight className={`w-4 h-4 ${saved ? 'text-amber-500' : 'text-muted-foreground'}`} />
+            </button>
+
             <Link
               to={`/${location.id}`}
               onClick={onClose}
