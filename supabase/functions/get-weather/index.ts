@@ -81,6 +81,8 @@ serve(async (req) => {
       waterTemp = marineData?.current?.sea_surface_temperature ?? null;
     }
 
+    const current = data.current;
+
     // "Feels like" comes from Open-Meteo's apparent_temperature, which is
     // computed at the requested lat/lon and accounts for humidity, wind and
     // radiation. We previously derived it from Met Éireann's Valentia station
@@ -89,7 +91,6 @@ serve(async (req) => {
     // the real apparent temp at Cromane was ~7°).
     const feelsLikeFinal = Math.round(current.apparent_temperature);
 
-    const current = data.current;
     const speedKmh = current.wind_speed_10m;
     const speedKnots = Math.round(speedKmh * 0.539957);
     const beaufort = kmhToBeaufort(speedKmh);
