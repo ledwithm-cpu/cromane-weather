@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft } from 'lucide-react';
+import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft, Bookmark, BookmarkCheck, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Location } from '@/lib/locations';
 import { openExternal } from '@/lib/open-external';
+import { useBucketList } from '@/hooks/use-bucket-list';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
