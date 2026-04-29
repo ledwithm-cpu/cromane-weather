@@ -101,7 +101,7 @@ const WeatherDayCard = ({
   const dirRotation = (day.wind_direction_degrees + 180) % 360;
 
   return (
-    <div className="glass-card rounded-lg px-5 py-4 space-y-2.5">
+    <div className="px-5 py-4 space-y-2.5">
       <div className="relative flex items-center justify-center">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
           Weather
