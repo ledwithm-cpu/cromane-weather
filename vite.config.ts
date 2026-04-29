@@ -37,6 +37,7 @@ export default defineConfig(({ mode }) => ({
     // see correct OG/Twitter tags for /, /discover, /how-it-works, /contact,
     // and every location page (/cromane, /bundoran, etc.).
     mode !== "development" && staticSeoPlugin(),
+    mode !== "development" && manifestIconValidatorPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
