@@ -12,9 +12,9 @@ import { validateManifestIcons } from "./scripts/validate-manifest-icons.mjs";
 const manifestIconValidatorPlugin = () => ({
   name: "validate-manifest-icons",
   apply: "build" as const,
-  async buildStart() {
+  async buildStart(this: { info?: (msg: string) => void }) {
     const { count } = await validateManifestIcons();
-    this.info(`✓ Manifest icons valid (${count} checked)`);
+    this.info?.(`✓ Manifest icons valid (${count} checked)`);
   },
 });
 
