@@ -1,14 +1,18 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Navigation, MapPin, Ticket, ArrowRight } from 'lucide-react';
+import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Location } from '@/lib/locations';
+import { useBucketList } from '@/hooks/use-bucket-list';
 
 interface Props {
   location: Location;
   onClose: () => void;
+  onAddedToBucketList?: () => void;
 }
 
-const MapActionSheet = ({ location, onClose }: Props) => {
+const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
+  const { has, add, remove } = useBucketList();
+  const saved = has(location.id);
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lon}`;
   // Apple Maps universal link — opens Apple Maps on iOS, falls back to maps.apple.com on others
   const appleMapsUrl = `https://maps.apple.com/?daddr=${location.lat},${location.lon}&dirflg=d`;
