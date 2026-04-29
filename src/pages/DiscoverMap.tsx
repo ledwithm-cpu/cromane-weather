@@ -19,10 +19,10 @@ delete (L.Icon.Default.prototype as any)._getIconUrl;
 // Marker styles: blue (default sauna), grey (no sauna), gold + bookmark badge (saved).
 const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
   const baseColor = opts.saved
-    ? 'hsl(42, 92%, 52%)' // gold
+    ? 'hsl(42, 92%, 52%)' // gold (saved)
     : opts.hasSauna
-    ? 'hsl(210, 60%, 45%)'
-    : 'hsl(215, 12%, 50%)';
+    ? 'hsl(110, 28%, 38%)' // sage primary
+    : 'hsl(95, 8%, 48%)';   // muted sage-grey
 
   // Tiny bookmark glyph for saved markers
   const badge = opts.saved
