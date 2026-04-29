@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Location } from '@/lib/locations';
+import { openExternal } from '@/lib/open-external';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
