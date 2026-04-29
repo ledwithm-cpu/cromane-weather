@@ -81,25 +81,16 @@ serve(async (req) => {
       waterTemp = marineData?.current?.sea_surface_temperature ?? null;
     }
 
-    let feelsLike: number | null = null;
-    if (metRes && metRes.ok) {
-      try {
-        const metData = await metRes.json();
-        if (Array.isArray(metData) && metData.length > 0) {
-          const latest = metData[metData.length - 1];
-          const tempC = parseFloat(latest.temperature);
-          const windKt = parseFloat(latest.windSpeed);
-          const windKmh = windKt * 1.852;
-          if (!isNaN(tempC) && !isNaN(windKmh)) {
-            feelsLike = Math.round(calcWindChill(tempC, windKmh));
-          }
-        }
-      } catch (e) {
-        console.warn('Met Éireann parse error:', e);
-      }
-    }
-
     const current = data.current;
+
+    // "Feels like" comes from Open-Meteo's apparent_temperature, which is
+    // computed at the requested lat/lon and accounts for humidity, wind and
+    // radiation. We previously derived it from Met Éireann's Valentia station
+    // using wind-chill only — that station is up to ~70km from many of our
+    // saunas and overestimated "feels like" on mild days (e.g. showed 16° when
+    // the real apparent temp at Cromane was ~7°).
+    const feelsLikeFinal = Math.round(current.apparent_temperature);
+
     const speedKmh = current.wind_speed_10m;
     const speedKnots = Math.round(speedKmh * 0.539957);
     const beaufort = kmhToBeaufort(speedKmh);
@@ -124,7 +115,6 @@ serve(async (req) => {
 
     const sunrise = data.daily?.sunrise?.[0]?.split('T')[1] ?? null;
     const sunset = data.daily?.sunset?.[0]?.split('T')[1] ?? null;
-    const feelsLikeFinal = feelsLike ?? Math.round(current.apparent_temperature);
 
     // Build 7-day forecast
     const daily = data.daily ?? {};
