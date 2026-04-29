@@ -35,8 +35,7 @@ beforeEach(() => {
       unobserve() {}
       disconnect() {}
     }
-    // @ts-expect-error - polyfill
-    globalThis.ResizeObserver = RO;
+    (globalThis as unknown as { ResizeObserver: typeof RO }).ResizeObserver = RO;
   }
 });
 afterEach(() => {
