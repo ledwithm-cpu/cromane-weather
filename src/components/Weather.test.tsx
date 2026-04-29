@@ -13,6 +13,22 @@ import {
 beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(new Date(FIXED_NOW_MS));
+  // jsdom doesn't ship IntersectionObserver, which embla-carousel (used by
+  // ForecastSwiper) calls on mount. A no-op shim is enough for render-only
+  // assertions — we never scroll the carousel in these tests.
+  if (!('IntersectionObserver' in globalThis)) {
+    class IO {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+      takeRecords() { return []; }
+      root = null;
+      rootMargin = '';
+      thresholds: number[] = [];
+    }
+    // @ts-expect-error - polyfill
+    globalThis.IntersectionObserver = IO;
+  }
 });
 afterEach(() => {
   vi.useRealTimers();
