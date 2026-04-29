@@ -286,7 +286,7 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
 
           {/* Directions */}
           <button
-            onClick={() => window.open(directionsUrl, '_blank', 'noopener,noreferrer')}
+            onClick={() => openExternal(directionsUrl)}
             className="flex items-center justify-center gap-2 w-full rounded-2xl bg-foreground text-background py-3.5 text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
           >
             <Navigation className="w-4 h-4" />
