@@ -484,6 +484,27 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
     return () => { tideApi.off('select', onSelect); };
   }, [weatherApi, tideApi]);
 
+  // Track scroll direction for the Weather ↔ Tides indicator
+  useEffect(() => {
+    if (!weatherApi) return;
+    let lastProgress = weatherApi.scrollProgress();
+    const onScroll = () => {
+      const p = weatherApi.scrollProgress();
+      const delta = p - lastProgress;
+      if (Math.abs(delta) > 0.001) {
+        setSwipeDir(delta > 0 ? 1 : -1);
+      }
+      lastProgress = p;
+    };
+    const onSettle = () => setSwipeDir(0);
+    weatherApi.on('scroll', onScroll);
+    weatherApi.on('settle', onSettle);
+    return () => {
+      weatherApi.off('scroll', onScroll);
+      weatherApi.off('settle', onSettle);
+    };
+  }, [weatherApi]);
+
   const jumpTo = useCallback((idx: number) => {
     weatherApi?.scrollTo(idx);
     tideApi?.scrollTo(idx);
