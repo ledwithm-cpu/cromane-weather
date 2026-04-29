@@ -273,7 +273,7 @@ const MapLocationDrawer = ({ location, onClose }: Props) => {
           {/* Sauna Info */}
           {location.saunaUrl && (
             <button
-              onClick={() => window.open(location.saunaUrl, '_blank', 'noopener,noreferrer')}
+              onClick={() => openExternal(location.saunaUrl!)}
               className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 p-5 group active:scale-[0.98] transition-all text-left"
             >
               <div>
