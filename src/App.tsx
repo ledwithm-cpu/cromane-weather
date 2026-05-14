@@ -29,6 +29,7 @@ const RouteFallback = () => (
 
 const App = () => {
   const locationState = useLocationState();
+  useAnalytics();
 
   useEffect(() => {
     let unsubscribeForeground: (() => void) | undefined;
