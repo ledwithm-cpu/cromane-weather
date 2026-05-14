@@ -26,7 +26,8 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-D2R80M3VGW');
+      var gaDebug = window.location.search.includes('ga_debug=1');
+      gtag('config', 'G-D2R80M3VGW', gaDebug ? { 'debug_mode': true } : {});
     </script>
 
     <title>Irish Beach Saunas | Find Coastal Saunas, Tide Times & Weather</title>

@@ -27,9 +27,24 @@ const RouteFallback = () => (
   </div>
 );
 
+const AnalyticsRoutes = () => {
+  useAnalytics();
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/:locationId" element={<LocationPage />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/discover" element={<DiscoverMap />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  );
+};
+
 const App = () => {
   const locationState = useLocationState();
-  useAnalytics();
 
   useEffect(() => {
     let unsubscribeForeground: (() => void) | undefined;
@@ -57,16 +72,7 @@ const App = () => {
         <TooltipProvider>
           <Sonner />
           <BrowserRouter>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/:locationId" element={<LocationPage />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/discover" element={<DiscoverMap />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <AnalyticsRoutes />
           </BrowserRouter>
         </TooltipProvider>
       </LocationContext.Provider>
