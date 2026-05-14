@@ -24,12 +24,12 @@ const LocationPage = () => {
   }
 
   const title = loc.saunaName
-    ? `${loc.name} Beach Sauna – ${loc.saunaName} | Tides & Weather`
-    : `${loc.name} – Tide Times & Weather | Irish Beach Saunas`;
+    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna, Co. ${loc.county}`
+    : `${loc.name} Beach Sauna – Sea Swimming, Tides & Weather`;
 
   const description = loc.saunaName
-    ? `Book ${loc.saunaName} in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather conditions for your sauna and swim session.`
-    : `Live tide times, sea temperature, and weather for ${loc.name}, Co. ${loc.county}. Plan your coastal swim with real-time data.`;
+    ? `${loc.saunaName} beach sauna in ${loc.name}, Co. ${loc.county}. Book a wood-fired sauna and cold plunge with live tide times, sea temperature, and weather for sea swimming in ${loc.name}.`
+    : `${loc.name} beach sauna and sea swimming guide. Live tide times, sea temperature, and weather for cold-water swimming and sauna sessions in ${loc.name}, Co. ${loc.county}.`;
 
   return (
     <>
