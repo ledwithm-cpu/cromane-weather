@@ -95,11 +95,11 @@ export function getSeoRoutes() {
 
   const locationRoutes = locations.map((loc) => {
     const title = loc.saunaName
-      ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna, Co. ${loc.county}`
-      : `${loc.name} Beach Sauna – Sea Swimming, Tides & Weather`;
+      ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, Co. ${loc.county}`
+      : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, Co. ${loc.county}`;
     const description = loc.saunaName
-      ? `${loc.saunaName} beach sauna in ${loc.name}, Co. ${loc.county}. Book a wood-fired sauna and cold plunge with live tide times, sea temperature, and weather for sea swimming in ${loc.name}.`
-      : `${loc.name} beach sauna and sea swimming guide. Live tide times, sea temperature, and weather for cold-water swimming and sauna sessions in ${loc.name}, Co. ${loc.county}.`;
+      ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
+      : `${loc.name} beach sauna and sea swimming guide for Co. ${loc.county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
     return {
       path: `/${loc.id}`,
       title,
