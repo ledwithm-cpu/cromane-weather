@@ -6,101 +6,100 @@
 
 @layer base {
   :root {
-    /* Calm coastal — soft fog, pale sand, quiet sea */
-    /* Calm coastal sage — soft moss, pale linen, quiet meadow */
-    --background: 80 12% 92%;
-    --foreground: 100 12% 18%;
+    /* Bright coastal — warm sand, vibrant sage, sunlit sea */
+    --background: 85 18% 94%;
+    --foreground: 100 15% 16%;
 
-    --card: 85 14% 94%;
-    --card-foreground: 100 12% 18%;
+    --card: 85 18% 96%;
+    --card-foreground: 100 15% 16%;
 
-    --popover: 85 18% 97%;
-    --popover-foreground: 100 12% 18%;
+    --popover: 85 20% 98%;
+    --popover-foreground: 100 15% 16%;
 
-    --primary: 110 20% 45%;
+    --primary: 110 32% 48%;
     --primary-foreground: 90 25% 97%;
 
-    --secondary: 85 10% 90%;
-    --secondary-foreground: 100 10% 28%;
+    --secondary: 85 14% 92%;
+    --secondary-foreground: 100 12% 25%;
 
-    --muted: 85 8% 91%;
-    --muted-foreground: 95 6% 45%;
+    --muted: 85 12% 93%;
+    --muted-foreground: 95 10% 42%;
 
-    --accent: 95 25% 55%;
-    --accent-foreground: 95 35% 14%;
+    --accent: 45 65% 58%;
+    --accent-foreground: 45 40% 18%;
 
     --destructive: 0 55% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 85 12% 87%;
-    --input: 85 12% 87%;
-    --ring: 110 20% 45%;
+    --border: 85 14% 88%;
+    --input: 85 14% 88%;
+    --ring: 110 32% 48%;
 
     --radius: 1rem;
 
-    /* Sage glass tokens */
-    --glass-bg: 85 18% 97% / 0.55;
-    --glass-border: 90 15% 85% / 0.35;
+    /* Sage glass tokens — more opaque for brighter feel */
+    --glass-bg: 85 20% 98% / 0.72;
+    --glass-border: 90 18% 86% / 0.50;
     --glass-blur: 20px;
 
     --warning-yellow: 48 80% 53%;
     --warning-orange: 25 80% 55%;
     --warning-red: 0 65% 50%;
 
-    --marine-teal: 165 25% 42%;
-    --tide-blue: 110 22% 50%;
+    --marine-teal: 165 32% 45%;
+    --tide-blue: 110 28% 52%;
 
-    --sidebar-background: 85 14% 97%;
-    --sidebar-foreground: 100 10% 28%;
-    --sidebar-primary: 110 20% 45%;
+    --sidebar-background: 85 18% 97%;
+    --sidebar-foreground: 100 12% 25%;
+    --sidebar-primary: 110 32% 48%;
     --sidebar-primary-foreground: 90 25% 97%;
-    --sidebar-accent: 85 10% 93%;
-    --sidebar-accent-foreground: 100 12% 15%;
-    --sidebar-border: 85 12% 88%;
-    --sidebar-ring: 110 22% 50%;
+    --sidebar-accent: 85 14% 93%;
+    --sidebar-accent-foreground: 100 15% 16%;
+    --sidebar-border: 85 14% 88%;
+    --sidebar-ring: 110 28% 52%;
   }
 
   .dark {
-    /* Deep forest night — calm, mossy */
-    --background: 110 12% 10%;
-    --foreground: 90 12% 88%;
+    /* Deep forest night — brighter charcoal, mossy */
+    --background: 110 14% 12%;
+    --foreground: 90 15% 90%;
 
-    --card: 110 10% 13%;
-    --card-foreground: 90 12% 88%;
+    --card: 110 12% 15%;
+    --card-foreground: 90 15% 90%;
 
-    --popover: 110 10% 13%;
-    --popover-foreground: 90 12% 88%;
+    --popover: 110 12% 15%;
+    --popover-foreground: 90 15% 90%;
 
-    --primary: 110 22% 55%;
-    --primary-foreground: 110 12% 10%;
+    --primary: 110 32% 58%;
+    --primary-foreground: 110 14% 12%;
 
-    --secondary: 110 8% 17%;
-    --secondary-foreground: 90 10% 78%;
+    --secondary: 110 10% 19%;
+    --secondary-foreground: 90 12% 82%;
 
-    --muted: 110 8% 15%;
-    --muted-foreground: 95 6% 52%;
+    --muted: 110 10% 17%;
+    --muted-foreground: 95 10% 55%;
 
-    --accent: 95 22% 50%;
-    --accent-foreground: 95 30% 92%;
+    --accent: 45 55% 52%;
+    --accent-foreground: 45 35% 92%;
 
     --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 110 8% 19%;
-    --input: 110 8% 19%;
-    --ring: 110 22% 55%;
+    --border: 110 10% 21%;
+    --input: 110 10% 21%;
+    --ring: 110 32% 58%;
 
-    --glass-bg: 110 10% 13% / 0.65;
-    --glass-border: 110 8% 22% / 0.45;
+    --glass-bg: 110 12% 15% / 0.78;
+    --glass-border: 110 10% 24% / 0.55;
 
-    --sidebar-background: 110 12% 10%;
-    --sidebar-foreground: 90 12% 88%;
-    --sidebar-primary: 110 22% 55%;
-    --sidebar-primary-foreground: 110 12% 10%;
-    --sidebar-accent: 110 8% 15%;
-    --sidebar-accent-foreground: 90 12% 88%;
-    --sidebar-border: 110 8% 19%;
-    --sidebar-ring: 110 22% 55%;
+    --sidebar-background: 110 14% 12%;
+    --sidebar-foreground: 90 15% 90%;
+    --sidebar-primary: 110 32% 58%;
+    --sidebar-primary-foreground: 110 14% 12%;
+    --sidebar-accent: 110 10% 17%;
+    --sidebar-accent-foreground: 90 15% 90%;
+    --sidebar-border: 110 10% 21%;
+    --sidebar-ring: 110 32% 58%;
   }
 
   /* Warning state — deep charcoal with amber tint */

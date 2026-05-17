@@ -21,8 +21,8 @@ const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
   const baseColor = opts.saved
     ? 'hsl(42, 92%, 52%)' // gold (saved)
     : opts.hasSauna
-    ? 'hsl(110, 28%, 38%)' // sage primary
-    : 'hsl(95, 8%, 48%)';   // muted sage-grey
+    ? 'hsl(110, 32%, 48%)' // sage primary
+    : 'hsl(95, 12%, 52%)';  // muted sage-grey
 
   // Tiny bookmark glyph for saved markers
   const badge = opts.saved
