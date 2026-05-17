@@ -168,6 +168,8 @@ const HowItWorks = () => {
           </motion.section>
         </div>
 
+        <AdSlot className="pt-8" />
+
         <AppFooter delay={0.5} />
       </div>
     </div>
