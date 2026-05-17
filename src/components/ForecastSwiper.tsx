@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { WindData, TideData, TideForecastDay, WeatherForecastDay } from '@/lib/mock-data';
 import { useLocation } from '@/hooks/use-location';
+import WeatherShareRow from './WeatherShareRow';
 
 interface Props {
   wind: WindData;
