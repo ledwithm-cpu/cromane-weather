@@ -10,6 +10,7 @@ import LightningCard from '@/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
+import AdSlot from '@/components/AdSlot';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocation } from '@/hooks/use-location';
@@ -141,6 +142,9 @@ const Index = () => {
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             {isToday && <MarineCard marine={marine} />}
           </div>
+
+          {/* Sponsored */}
+          <AdSlot className="pt-6" />
 
           {/* Footer */}
           <AppFooter delay={0.6} />
