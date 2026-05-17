@@ -143,6 +143,9 @@ const Index = () => {
             {isToday && <MarineCard marine={marine} />}
           </div>
 
+          {/* Sponsored */}
+          <AdSlot className="pt-6" />
+
           {/* Footer */}
           <AppFooter delay={0.6} />
         </div>
