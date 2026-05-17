@@ -162,6 +162,11 @@ const WeatherDayCard = ({
         </div>
       </div>
 
+      <WeatherShareRow
+        text={`${location.name} · ${isToday ? 'Today' : shortDay(date)} ${dayNumber(date)} · ${day.temp_max_c}°/${day.temp_min_c}° ${weatherLabel(day.weather_code)} · ${day.wind_speed_kmh}km/h ${day.wind_direction}`}
+        url={`${typeof window !== 'undefined' ? window.location.origin : 'https://saunasinireland.com'}/${location.id}`}
+      />
+
     </div>
   );
 };
