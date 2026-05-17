@@ -603,6 +603,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                   day={weatherByDate.get(d.key) ?? null}
                   fallbackWind={wind}
                   isToday={d.key === todayKey}
+                  date={d.date}
                 />
               </div>
             ))}
