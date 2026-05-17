@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { WindData, TideData, TideForecastDay, WeatherForecastDay } from '@/lib/mock-data';
 import { useLocation } from '@/hooks/use-location';
+import WeatherShareRow from './WeatherShareRow';
 
 interface Props {
   wind: WindData;
@@ -84,12 +85,14 @@ function build7Days(): { date: Date; key: string }[] {
 // ─── Day cards ──────────────────────────────────────────────────────────────
 
 const WeatherDayCard = ({
-  day, fallbackWind, isToday,
+  day, fallbackWind, isToday, date,
 }: {
   day: WeatherForecastDay | null;
   fallbackWind: WindData;
   isToday: boolean;
+  date: Date;
 }) => {
+  const { location } = useLocation();
   if (!day) {
     return (
       <div className="glass-card rounded-lg p-6 h-full flex items-center justify-center text-xs text-muted-foreground">
@@ -158,6 +161,11 @@ const WeatherDayCard = ({
           <span className="text-[9px] uppercase tracking-wider text-muted-foreground">Rain</span>
         </div>
       </div>
+
+      <WeatherShareRow
+        text={`${location.name} · ${isToday ? 'Today' : shortDay(date)} ${dayNumber(date)} · ${day.temp_max_c}°/${day.temp_min_c}° ${weatherLabel(day.weather_code)} · ${day.wind_speed_kmh}km/h ${day.wind_direction}`}
+        url={`${typeof window !== 'undefined' ? window.location.origin : 'https://saunasinireland.com'}/${location.id}`}
+      />
 
     </div>
   );
@@ -595,6 +603,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                   day={weatherByDate.get(d.key) ?? null}
                   fallbackWind={wind}
                   isToday={d.key === todayKey}
+                  date={d.date}
                 />
               </div>
             ))}
