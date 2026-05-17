@@ -56,6 +56,8 @@ const Contact = () => {
           </a>
         </motion.div>
 
+        <AdSlot className="pt-6" />
+
         <AppFooter delay={0.4} />
       </div>
     </div>
