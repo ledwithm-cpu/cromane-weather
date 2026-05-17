@@ -85,12 +85,14 @@ function build7Days(): { date: Date; key: string }[] {
 // ─── Day cards ──────────────────────────────────────────────────────────────
 
 const WeatherDayCard = ({
-  day, fallbackWind, isToday,
+  day, fallbackWind, isToday, date,
 }: {
   day: WeatherForecastDay | null;
   fallbackWind: WindData;
   isToday: boolean;
+  date: Date;
 }) => {
+  const { location } = useLocation();
   if (!day) {
     return (
       <div className="glass-card rounded-lg p-6 h-full flex items-center justify-center text-xs text-muted-foreground">
