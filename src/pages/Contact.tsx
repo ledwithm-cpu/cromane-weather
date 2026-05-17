@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail } from 'lucide-react';
 import AppFooter from '@/components/AppFooter';
+import AdSlot from '@/components/AdSlot';
 
 // Static, low-cost map placeholder of Ireland (CARTO light, no labels).
 // Avoids loading react-leaflet on this route for faster mobile paint.
