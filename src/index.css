@@ -60,46 +60,46 @@
   }
 
   .dark {
-    /* Deep forest night — calm, mossy */
-    --background: 110 12% 10%;
-    --foreground: 90 12% 88%;
+    /* Deep forest night — brighter charcoal, mossy */
+    --background: 110 14% 12%;
+    --foreground: 90 15% 90%;
 
-    --card: 110 10% 13%;
-    --card-foreground: 90 12% 88%;
+    --card: 110 12% 15%;
+    --card-foreground: 90 15% 90%;
 
-    --popover: 110 10% 13%;
-    --popover-foreground: 90 12% 88%;
+    --popover: 110 12% 15%;
+    --popover-foreground: 90 15% 90%;
 
-    --primary: 110 22% 55%;
-    --primary-foreground: 110 12% 10%;
+    --primary: 110 32% 58%;
+    --primary-foreground: 110 14% 12%;
 
-    --secondary: 110 8% 17%;
-    --secondary-foreground: 90 10% 78%;
+    --secondary: 110 10% 19%;
+    --secondary-foreground: 90 12% 82%;
 
-    --muted: 110 8% 15%;
-    --muted-foreground: 95 6% 52%;
+    --muted: 110 10% 17%;
+    --muted-foreground: 95 10% 55%;
 
-    --accent: 95 22% 50%;
-    --accent-foreground: 95 30% 92%;
+    --accent: 45 55% 52%;
+    --accent-foreground: 45 35% 92%;
 
     --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 110 8% 19%;
-    --input: 110 8% 19%;
-    --ring: 110 22% 55%;
+    --border: 110 10% 21%;
+    --input: 110 10% 21%;
+    --ring: 110 32% 58%;
 
-    --glass-bg: 110 10% 13% / 0.65;
-    --glass-border: 110 8% 22% / 0.45;
+    --glass-bg: 110 12% 15% / 0.78;
+    --glass-border: 110 10% 24% / 0.55;
 
-    --sidebar-background: 110 12% 10%;
-    --sidebar-foreground: 90 12% 88%;
-    --sidebar-primary: 110 22% 55%;
-    --sidebar-primary-foreground: 110 12% 10%;
-    --sidebar-accent: 110 8% 15%;
-    --sidebar-accent-foreground: 90 12% 88%;
-    --sidebar-border: 110 8% 19%;
-    --sidebar-ring: 110 22% 55%;
+    --sidebar-background: 110 14% 12%;
+    --sidebar-foreground: 90 15% 90%;
+    --sidebar-primary: 110 32% 58%;
+    --sidebar-primary-foreground: 110 14% 12%;
+    --sidebar-accent: 110 10% 17%;
+    --sidebar-accent-foreground: 90 15% 90%;
+    --sidebar-border: 110 10% 21%;
+    --sidebar-ring: 110 32% 58%;
   }
 
   /* Warning state — deep charcoal with amber tint */
