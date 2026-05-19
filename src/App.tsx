@@ -9,8 +9,8 @@ import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebas
 import { LocationContext, useLocationState } from "@/hooks/use-location";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-const LocationPage = lazy(() => import("./pages/LocationPage"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const DiscoverMap = lazy(() => import("./pages/DiscoverMap"));
 const Contact = lazy(() => import("./pages/Contact"));
