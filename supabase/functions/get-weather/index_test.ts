@@ -10,7 +10,7 @@ import { assert, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.t
 const SUPABASE_URL = Deno.env.get("VITE_SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("VITE_SUPABASE_PUBLISHABLE_KEY")!;
 
-// Mirrored from src/lib/locations.ts. Deno can't import the .ts source through
+// Mirrored from src/data/locations.ts. Deno can't import the .ts source through
 // the Vite alias system, so we keep the minimal {id, name, lat, lon, met}
 // tuple here and rely on a structure test (below) to make sure no app
 // location is silently missing from this list.
@@ -138,8 +138,8 @@ for (const loc of LOCATIONS) {
 // Structural guard: if a future PR adds/removes a location in the app, this
 // test forces the maintainer to keep the parametrized list above in sync,
 // otherwise we'd silently stop covering new locations.
-Deno.test("LOCATIONS parametrized list matches src/lib/locations.ts count", async () => {
-  const src = await Deno.readTextFile(new URL("../../../src/lib/locations.ts", import.meta.url));
+Deno.test("LOCATIONS parametrized list matches src/data/locations.ts count", async () => {
+  const src = await Deno.readTextFile(new URL("../../../src/data/locations.ts", import.meta.url));
   // Count unique `id: '...'` entries inside the LOCATIONS export. This is a
   // cheap heuristic that only requires a maintainer to update LOCATIONS in
   // this test file when the app's location list changes.
@@ -147,6 +147,6 @@ Deno.test("LOCATIONS parametrized list matches src/lib/locations.ts count", asyn
   assertEquals(
     LOCATIONS.length,
     matches.length,
-    `Parametrized list has ${LOCATIONS.length} entries but src/lib/locations.ts declares ${matches.length}. Update the LOCATIONS array in this test file to keep weather coverage in sync.`,
+    `Parametrized list has ${LOCATIONS.length} entries but src/data/locations.ts declares ${matches.length}. Update the LOCATIONS array in this test file to keep weather coverage in sync.`,
   );
 });
