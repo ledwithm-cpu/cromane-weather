@@ -1,11 +1,11 @@
-import type { Location } from '@/lib/locations';
+import type { Location } from '@/data/locations';
 import type {
   WindData,
   TideData,
   LightningData,
   Warning,
   MarineWarning,
-} from '@/lib/mock-data';
+} from '@/types/forecast';
 import type { PollenCurrent } from '@/hooks/use-pollen';
 
 // ─── Stable timestamp so snapshot diffs stay deterministic ───

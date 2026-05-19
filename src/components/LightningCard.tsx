@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, CloudLightning } from 'lucide-react';
-import type { LightningData } from '@/lib/mock-data';
+import type { LightningData } from '@/types/forecast';
 
 interface Props {
   data: LightningData;

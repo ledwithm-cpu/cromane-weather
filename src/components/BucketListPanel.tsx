@@ -1,7 +1,7 @@
 import { Reorder, motion, AnimatePresence } from 'framer-motion';
 import { Bookmark, GripVertical, X, ListChecks } from 'lucide-react';
 import { useBucketList, BucketItem } from '@/hooks/use-bucket-list';
-import { LOCATIONS } from '@/lib/locations';
+import { LOCATIONS } from '@/data/locations';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Props {

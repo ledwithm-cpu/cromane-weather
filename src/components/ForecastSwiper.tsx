@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
-import { WindData, TideData } from '@/lib/mock-data';
+import { WindData, TideData } from '@/types/forecast';
 import WeatherDayCard from './WeatherDayCard';
 import TideDayCard from './TideDayCard';
 import { build7Days, formatLongDate } from '@/lib/forecast-days';
@@ -207,8 +207,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                     isToday={d.key === todayKey}
                     globalMinH={globalMinH}
                     globalMaxH={globalMaxH}
-                    sunrise={weatherDay?.sunrise}
-                    sunset={weatherDay?.sunset}
+                    sunrise={weatherDay?.sunrise ?? undefined}
+                    sunset={weatherDay?.sunset ?? undefined}
                   />
                 </div>
               );
