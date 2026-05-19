@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { m } from 'framer-motion';
 import { WindData, TideData } from '@/types/forecast';
@@ -6,6 +6,7 @@ import WeatherDayCard from './WeatherDayCard';
 import TideDayCard from './TideDayCard';
 import { build7Days, formatLongDate } from '@/lib/forecast-days';
 import { useSyncedEmbla } from '@/hooks/use-synced-embla';
+import { useDailyRollover } from '@/hooks/use-daily-rollover';
 
 interface Props {
   wind: WindData;
@@ -14,7 +15,10 @@ interface Props {
 }
 
 const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
-  const days = useRef(build7Days()).current;
+  // Rebuild the 7-day window whenever the Dublin calendar date rolls over,
+  // so a backgrounded app silently re-anchors to "today" on resume.
+  const dateKey = useDailyRollover();
+  const days = useMemo(() => build7Days(), [dateKey]);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   // Direction the user is currently swiping: -1 = back, 0 = idle, 1 = forward
   const [swipeDir, setSwipeDir] = useState<-1 | 0 | 1>(0);
