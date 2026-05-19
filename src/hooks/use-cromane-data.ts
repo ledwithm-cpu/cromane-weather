@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { WindData, TideData, TideEvent, Warning, MarineWarning, LightningData, NowcastData, mockWind, mockTides, mockWarnings, mockMarine, mockLightning } from '@/types/forecast';
+import { WindData, TideData, TideEvent, Warning, MarineWarning, LightningData, NowcastData } from '@/types/forecast';
+import { mockWind, mockTides, mockWarnings, mockMarine, mockLightning } from '@/tests/fixtures/forecast';
 import { cacheGet, cacheSet } from '@/lib/offline-cache';
 import { useCallback } from 'react';
 import { useLocation } from '@/hooks/use-location';
