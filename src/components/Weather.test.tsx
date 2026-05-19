@@ -73,7 +73,7 @@ describe('Weather UI — temperature & feels-like mirror the API payload', () =>
         tideData={mockTidesResponse}
       />,
     );
-    const today = mockWeatherResponse.forecast[0];
+    const today = mockWeatherResponse.forecast![0];
     // Both the high/low temps and the "Feels" value must come straight from
     // the forecast payload — they're rounded mirrors of Open-Meteo's daily
     // apparent_temperature_max/min and temperature_2m_max/min.
