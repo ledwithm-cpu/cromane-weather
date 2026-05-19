@@ -68,17 +68,22 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <LocationContext.Provider value={locationState}>
-        <TooltipProvider>
-          <Sonner />
-          <BrowserRouter>
-            <AnalyticsRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
-      </LocationContext.Provider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <LocationContext.Provider value={locationState}>
+          <TooltipProvider>
+            <Sonner />
+            <BrowserRouter>
+              <ErrorBoundary>
+                <AnalyticsRoutes />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
+        </LocationContext.Provider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
+
 };
 
 export default App;
