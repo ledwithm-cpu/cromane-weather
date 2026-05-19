@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MarineWarning } from '@/lib/mock-data';
+import { MarineWarning } from '@/types/forecast';
 
 interface Props {
   marine: MarineWarning;

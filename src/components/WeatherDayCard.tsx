@@ -2,7 +2,7 @@ import {
   Sun, Cloud, CloudRain, CloudDrizzle, CloudSnow,
   CloudLightning, CloudFog, CloudSun, Wind, Droplets, Thermometer,
 } from 'lucide-react';
-import { WindData, WeatherForecastDay } from '@/lib/mock-data';
+import { WindData, WeatherForecastDay } from '@/types/forecast';
 import { useLocation } from '@/hooks/use-location';
 import { shortDay, dayNumber } from '@/lib/forecast-days';
 import WeatherShareRow from './WeatherShareRow';

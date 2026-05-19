@@ -6,7 +6,7 @@ import {
   mockWarningsResponse,
   mockLocation,
 } from '@/tests/setup/mockData';
-import type { Warning } from '@/lib/mock-data';
+import type { Warning } from '@/types/forecast';
 
 // WarningsCard reads location.county and location.name from useLocation()
 vi.mock('@/hooks/use-location', () => ({

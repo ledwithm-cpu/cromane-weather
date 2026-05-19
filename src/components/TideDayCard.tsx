@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { TideForecastDay } from '@/lib/mock-data';
+import { TideForecastDay } from '@/types/forecast';
 import { useLocation } from '@/hooks/use-location';
 import { buildTideSparkline } from '@/lib/tide-sparkline';
 

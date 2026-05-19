@@ -5,7 +5,7 @@ import type {
   LightningData,
   Warning,
   MarineWarning,
-} from '@/lib/mock-data';
+} from '@/types/forecast';
 import type { PollenCurrent } from '@/hooks/use-pollen';
 
 // ─── Stable timestamp so snapshot diffs stay deterministic ───
