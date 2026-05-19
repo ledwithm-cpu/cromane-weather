@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, type ReactNode } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { m, useMotionValue, useTransform } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
 interface PullToRefreshProps {
@@ -59,16 +59,16 @@ const PullToRefresh = ({ onRefresh, children }: PullToRefreshProps) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Pull indicator */}
-      <motion.div
+      <m.div
         className="flex justify-center items-center overflow-hidden"
         style={{ height: pullDistance, opacity: indicatorOpacity }}
       >
-        <motion.div style={{ scale: indicatorScale, rotate: refreshing ? undefined : rotation }}>
+        <m.div style={{ scale: indicatorScale, rotate: refreshing ? undefined : rotation }}>
           <RefreshCw
             className={`w-5 h-5 text-muted-foreground ${refreshing ? 'animate-spin' : ''}`}
           />
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
       {children}
     </div>

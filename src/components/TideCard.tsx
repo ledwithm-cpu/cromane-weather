@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 // Waves icon removed – using text labels instead
 import { TideData, WindData, Warning } from '@/types/forecast';
 import { useLocation } from '@/hooks/use-location';
@@ -22,7 +22,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
   const stateLabel = state === 'rising' ? 'Rising' : 'Falling';
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -186,7 +186,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
           </a>
         </div>
       )}
-    </motion.div>
+    </m.div>
   );
 };
 

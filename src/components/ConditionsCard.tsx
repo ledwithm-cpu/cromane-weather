@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Sun, Cloud, CloudRain, CloudDrizzle, CloudSnow, CloudLightning, CloudFog, CloudSun } from 'lucide-react';
 import { WindData, Warning } from '@/types/forecast';
 import { isBookingConditionsMet } from '@/lib/conditions';
@@ -93,7 +93,7 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
   const unitLabel = unit === 'kts' ? 'Knots' : 'km/h';
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
@@ -133,7 +133,7 @@ const ConditionsCard = ({ wind, warnings }: Props) => {
         <span>{wind.direction} ({wind.direction_degrees}°)</span>
       </div>
 
-    </motion.div>
+    </m.div>
   );
 };
 

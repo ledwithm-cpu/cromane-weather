@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Zap, CloudLightning } from 'lucide-react';
 import type { LightningData } from '@/types/forecast';
 
@@ -84,7 +84,7 @@ const LightningCard = ({ data }: Props) => {
   const showHorizonClose = nowcastLevel >= 1 && (nowcast?.eta_minutes ?? 999) <= 30;
 
   return (
-    <motion.div
+    <m.div
       data-testid="lightning-card"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ const LightningCard = ({ data }: Props) => {
       {/* Horizon Gradient — distant storm darkening */}
       <AnimatePresence>
         {(showHorizon || showHorizonClose) && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: showHorizonClose ? 0.4 : 0.2 }}
             exit={{ opacity: 0 }}
@@ -117,14 +117,14 @@ const LightningCard = ({ data }: Props) => {
       {/* Radial Pulse Animation */}
       <AnimatePresence>
         {showPulse && (
-          <motion.div
+          <m.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             {[0, 0.3, 0.6].map((delay) => (
-              <motion.div
+              <m.div
                 key={delay}
                 className="absolute rounded-full border border-accent/30"
                 initial={{ width: 0, height: 0, opacity: 0.6 }}
@@ -132,7 +132,7 @@ const LightningCard = ({ data }: Props) => {
                 transition={{ duration: 1.8, delay, ease: 'easeOut' }}
               />
             ))}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -270,7 +270,7 @@ const LightningCard = ({ data }: Props) => {
       {/* Level 3 danger banner */}
       <AnimatePresence>
         {effectiveLevel >= 3 && data.closest_strike && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -279,10 +279,10 @@ const LightningCard = ({ data }: Props) => {
             <p className="text-xs text-foreground font-medium">
               ⚡ Lightning detected {data.closest_strike.distance_km}km {data.closest_strike.bearing_compass}. Take your pets inside.
             </p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };
 

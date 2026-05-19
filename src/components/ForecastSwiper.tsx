@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { WindData, TideData } from '@/types/forecast';
 import WeatherDayCard from './WeatherDayCard';
 import TideDayCard from './TideDayCard';
@@ -87,7 +87,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   }, [tideForecast]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
@@ -101,20 +101,20 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
 
         {/* Jony Ive–inspired swipe indicator: precision rail + breathing chevrons */}
         <div className="flex items-center justify-center gap-3 pt-0.5" aria-hidden>
-          <motion.svg
+          <m.svg
             width="14" height="10" viewBox="0 0 14 10"
             className="text-muted-foreground/40"
             animate={{ x: [0, -2, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
             <path d="M9 1 L4 5 L9 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-          </motion.svg>
+          </m.svg>
 
           <div className="flex items-center gap-[3px]">
             {days.map((d, i) => {
               const active = i === currentDayIndex;
               return (
-                <motion.span
+                <m.span
                   key={`rail-${d.key}`}
                   className="block rounded-full bg-foreground"
                   animate={{
@@ -128,14 +128,14 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
             })}
           </div>
 
-          <motion.svg
+          <m.svg
             width="14" height="10" viewBox="0 0 14 10"
             className="text-muted-foreground/40"
             animate={{ x: [0, 2, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
             <path d="M5 1 L10 5 L5 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-          </motion.svg>
+          </m.svg>
         </div>
       </div>
 
@@ -161,7 +161,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
         <div className="relative mx-5 h-px bg-border/60" aria-hidden>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="flex items-center gap-1.5 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/80 font-medium shadow-sm">
-              <motion.span
+              <m.span
                 animate={{
                   opacity: swipeDir === -1 ? 1 : 0.55,
                   color: swipeDir === -1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
@@ -169,8 +169,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 transition={{ duration: 0.2 }}
               >
                 Weather
-              </motion.span>
-              <motion.span
+              </m.span>
+              <m.span
                 className="text-foreground/50"
                 animate={{
                   x: swipeDir === 1 ? 1.5 : swipeDir === -1 ? -1.5 : 0,
@@ -179,8 +179,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 transition={{ type: 'spring', stiffness: 260, damping: 22 }}
               >
                 ↔
-              </motion.span>
-              <motion.span
+              </m.span>
+              <m.span
                 animate={{
                   opacity: swipeDir === 1 ? 1 : 0.55,
                   color: swipeDir === 1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
@@ -188,7 +188,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                 transition={{ duration: 0.2 }}
               >
                 Tides
-              </motion.span>
+              </m.span>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

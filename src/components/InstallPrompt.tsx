@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Share, Plus, MoreVertical, X, Smartphone } from 'lucide-react';
 
 const STORAGE_KEY = 'a2hs-prompt-dismissed-v1';
@@ -56,7 +56,7 @@ const InstallPrompt = () => {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 16 }}
@@ -133,7 +133,7 @@ const InstallPrompt = () => {
               </button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
