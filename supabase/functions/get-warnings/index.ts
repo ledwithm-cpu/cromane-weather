@@ -1,26 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeaders } from "../_shared/cors.ts";
+import { createRateLimiter, getClientIp } from "../_shared/rate-limit.ts";
 
 const WARNINGS_PAGE_URL = 'https://www.met.ie/warnings';
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 30;
-const RATE_WINDOW_MS = 60_000;
+const limiter = createRateLimiter();
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT;
-}
 
 function cleanHtml(s: string): string {
   return s.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
