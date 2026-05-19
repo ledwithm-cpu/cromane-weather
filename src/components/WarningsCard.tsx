@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Warning } from '@/types/forecast';
 import { Badge } from '@/components/ui/badge';
 import { CloudLightning } from 'lucide-react';
@@ -21,7 +21,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
 
   if (warnings.length === 0 && !thunderActive) {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -33,12 +33,12 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           </p>
         </div>
         <p className="text-sm text-muted-foreground">No active warnings for {location.county}</p>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -79,7 +79,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           <p className="text-xs text-muted-foreground/60">Valid until {w.valid_until}</p>
         </div>
       ))}
-    </motion.div>
+    </m.div>
   );
 };
 

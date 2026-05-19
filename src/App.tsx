@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LazyMotion, domAnimation } from "framer-motion";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { toast } from "sonner";
 import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebase-messaging";
@@ -70,16 +71,18 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <LocationContext.Provider value={locationState}>
-          <TooltipProvider>
-            <Sonner />
-            <BrowserRouter>
-              <ErrorBoundary>
-                <AnalyticsRoutes />
-              </ErrorBoundary>
-            </BrowserRouter>
-          </TooltipProvider>
-        </LocationContext.Provider>
+        <LazyMotion features={domAnimation} strict>
+          <LocationContext.Provider value={locationState}>
+            <TooltipProvider>
+              <Sonner />
+              <BrowserRouter>
+                <ErrorBoundary>
+                  <AnalyticsRoutes />
+                </ErrorBoundary>
+              </BrowserRouter>
+            </TooltipProvider>
+          </LocationContext.Provider>
+        </LazyMotion>
       </QueryClientProvider>
     </ErrorBoundary>
   );

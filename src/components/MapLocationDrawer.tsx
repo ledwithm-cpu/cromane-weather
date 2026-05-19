@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft, Bookmark, BookmarkCheck, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Location } from '@/data/locations';
@@ -165,7 +165,7 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
   return (
     <>
 
-      <motion.div
+      <m.div
         {...panelVariants}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
         className={`${
@@ -339,7 +339,7 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
             {location.lat.toFixed(4)}°N · {Math.abs(location.lon).toFixed(4)}°W
           </p>
         </div>
-      </motion.div>
+      </m.div>
     </>
   );
 };

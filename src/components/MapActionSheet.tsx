@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Location } from '@/data/locations';
@@ -23,14 +23,14 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
 
   return (
     <>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="fixed inset-0 z-[2000] bg-background/40 backdrop-blur-[2px]"
       />
-      <motion.div
+      <m.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
@@ -114,7 +114,7 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
             </Link>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </>
   );
 };

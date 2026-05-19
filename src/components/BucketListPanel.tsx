@@ -1,4 +1,4 @@
-import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { Reorder, m, AnimatePresence } from 'framer-motion';
 import { Bookmark, GripVertical, X, ListChecks } from 'lucide-react';
 import { useBucketList, BucketItem } from '@/hooks/use-bucket-list';
 import { LOCATIONS } from '@/data/locations';
@@ -117,7 +117,7 @@ const BucketListPanel = ({ open, onClose }: Props) => {
       {open && (
         <>
           {isMobile && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -125,7 +125,7 @@ const BucketListPanel = ({ open, onClose }: Props) => {
               className="fixed inset-0 z-[2000] bg-background/40 backdrop-blur-[2px]"
             />
           )}
-          <motion.aside
+          <m.aside
             key="bucket-panel"
             initial={isMobile ? { y: '100%' } : { x: '100%' }}
             animate={isMobile ? { y: 0 } : { x: 0 }}
@@ -152,7 +152,7 @@ const BucketListPanel = ({ open, onClose }: Props) => {
             <div className="flex-1 overflow-y-auto pt-3">
               {rows.length === 0 ? Empty : List}
             </div>
-          </motion.aside>
+          </m.aside>
         </>
       )}
     </AnimatePresence>

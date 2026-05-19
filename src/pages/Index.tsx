@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
 import WarningsCard from '@/components/WarningsCard';
@@ -104,7 +104,7 @@ const Index = () => {
         <PullToRefresh onRefresh={refreshAll}>
         <main className="max-w-md mx-auto px-4 py-8 space-y-4">
           {/* Header */}
-          <motion.header
+          <m.header
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="pb-4 text-center relative"
@@ -161,7 +161,7 @@ const Index = () => {
                 Fetching live data…
               </p>
             ) : null}
-          </motion.header>
+          </m.header>
 
           {/* Card Stack */}
           <div className="space-y-3">

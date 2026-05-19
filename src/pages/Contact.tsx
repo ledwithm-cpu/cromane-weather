@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail } from 'lucide-react';
 import AppFooter from '@/components/AppFooter';
@@ -21,7 +21,7 @@ const Contact = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-md mx-auto px-4 py-8 space-y-6">
-        <motion.header
+        <m.header
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="flex items-center gap-3"
@@ -35,9 +35,9 @@ const Contact = () => {
           <h1 className="text-2xl font-light tracking-tight text-foreground">
             Contact Us
           </h1>
-        </motion.header>
+        </m.header>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -54,7 +54,7 @@ const Contact = () => {
             <Mail className="w-4 h-4 text-primary" />
             ledwith.m@gmail.com
           </a>
-        </motion.div>
+        </m.div>
 
         <AdSlot className="pt-6" />
 

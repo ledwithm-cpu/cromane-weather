@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Bug } from 'lucide-react';
 import { useDebugMode } from '@/hooks/use-debug-mode';
 
@@ -18,7 +18,7 @@ const AppFooter = ({ delay = 0.5 }: AppFooterProps) => {
   ];
 
   return (
-    <motion.footer
+    <m.footer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
@@ -56,7 +56,7 @@ const AppFooter = ({ delay = 0.5 }: AppFooterProps) => {
         <Bug className="w-2.5 h-2.5" strokeWidth={2} />
         {isDebugMode ? 'Debug On' : 'Debug'}
       </button>
-    </motion.footer>
+    </m.footer>
   );
 };
 

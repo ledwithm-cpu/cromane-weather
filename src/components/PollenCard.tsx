@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { PollenCurrent } from '@/hooks/use-pollen';
 
 interface Props {
@@ -62,7 +62,7 @@ const PollenCard = ({ data }: Props) => {
   const alderStatus = getPollenStatus(alder);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.45 }}
@@ -113,7 +113,7 @@ const PollenCard = ({ data }: Props) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 
