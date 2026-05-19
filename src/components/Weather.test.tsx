@@ -26,8 +26,7 @@ beforeEach(() => {
       rootMargin = '';
       thresholds: number[] = [];
     }
-    // @ts-expect-error - polyfill
-    globalThis.IntersectionObserver = IO;
+    globalThis.IntersectionObserver = IO as unknown as typeof IntersectionObserver;
   }
   if (!('ResizeObserver' in globalThis)) {
     class RO {
