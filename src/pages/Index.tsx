@@ -12,7 +12,7 @@ import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
 import AdSlot from '@/components/AdSlot';
 import SEOHead from '@/components/SEOHead';
-import { hasActiveWarnings } from '@/types/forecast';
+import { hasActiveWarnings } from '@/lib/conditions';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocationFromRoute } from '@/hooks/use-location-from-route';
 import { LOCATIONS } from '@/data/locations';
