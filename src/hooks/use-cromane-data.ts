@@ -5,7 +5,7 @@ import { cacheGet, cacheSet } from '@/lib/offline-cache';
 import { useCallback } from 'react';
 import { useLocation } from '@/hooks/use-location';
 import { useDebugMode } from '@/hooks/use-debug-mode';
-import { Location } from '@/lib/locations';
+import { Location } from '@/data/locations';
 
 // Extreme lightning mock used when Debug Mode is enabled (strike 2km away)
 const DEBUG_LIGHTNING: LightningData = {

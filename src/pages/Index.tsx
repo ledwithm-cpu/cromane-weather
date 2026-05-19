@@ -15,7 +15,7 @@ import SEOHead from '@/components/SEOHead';
 import { hasActiveWarnings } from '@/types/forecast';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocationFromRoute } from '@/hooks/use-location-from-route';
-import { LOCATIONS } from '@/lib/locations';
+import { LOCATIONS } from '@/data/locations';
 import {
   Select,
   SelectContent,

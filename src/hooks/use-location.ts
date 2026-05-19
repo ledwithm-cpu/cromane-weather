@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import { Location, DEFAULT_LOCATION, getLocationById } from '@/lib/locations';
+import { Location, DEFAULT_LOCATION, getLocationById } from '@/data/locations';
 
 interface LocationContextValue {
   location: Location;

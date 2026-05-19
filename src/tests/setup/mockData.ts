@@ -1,4 +1,4 @@
-import type { Location } from '@/lib/locations';
+import type { Location } from '@/data/locations';
 import type {
   WindData,
   TideData,

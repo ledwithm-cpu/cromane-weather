@@ -4,7 +4,7 @@ import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
-import { LOCATIONS, Location } from '@/lib/locations';
+import { LOCATIONS, Location } from '@/data/locations';
 import MapLocationDrawer from '@/components/MapLocationDrawer';
 import MapActionSheet from '@/components/MapActionSheet';
 import BucketListPanel from '@/components/BucketListPanel';
