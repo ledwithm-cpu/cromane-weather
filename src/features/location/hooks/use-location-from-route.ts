@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { LOCATIONS } from '@/data/locations';
+import { LOCATIONS } from '@/features/location/data/locations';
 import { useLocation } from './use-location';
 
 /**

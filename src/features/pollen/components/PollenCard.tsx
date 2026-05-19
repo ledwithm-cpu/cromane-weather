@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import type { PollenCurrent } from '@/hooks/use-pollen';
+import type { PollenCurrent } from '@/features/pollen/hooks/use-pollen';
 
 interface Props {
   data: PollenCurrent | undefined;

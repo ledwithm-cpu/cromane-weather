@@ -7,7 +7,7 @@ import { LazyMotion, domAnimation } from "framer-motion";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { toast } from "sonner";
 import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebase-messaging";
-import { LocationContext, useLocationState } from "@/hooks/use-location";
+import { LocationContext, useLocationState } from "@/features/location/hooks/use-location";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";

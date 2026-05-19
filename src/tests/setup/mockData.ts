@@ -1,4 +1,4 @@
-import type { Location } from '@/data/locations';
+import type { Location } from '@/features/location/data/locations';
 import type {
   WindData,
   TideData,
@@ -6,7 +6,7 @@ import type {
   Warning,
   MarineWarning,
 } from '@/types/forecast';
-import type { PollenCurrent } from '@/hooks/use-pollen';
+import type { PollenCurrent } from '@/features/pollen/hooks/use-pollen';
 
 // ─── Stable timestamp so snapshot diffs stay deterministic ───
 export const FIXED_NOW_MS = 1_704_110_400_000; // 2024-01-01T12:00:00.000Z

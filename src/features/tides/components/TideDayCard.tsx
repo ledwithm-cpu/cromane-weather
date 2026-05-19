@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { TideForecastDay } from '@/types/forecast';
-import { useLocation } from '@/hooks/use-location';
-import { buildTideSparkline } from '@/lib/tide-sparkline';
+import { useLocation } from '@/features/location/hooks/use-location';
+import { buildTideSparkline } from '@/features/tides/lib/tide-sparkline';
 
 interface Props {
   day: TideForecastDay | null;

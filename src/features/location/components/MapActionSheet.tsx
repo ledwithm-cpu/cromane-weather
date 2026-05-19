@@ -1,8 +1,8 @@
 import { m } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
-import { Location } from '@/data/locations';
-import { useBucketList } from '@/hooks/use-bucket-list';
+import { Location } from '@/features/location/data/locations';
+import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import { openExternal, buildDirectionsUrls } from '@/lib/open-external';
 
 interface Props {

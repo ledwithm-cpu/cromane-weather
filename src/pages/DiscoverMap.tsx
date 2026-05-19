@@ -4,13 +4,13 @@ import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { m, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
-import { LOCATIONS, Location } from '@/data/locations';
-import MapLocationDrawer from '@/components/MapLocationDrawer';
-import MapActionSheet from '@/components/MapActionSheet';
-import BucketListPanel from '@/components/BucketListPanel';
+import { LOCATIONS, Location } from '@/features/location/data/locations';
+import MapLocationDrawer from '@/features/location/components/MapLocationDrawer';
+import MapActionSheet from '@/features/location/components/MapActionSheet';
+import BucketListPanel from '@/features/bucket-list/components/BucketListPanel';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useBucketList } from '@/hooks/use-bucket-list';
+import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import 'leaflet/dist/leaflet.css';
 
 // Fix default marker icon issue with bundlers

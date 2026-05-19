@@ -1,7 +1,7 @@
 import { m } from 'framer-motion';
 // Waves icon removed – using text labels instead
 import { TideData, WindData, Warning } from '@/types/forecast';
-import { useLocation } from '@/hooks/use-location';
+import { useLocation } from '@/features/location/hooks/use-location';
 
 interface Props {
   tideData: TideData;

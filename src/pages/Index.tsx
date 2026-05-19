@@ -3,19 +3,19 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { m } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
-import WarningsCard from '@/components/WarningsCard';
-import MarineCard from '@/components/MarineCard';
-import ForecastSwiper from '@/components/ForecastSwiper';
-import LightningCard from '@/components/LightningCard';
+import WarningsCard from '@/features/weather/components/WarningsCard';
+import MarineCard from '@/features/weather/components/MarineCard';
+import ForecastSwiper from '@/features/weather/components/ForecastSwiper';
+import LightningCard from '@/features/lightning/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
 import AdSlot from '@/components/AdSlot';
 import SEOHead from '@/components/SEOHead';
-import { hasActiveWarnings } from '@/lib/conditions';
+import { hasActiveWarnings } from '@/features/weather/lib/conditions';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
-import { useLocationFromRoute } from '@/hooks/use-location-from-route';
-import { LOCATIONS } from '@/data/locations';
+import { useLocationFromRoute } from '@/features/location/hooks/use-location-from-route';
+import { LOCATIONS } from '@/features/location/data/locations';
 import {
   Select,
   SelectContent,

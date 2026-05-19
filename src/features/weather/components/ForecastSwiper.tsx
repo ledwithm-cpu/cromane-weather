@@ -3,10 +3,10 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { m } from 'framer-motion';
 import { WindData, TideData } from '@/types/forecast';
 import WeatherDayCard from './WeatherDayCard';
-import TideDayCard from './TideDayCard';
-import { build7Days, formatLongDate } from '@/lib/forecast-days';
-import { useSyncedEmbla } from '@/hooks/use-synced-embla';
-import { useDailyRollover } from '@/hooks/use-daily-rollover';
+import TideDayCard from '@/features/tides/components/TideDayCard';
+import { build7Days, formatLongDate } from '@/features/weather/lib/forecast-days';
+import { useSyncedEmbla } from '@/features/weather/hooks/use-synced-embla';
+import { useDailyRollover } from '@/features/weather/hooks/use-daily-rollover';
 
 interface Props {
   wind: WindData;
