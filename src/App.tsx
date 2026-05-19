@@ -9,8 +9,8 @@ import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebas
 import { LocationContext, useLocationState } from "@/hooks/use-location";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-const LocationPage = lazy(() => import("./pages/LocationPage"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const DiscoverMap = lazy(() => import("./pages/DiscoverMap"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -33,13 +33,14 @@ const AnalyticsRoutes = () => {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/:locationId" element={<LocationPage />} />
+        <Route path="/:locationId" element={<Index />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/discover" element={<DiscoverMap />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+
   );
 };
 
@@ -67,17 +68,22 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <LocationContext.Provider value={locationState}>
-        <TooltipProvider>
-          <Sonner />
-          <BrowserRouter>
-            <AnalyticsRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
-      </LocationContext.Provider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <LocationContext.Provider value={locationState}>
+          <TooltipProvider>
+            <Sonner />
+            <BrowserRouter>
+              <ErrorBoundary>
+                <AnalyticsRoutes />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
+        </LocationContext.Provider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
+
 };
 
 export default App;

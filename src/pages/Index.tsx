@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
@@ -11,9 +11,10 @@ import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
 import AdSlot from '@/components/AdSlot';
+import SEOHead from '@/components/SEOHead';
 import { hasActiveWarnings } from '@/lib/mock-data';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
-import { useLocation } from '@/hooks/use-location';
+import { useLocationFromRoute } from '@/hooks/use-location-from-route';
 import { LOCATIONS } from '@/lib/locations';
 import {
   Select,
@@ -23,15 +24,31 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+const DEFAULT_SEO = {
+  title: 'Irish Beach Saunas | Find Coastal Saunas, Tide Times & Weather',
+  description:
+    'Find Irish beach saunas with live tide times, sea temperature and weather for coastal sauna and sea swimming sessions around Ireland.',
+  canonicalPath: '/',
+};
+
+function buildLocationSEO(loc: ReturnType<typeof useLocationFromRoute>['location']) {
+  const title = loc.saunaName
+    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, Co. ${loc.county}`
+    : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, Co. ${loc.county}`;
+  const description = loc.saunaName
+    ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
+    : `${loc.name} beach sauna and sea swimming guide for Co. ${loc.county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
+  const h1 = loc.saunaName
+    ? `${loc.name} Sauna · ${loc.saunaName} Beach Sauna & Sea Swimming in ${loc.name}, Co. ${loc.county}`
+    : `${loc.name} Beach Sauna & Sea Swimming · ${loc.name}, Co. ${loc.county}`;
+  return { title, description, canonicalPath: `/${loc.id}`, h1 };
+}
+
 const Index = () => {
-  const { location, setLocationById } = useLocation();
+  const { location, isInvalidRoute, hasRouteParam } = useLocationFromRoute();
   const navigate = useNavigate();
 
-  // Keep the URL in sync with the selected location. LocationPage.tsx
-  // listens for the :locationId param and updates the LocationContext,
-  // so navigating is enough to sync state + URL together.
   const handleLocationChange = (id: string) => {
-    setLocationById(id);
     navigate(`/${id}`);
   };
 
@@ -58,7 +75,6 @@ const Index = () => {
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
 
-  // Group locations by county for the dropdown (static — computed once)
   const grouped = useMemo(
     () =>
       LOCATIONS.reduce<Record<string, typeof LOCATIONS>>((acc, loc) => {
@@ -68,11 +84,25 @@ const Index = () => {
     []
   );
 
+  const seo = hasRouteParam ? buildLocationSEO(location) : null;
+  const h1Text = seo?.h1 ?? `${location.name} Beach Sauna & Sea Swimming · Live Irish Coastal Conditions`;
+
+  // Invalid /:locationId → bounce home declaratively (no render-time side effects).
+  if (isInvalidRoute) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    <div className={`min-h-screen transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`} data-storm-approaching={stormApproaching || undefined}>
-      <div className="bg-background min-h-screen">
+    <div className={`min-h-dvh transition-colors duration-700 ${warningActive || lightningDanger ? 'theme-warning' : ''}`} data-storm-approaching={stormApproaching || undefined}>
+      <SEOHead
+        title={seo?.title ?? DEFAULT_SEO.title}
+        description={seo?.description ?? DEFAULT_SEO.description}
+        canonicalPath={seo?.canonicalPath ?? DEFAULT_SEO.canonicalPath}
+      />
+      <h1 className="sr-only">{h1Text}</h1>
+      <div className="bg-background min-h-dvh">
         <PullToRefresh onRefresh={refreshAll}>
-        <div className="max-w-md mx-auto px-4 py-8 space-y-4">
+        <main className="max-w-md mx-auto px-4 py-8 space-y-4">
           {/* Header */}
           <motion.header
             initial={{ opacity: 0 }}
@@ -148,7 +178,7 @@ const Index = () => {
 
           {/* Footer */}
           <AppFooter delay={0.6} />
-        </div>
+        </main>
         </PullToRefresh>
         <InstallPrompt />
         <DebugModeIndicator />
