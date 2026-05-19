@@ -207,8 +207,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
                     isToday={d.key === todayKey}
                     globalMinH={globalMinH}
                     globalMaxH={globalMaxH}
-                    sunrise={weatherDay?.sunrise}
-                    sunset={weatherDay?.sunset}
+                    sunrise={weatherDay?.sunrise ?? undefined}
+                    sunset={weatherDay?.sunset ?? undefined}
                   />
                 </div>
               );
