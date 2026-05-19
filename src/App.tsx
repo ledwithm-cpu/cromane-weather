@@ -71,16 +71,18 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <LocationContext.Provider value={locationState}>
-          <TooltipProvider>
-            <Sonner />
-            <BrowserRouter>
-              <ErrorBoundary>
-                <AnalyticsRoutes />
-              </ErrorBoundary>
-            </BrowserRouter>
-          </TooltipProvider>
-        </LocationContext.Provider>
+        <LazyMotion features={domAnimation} strict>
+          <LocationContext.Provider value={locationState}>
+            <TooltipProvider>
+              <Sonner />
+              <BrowserRouter>
+                <ErrorBoundary>
+                  <AnalyticsRoutes />
+                </ErrorBoundary>
+              </BrowserRouter>
+            </TooltipProvider>
+          </LocationContext.Provider>
+        </LazyMotion>
       </QueryClientProvider>
     </ErrorBoundary>
   );
