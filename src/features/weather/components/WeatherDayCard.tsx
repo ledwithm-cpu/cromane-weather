@@ -3,8 +3,8 @@ import {
   CloudLightning, CloudFog, CloudSun, Wind, Droplets, Thermometer,
 } from 'lucide-react';
 import { WindData, WeatherForecastDay } from '@/types/forecast';
-import { useLocation } from '@/hooks/use-location';
-import { shortDay, dayNumber } from '@/lib/forecast-days';
+import { useLocation } from '@/features/location/hooks/use-location';
+import { shortDay, dayNumber } from '@/features/weather/lib/forecast-days';
 import WeatherShareRow from './WeatherShareRow';
 
 function getWeatherIcon(code: number, className = 'text-foreground') {

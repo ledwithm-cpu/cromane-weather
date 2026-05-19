@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from '@/hooks/use-location';
+import { useLocation } from '@/features/location/hooks/use-location';
 import { useDebugMode } from '@/hooks/use-debug-mode';
 
 export interface PollenCurrent {

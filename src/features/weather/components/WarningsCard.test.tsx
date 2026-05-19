@@ -9,7 +9,7 @@ import {
 import type { Warning } from '@/types/forecast';
 
 // WarningsCard reads location.county and location.name from useLocation()
-vi.mock('@/hooks/use-location', () => ({
+vi.mock('@/features/location/hooks/use-location', () => ({
   useLocation: () => ({ location: mockLocation, setLocationById: vi.fn() }),
 }));
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dublinDateKey } from '@/lib/forecast-days';
+import { dublinDateKey } from '@/features/weather/lib/forecast-days';
 
 /**
  * Returns a token that changes whenever the Dublin-local calendar date rolls

@@ -2,7 +2,7 @@ import { m } from 'framer-motion';
 import { Warning } from '@/types/forecast';
 import { Badge } from '@/components/ui/badge';
 import { CloudLightning } from 'lucide-react';
-import { useLocation } from '@/hooks/use-location';
+import { useLocation } from '@/features/location/hooks/use-location';
 
 interface Props {
   warnings: Warning[];

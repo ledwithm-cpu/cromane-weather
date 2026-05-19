@@ -15,7 +15,7 @@ import {
 // ─── Module mocks (must come before importing the hooks under test) ───
 
 // Mock the location context so hooks read our test location instead of DEFAULT_LOCATION
-vi.mock('@/hooks/use-location', () => ({
+vi.mock('@/features/location/hooks/use-location', () => ({
   useLocation: () => ({ location: mockLocation, setLocationById: vi.fn() }),
 }));
 

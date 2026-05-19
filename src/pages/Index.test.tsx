@@ -27,20 +27,20 @@ vi.mock('@/hooks/use-cromane-data', () => ({
   useRefreshAll: () => useRefreshAllMock(),
 }));
 
-vi.mock('@/hooks/use-pollen', () => ({
+vi.mock('@/features/pollen/hooks/use-pollen', () => ({
   usePollen: () => usePollenMock(),
 }));
 
-vi.mock('@/hooks/use-location', () => ({
+vi.mock('@/features/location/hooks/use-location', () => ({
   useLocation: () => ({ location: mockLocation, setLocationById: vi.fn() }),
 }));
 
 // Heavy children — replace with simple test stubs so we don't pull in
 // charts, swipers, or the lightning card's timer machinery.
-vi.mock('@/components/ForecastSwiper', () => ({
+vi.mock('@/features/weather/components/ForecastSwiper', () => ({
   default: () => <div data-testid="forecast-swiper" />,
 }));
-vi.mock('@/components/LightningCard', () => ({
+vi.mock('@/features/lightning/components/LightningCard', () => ({
   default: () => <div data-testid="lightning-card" />,
 }));
 vi.mock('@/components/PullToRefresh', () => ({
@@ -49,10 +49,10 @@ vi.mock('@/components/PullToRefresh', () => ({
 vi.mock('@/components/InstallPrompt', () => ({
   default: () => null,
 }));
-vi.mock('@/components/MarineCard', () => ({
+vi.mock('@/features/weather/components/MarineCard', () => ({
   default: () => <div data-testid="marine-card" />,
 }));
-vi.mock('@/components/PollenCard', () => ({
+vi.mock('@/features/pollen/components/PollenCard', () => ({
   default: () => <div data-testid="pollen-card" />,
 }));
 // Now import the page under test
