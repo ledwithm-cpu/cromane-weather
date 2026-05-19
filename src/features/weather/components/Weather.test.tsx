@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import TideCard from './TideCard';
+import TideCard from '@/features/tides/components/TideCard';
 import ForecastSwiper from './ForecastSwiper';
 import {
   mockTidesResponse,
