@@ -45,6 +45,11 @@ function buildLocationSEO(loc: ReturnType<typeof useLocationFromRoute>['location
 }
 
 const Index = () => {
+  // TEMPORARY: trigger error-boundary preview via ?crash=1 in URL
+  if (typeof window !== 'undefined' && window.location.search.includes('crash=1')) {
+    throw new Error('Mock crash for ErrorBoundary preview');
+  }
+
   const { location, isInvalidRoute, hasRouteParam } = useLocationFromRoute();
   const navigate = useNavigate();
 

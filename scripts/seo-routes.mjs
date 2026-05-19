@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const LOCATIONS_PATH = resolve(__dirname, '../src/data/locations.ts');
+const LOCATIONS_PATH = resolve(__dirname, '../src/features/location/data/locations.ts');
 
 const SITE_URL = 'https://irishsaunas.lovable.app';
 const DEFAULT_OG_IMAGE =
