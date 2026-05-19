@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { parseWarningsHtml } from "./index.ts";
 
-// Unique (county, province) pairs derived from src/lib/locations.ts
+// Unique (county, province) pairs derived from src/data/locations.ts
 const COUNTY_PROVINCES: Array<{ county: string; province: string }> = [
   { county: "Kerry", province: "Munster" },
   { county: "Cork", province: "Munster" },
@@ -85,9 +85,9 @@ Deno.test("No marine warnings → marine.active false", () => {
   assertEquals(marine.active, false);
 });
 
-// Sync guard: keep COUNTY_PROVINCES aligned with src/lib/locations.ts.
-Deno.test("County/province coverage matches src/lib/locations.ts", async () => {
-  const url = new URL("../../../src/lib/locations.ts", import.meta.url);
+// Sync guard: keep COUNTY_PROVINCES aligned with src/data/locations.ts.
+Deno.test("County/province coverage matches src/data/locations.ts", async () => {
+  const url = new URL("../../../src/data/locations.ts", import.meta.url);
   const src = await Deno.readTextFile(url);
   const re = /county:\s*'([^']+)',\s*province:\s*'([^']+)'/g;
   const found = new Set<string>();
