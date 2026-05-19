@@ -563,6 +563,12 @@ export const LOCATIONS: Location[] = [
 
 export const DEFAULT_LOCATION = LOCATIONS[0]; // Cromane
 
+/** Pre-computed O(1) id -> Location lookup. Built once at module load. */
+export const locationsById: ReadonlyMap<string, Location> = new Map(
+  LOCATIONS.map(l => [l.id, l]),
+);
+
 export function getLocationById(id: string): Location {
-  return LOCATIONS.find(l => l.id === id) ?? DEFAULT_LOCATION;
+  return locationsById.get(id) ?? DEFAULT_LOCATION;
 }
+
