@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { getSeoRoutes } from './seo-routes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BASE_URL = 'https://irishsaunas.lovable.app';
+const BASE_URL = 'https://saunasinireland.com';
 
 // Per-route metadata defaults. Location pages share the same shape.
 const META = {
