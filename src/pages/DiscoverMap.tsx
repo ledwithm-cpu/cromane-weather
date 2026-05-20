@@ -216,20 +216,18 @@ const DiscoverMap = () => {
             Back
           </Link>
           <div className="pointer-events-auto flex items-center gap-2">
-            <div className="glass-card rounded-full px-4 py-2.5 shadow-lg">
-              <span className="text-sm font-normal tracking-wide text-foreground">
-                Discover Saunas
-              </span>
-            </div>
             <button
               onClick={() => setBucketOpen((o) => !o)}
               aria-label="Toggle bucket list"
               aria-expanded={bucketOpen}
-              className="relative glass-card rounded-full p-2.5 shadow-lg hover:bg-card/90 active:scale-[0.97] transition-all"
+              className="relative glass-card rounded-full px-4 py-2.5 shadow-lg hover:bg-card/90 active:scale-[0.97] transition-all inline-flex items-center gap-2"
             >
               <ListChecks className="w-4 h-4 text-foreground" />
+              <span className="text-sm font-normal tracking-wide text-foreground">
+                Bucket List
+              </span>
               {bucketItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-amber-500 text-[10px] font-semibold text-white tabular-nums shadow">
+                <span className="ml-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-amber-500 text-[10px] font-semibold text-white tabular-nums shadow">
                   {bucketItems.length}
                 </span>
               )}
@@ -238,6 +236,7 @@ const DiscoverMap = () => {
               <ThemeToggle />
             </div>
           </div>
+
         </div>
       </div>
 
