@@ -7,7 +7,7 @@ interface AppFooterProps {
 
 const AppFooter = ({ delay = 0.5 }: AppFooterProps) => {
   const { pathname } = useLocation();
-  const { isDebugMode, toggle } = useDebugMode();
+  
 
   const links = [
     { to: '/discover', label: 'Map' },
