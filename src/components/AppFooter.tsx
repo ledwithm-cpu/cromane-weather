@@ -1,7 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import { m } from 'framer-motion';
-import { Bug } from 'lucide-react';
-import { useDebugMode } from '@/hooks/use-debug-mode';
 
 interface AppFooterProps {
   delay?: number;
