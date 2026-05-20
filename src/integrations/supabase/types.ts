@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      bucket_list_items: {
+        Row: {
+          created_at: string
+          id: string
+          location_id: string
+          priority_index: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location_id: string
+          priority_index?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location_id?: string
+          priority_index?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -92,6 +116,63 @@ export type Database = {
           lat?: number
           lon?: number
           time_ns?: number
+        }
+        Relationships: []
+      }
+      marketing_subscribers: {
+        Row: {
+          converted_to_full_account: boolean
+          county: string | null
+          created_at: string
+          email: string
+          id: string
+          source: string
+        }
+        Insert: {
+          converted_to_full_account?: boolean
+          county?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+        }
+        Update: {
+          converted_to_full_account?: boolean
+          county?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          county: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          county?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          county?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

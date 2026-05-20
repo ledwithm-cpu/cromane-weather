@@ -11,6 +11,8 @@ import { LocationContext, useLocationState } from "@/features/location/hooks/use
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { AuthProvider } from "@/hooks/use-auth";
+import AuthModal from "@/components/auth/AuthModal";
 
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const DiscoverMap = lazy(() => import("./pages/DiscoverMap"));
@@ -76,9 +78,12 @@ const App = () => {
             <TooltipProvider>
               <Sonner />
               <BrowserRouter>
-                <ErrorBoundary>
-                  <AnalyticsRoutes />
-                </ErrorBoundary>
+                <AuthProvider>
+                  <ErrorBoundary>
+                    <AnalyticsRoutes />
+                  </ErrorBoundary>
+                  <AuthModal />
+                </AuthProvider>
               </BrowserRouter>
             </TooltipProvider>
           </LocationContext.Provider>
