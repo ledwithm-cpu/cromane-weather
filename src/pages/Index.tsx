@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { m } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
+import SignInButton from '@/components/auth/SignInButton';
 import AppFooter from '@/components/AppFooter';
 import WarningsCard from '@/features/weather/components/WarningsCard';
 import MarineCard from '@/features/weather/components/MarineCard';
@@ -114,7 +115,8 @@ const Index = () => {
             animate={{ opacity: 1 }}
             className="pb-4 text-center relative"
           >
-            <div className="absolute right-0 top-0">
+            <div className="absolute right-0 top-0 flex items-center gap-1">
+              <SignInButton />
               <ThemeToggle />
             </div>
 
