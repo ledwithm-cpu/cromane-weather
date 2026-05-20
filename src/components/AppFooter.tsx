@@ -39,23 +39,6 @@ const AppFooter = ({ delay = 0.5 }: AppFooterProps) => {
           </Link>
         ))}
       </div>
-      <p className="text-[10px] text-muted-foreground/30 tracking-[0.25em] uppercase font-light">
-        Irish Saunas · Live
-      </p>
-      <button
-        type="button"
-        onClick={toggle}
-        title={isDebugMode ? 'Disable Debug Mode' : 'Enable Debug Mode (uses mock extreme data)'}
-        aria-pressed={isDebugMode}
-        className={`inline-flex items-center gap-1.5 text-[9px] tracking-[0.22em] uppercase transition-colors ${
-          isDebugMode
-            ? 'text-warning-orange'
-            : 'text-muted-foreground/25 hover:text-muted-foreground/60'
-        }`}
-      >
-        <Bug className="w-2.5 h-2.5" strokeWidth={2} />
-        {isDebugMode ? 'Debug On' : 'Debug'}
-      </button>
     </m.footer>
   );
 };
