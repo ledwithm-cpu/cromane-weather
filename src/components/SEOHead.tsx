@@ -8,7 +8,7 @@ interface SEOHeadProps {
   ogUrl?: string;
 }
 
-const BASE_URL = 'https://irishsaunas.lovable.app';
+const BASE_URL = 'https://saunasinireland.com';
 const DEFAULT_OG_IMAGE = 'https://images.unsplash.com/photo-1588869715773-c66526732f6f?w=1200&h=630&fit=crop';
 
 const SEOHead = ({ title, description, canonicalPath, ogImage, ogUrl }: SEOHeadProps) => {

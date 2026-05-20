@@ -10,7 +10,7 @@ import { dirname, resolve } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LOCATIONS_PATH = resolve(__dirname, '../src/features/location/data/locations.ts');
 
-const SITE_URL = 'https://irishsaunas.lovable.app';
+const SITE_URL = 'https://saunasinireland.com';
 const DEFAULT_OG_IMAGE =
   'https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1bce73d-3598-4d1f-b7fc-df8d9af07643/id-preview-60157873--6bd72f3e-cc1b-4456-8a58-e989a2a1b43d.lovable.app-1774037527519.png';
 

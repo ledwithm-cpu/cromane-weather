@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://irishsaunas.lovable.app/sitemap.xml
+Sitemap: https://saunasinireland.com/sitemap.xml
