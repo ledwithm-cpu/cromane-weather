@@ -76,12 +76,9 @@ const App = () => {
             <TooltipProvider>
               <Sonner />
               <BrowserRouter>
-                <AuthProvider>
-                  <ErrorBoundary>
-                    <AnalyticsRoutes />
-                  </ErrorBoundary>
-                  <AuthModal />
-                </AuthProvider>
+                <ErrorBoundary>
+                  <AnalyticsRoutes />
+                </ErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>
           </LocationContext.Provider>
