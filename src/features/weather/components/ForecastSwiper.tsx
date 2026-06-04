@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { m } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { WindData, TideData } from '@/types/forecast';
 import WeatherDayCard from './WeatherDayCard';
 import TideDayCard from '@/features/tides/components/TideDayCard';
@@ -22,6 +23,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   // Direction the user is currently swiping: -1 = back, 0 = idle, 1 = forward
   const [swipeDir, setSwipeDir] = useState<-1 | 0 | 1>(0);
+  const [activeView, setActiveView] = useState<'weather' | 'tides'>('weather');
 
   // Notify parent whenever the active day changes
   useEffect(() => {
@@ -54,6 +56,25 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       weatherApi.off('settle', onSettle);
     };
   }, [weatherApi]);
+
+  // Sync newly visible carousel to current day when switching views
+  useEffect(() => {
+    if (activeView === 'weather') {
+      weatherApi?.scrollTo(currentDayIndex);
+    } else {
+      tideApi?.scrollTo(currentDayIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeView]);
+
+  // Track current day from the visible carousel
+  useEffect(() => {
+    const api = activeView === 'weather' ? weatherApi : tideApi;
+    if (!api) return;
+    const onSelect = () => setCurrentDayIndex(api.selectedScrollSnap());
+    api.on('select', onSelect);
+    return () => { api.off('select', onSelect); };
+  }, [activeView, weatherApi, tideApi]);
 
   const jumpTo = useCallback((idx: number) => {
     weatherApi?.scrollTo(idx);
@@ -98,127 +119,121 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       className="space-y-3"
     >
       {/* Static date label — does not move when swiping */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-1.5">
         <p className="text-base font-medium text-foreground tracking-wide">
           {formatLongDate(currentDay.date, isToday, isTomorrow)}
         </p>
+        <p className="text-[11px] text-muted-foreground/50 tracking-[0.08em]">
+          Swipe to see the week ahead →
+        </p>
 
-        {/* Jony Ive–inspired swipe indicator: precision rail + breathing chevrons */}
-        <div className="flex items-center justify-center gap-3 pt-0.5" aria-hidden>
-          <m.svg
-            width="14" height="10" viewBox="0 0 14 10"
-            className="text-muted-foreground/40"
-            animate={{ x: [0, -2, 0], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Day-initial pagination with larger tappable arrows */}
+        <div className="flex items-center justify-center gap-1 pt-1" aria-hidden>
+          <button
+            onClick={() => jumpTo(Math.max(0, currentDayIndex - 1))}
+            className="p-2 -ml-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+            aria-label="Previous day"
           >
-            <path d="M9 1 L4 5 L9 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-          </m.svg>
+            <ChevronLeft className="w-5 h-5" />
+          </button>
 
-          <div className="flex items-center gap-[3px]">
+          <div className="flex items-center gap-1">
             {days.map((d, i) => {
               const active = i === currentDayIndex;
+              const initial = d.date.toLocaleDateString('en-GB', { weekday: 'narrow' });
               return (
-                <m.span
-                  key={`rail-${d.key}`}
-                  className="block rounded-full bg-foreground"
-                  animate={{
-                    width: active ? 18 : 4,
-                    opacity: active ? 0.9 : 0.18,
-                  }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-                  style={{ height: 2 }}
-                />
+                <button
+                  key={`day-${d.key}`}
+                  onClick={() => jumpTo(i)}
+                  className={`w-7 h-7 rounded-full text-xs font-medium flex items-center justify-center transition-colors ${
+                    active
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/40'
+                  }`}
+                >
+                  {initial}
+                </button>
               );
             })}
           </div>
 
-          <m.svg
-            width="14" height="10" viewBox="0 0 14 10"
-            className="text-muted-foreground/40"
-            animate={{ x: [0, 2, 0], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          <button
+            onClick={() => jumpTo(Math.min(days.length - 1, currentDayIndex + 1))}
+            className="p-2 -mr-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+            aria-label="Next day"
           >
-            <path d="M5 1 L10 5 L5 9" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-          </m.svg>
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
-      {/* Stitched weather + tide card — single glass surface, hairline divider between */}
+      {/* Stitched weather + tide card — single glass surface */}
       <div className="glass-card rounded-lg overflow-hidden">
-        {/* Weather carousel */}
-        <div className="overflow-hidden" ref={weatherRef}>
-          <div className="flex">
-            {days.map((d) => (
-              <div key={`w-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
-                <WeatherDayCard
-                  day={weatherByDate.get(d.key) ?? null}
-                  fallbackWind={wind}
-                  isToday={d.key === todayKey}
-                  date={d.date}
-                />
-              </div>
-            ))}
-          </div>
+        {/* WEATHER · TIDES toggle */}
+        <div className="flex items-center justify-center gap-0.5 py-2.5 border-b border-border/30">
+          <button
+            onClick={() => setActiveView('weather')}
+            className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium transition-colors ${
+              activeView === 'weather'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground/50 hover:text-muted-foreground'
+            }`}
+          >
+            Weather
+          </button>
+          <span className="text-muted-foreground/30 text-[10px]">·</span>
+          <button
+            onClick={() => setActiveView('tides')}
+            className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium transition-colors ${
+              activeView === 'tides'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground/50 hover:text-muted-foreground'
+            }`}
+          >
+            Tides
+          </button>
         </div>
 
-        {/* Hairline divider with subtle Weather ↔ Tides swipe indicator */}
-        <div className="relative mx-5 h-px bg-border/60" aria-hidden>
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="flex items-center gap-1.5 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/80 font-medium shadow-sm">
-              <m.span
-                animate={{
-                  opacity: swipeDir === -1 ? 1 : 0.55,
-                  color: swipeDir === -1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                Weather
-              </m.span>
-              <m.span
-                className="text-foreground/50"
-                animate={{
-                  x: swipeDir === 1 ? 1.5 : swipeDir === -1 ? -1.5 : 0,
-                  opacity: swipeDir === 0 ? 0.5 : 0.9,
-                }}
-                transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-              >
-                ↔
-              </m.span>
-              <m.span
-                animate={{
-                  opacity: swipeDir === 1 ? 1 : 0.55,
-                  color: swipeDir === 1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                Tides
-              </m.span>
-            </div>
-          </div>
-        </div>
-
-        {/* Tide carousel */}
-        <div className="overflow-hidden" ref={tideRef}>
-          <div className="flex">
-            {days.map((d) => {
-              const weatherDay = weatherByDate.get(d.key) ?? null;
-              return (
-                <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
-                  <TideDayCard
-                    day={tideByDate.get(d.key) ?? null}
-                    currentHeight={tideData.current_height_m}
-                    currentState={tideData.state}
+        {activeView === 'weather' && (
+          <div className="overflow-hidden" ref={weatherRef}>
+            <div className="flex">
+              {days.map((d) => (
+                <div key={`w-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
+                  <WeatherDayCard
+                    day={weatherByDate.get(d.key) ?? null}
+                    fallbackWind={wind}
                     isToday={d.key === todayKey}
-                    globalMinH={globalMinH}
-                    globalMaxH={globalMaxH}
-                    sunrise={weatherDay?.sunrise ?? undefined}
-                    sunset={weatherDay?.sunset ?? undefined}
+                    date={d.date}
                   />
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {activeView === 'tides' && (
+          <div className="overflow-hidden" ref={tideRef}>
+            <div className="flex">
+              {days.map((d) => {
+                const weatherDay = weatherByDate.get(d.key) ?? null;
+                return (
+                  <div key={`t-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
+                    <TideDayCard
+                      day={tideByDate.get(d.key) ?? null}
+                      currentHeight={tideData.current_height_m}
+                      currentState={tideData.state}
+                      isToday={d.key === todayKey}
+                      globalMinH={globalMinH}
+                      globalMaxH={globalMaxH}
+                      sunrise={weatherDay?.sunrise ?? undefined}
+                      sunset={weatherDay?.sunset ?? undefined}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </m.div>
   );
