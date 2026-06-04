@@ -9,8 +9,6 @@ import MapLocationDrawer from '@/features/location/components/MapLocationDrawer'
 import MapActionSheet from '@/features/location/components/MapActionSheet';
 import BucketListPanel from '@/features/bucket-list/components/BucketListPanel';
 import ThemeToggle from '@/components/ThemeToggle';
-import SignInButton from '@/components/auth/SignInButton';
-import DiscoverEmailBanner from '@/components/auth/DiscoverEmailBanner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import 'leaflet/dist/leaflet.css';
@@ -234,14 +232,12 @@ const DiscoverMap = () => {
                 </span>
               )}
             </button>
-            <SignInButton glass />
             <div className="glass-card rounded-full shadow-lg">
               <ThemeToggle />
             </div>
           </div>
 
         </div>
-        <DiscoverEmailBanner />
       </div>
 
       {/* Legend */}

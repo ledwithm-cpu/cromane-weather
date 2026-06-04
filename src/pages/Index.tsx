@@ -114,7 +114,6 @@ const Index = () => {
             className="pb-4 text-center relative"
           >
             <div className="absolute right-0 top-0 flex items-center gap-1">
-              <SignInButton />
               <ThemeToggle />
             </div>
 

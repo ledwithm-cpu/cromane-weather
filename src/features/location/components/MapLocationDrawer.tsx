@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { Location } from '@/features/location/data/locations';
 import { openExternal } from '@/lib/open-external';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
-import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -113,21 +112,14 @@ function MiniTideTimeline({ tides, currentHeight }: { tides: TideEvent[]; curren
 
 const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
   const { has: isInBucket, add: addBucket, remove: removeBucket } = useBucketList();
-  const { requireAuth } = useAuth();
   const saved = isInBucket(location.id);
 
   const handleBucketToggle = () => {
     if (saved) {
       removeBucket(location.id);
     } else {
-      requireAuth({
-        intent: 'save',
-        message: 'Create a free account to save saunas to your bucket list.',
-        onSuccess: () => {
-          addBucket(location.id);
-          onAddToBucketList?.();
-        },
-      });
+      addBucket(location.id);
+      onAddToBucketList?.();
     }
   };
 
