@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
-import AdSlot from '@/components/AdSlot';
+
 
 const section = (delay: number) => ({
   initial: { opacity: 0, y: 16 },
