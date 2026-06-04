@@ -8,6 +8,8 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { toast } from "sonner";
 import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebase-messaging";
 import { LocationContext, useLocationState } from "@/features/location/hooks/use-location";
+import { AuthProvider } from "@/hooks/use-auth";
+import AuthModal from "@/components/auth/AuthModal";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -71,18 +73,21 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <LazyMotion features={domAnimation} strict>
-          <LocationContext.Provider value={locationState}>
-            <TooltipProvider>
-              <Sonner />
-              <BrowserRouter>
-                <ErrorBoundary>
-                  <AnalyticsRoutes />
-                </ErrorBoundary>
-              </BrowserRouter>
-            </TooltipProvider>
-          </LocationContext.Provider>
-        </LazyMotion>
+        <AuthProvider>
+          <LazyMotion features={domAnimation} strict>
+            <LocationContext.Provider value={locationState}>
+              <TooltipProvider>
+                <Sonner />
+                <AuthModal />
+                <BrowserRouter>
+                  <ErrorBoundary>
+                    <AnalyticsRoutes />
+                  </ErrorBoundary>
+                </BrowserRouter>
+              </TooltipProvider>
+            </LocationContext.Provider>
+          </LazyMotion>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
