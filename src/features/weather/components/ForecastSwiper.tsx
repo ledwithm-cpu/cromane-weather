@@ -170,10 +170,10 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       {/* Stitched weather + tide card — single glass surface */}
       <div className="glass-card rounded-lg overflow-hidden">
         {/* WEATHER · TIDES toggle */}
-        <div className="flex items-center justify-center gap-0.5 py-2.5 border-b border-border/30">
+        <div className="flex items-center justify-center gap-0.5 py-3 border-b border-border/30">
           <button
             onClick={() => setActiveView('weather')}
-            className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] font-medium transition-colors ${
               activeView === 'weather'
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground/50 hover:text-muted-foreground'
@@ -181,10 +181,10 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
           >
             Weather
           </button>
-          <span className="text-muted-foreground/30 text-[10px]">·</span>
+          <span className="text-muted-foreground/30 text-[11px]">·</span>
           <button
             onClick={() => setActiveView('tides')}
-            className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] font-medium transition-colors ${
               activeView === 'tides'
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground/50 hover:text-muted-foreground'
