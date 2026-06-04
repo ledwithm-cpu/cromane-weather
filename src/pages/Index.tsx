@@ -162,16 +162,17 @@ const Index = () => {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
-                className="text-center pt-1"
+                className="pt-1"
               >
                 <button
                   type="button"
                   onClick={handleBookingClick}
-                  className="group inline-flex min-h-8 items-center px-3 py-1.5 text-sm font-medium text-primary/90 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="group w-full h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-medium tracking-wide shadow-sm hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background flex items-center justify-center gap-2"
                 >
-                  <span className="border-b border-primary/25 pb-0.5 transition-colors group-hover:border-primary/60">
-                    Book {location.saunaName}
-                  </span>
+                  <span>Book {location.saunaName}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:translate-x-0.5 transition-transform">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
                 </button>
               </m.div>
             )}
