@@ -118,7 +118,7 @@ const Index = () => {
             </div>
 
             <p className="text-xs text-muted-foreground/50 mb-2 tracking-wide">
-              Live tides, weather & warnings for Irish coastal saunas
+              Check conditions before your sauna. Pick your spot below.
             </p>
 
             <Select value={location.id} onValueChange={handleLocationChange}>
