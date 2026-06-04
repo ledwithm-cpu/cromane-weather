@@ -260,9 +260,6 @@ const LightningCard = ({ data }: Props) => {
             <p className="text-xs text-muted-foreground/60 leading-relaxed">
               No lightning activity within 20km for the past 30 minutes.
             </p>
-            <p className="text-xs text-muted-foreground/40 leading-relaxed">
-              We will notify you if we predict activity coming in your chosen area.
-            </p>
           </div>
         )}
       </div>
