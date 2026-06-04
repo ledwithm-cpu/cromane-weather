@@ -62,24 +62,24 @@ const WeatherShareRow = ({ text, url }: Props) => {
   };
 
   const btn =
-    'inline-flex items-center justify-center w-7 h-7 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:bg-card/80 active:scale-95 transition-all';
+    'inline-flex items-center justify-center w-8 h-8 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:bg-card/80 active:scale-95 transition-all';
 
   return (
     <div
-      className="flex items-center justify-center gap-2 pt-2"
+      className="flex items-center justify-between w-[220px] mx-auto pt-2"
       aria-label="Share this forecast"
     >
-      <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mr-1">
+      <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60">
         Share
       </span>
       <button type="button" onClick={shareWhatsApp} className={btn} aria-label="Share on WhatsApp">
-        <WhatsAppIcon />
+        <WhatsAppIcon size={16} />
       </button>
       <button type="button" onClick={shareFacebook} className={btn} aria-label="Share on Facebook">
-        <Facebook size={13} strokeWidth={1.6} />
+        <Facebook size={15} strokeWidth={1.6} />
       </button>
       <button type="button" onClick={shareInstagram} className={btn} aria-label="Share on Instagram">
-        <Instagram size={13} strokeWidth={1.6} />
+        <Instagram size={15} strokeWidth={1.6} />
       </button>
     </div>
   );
