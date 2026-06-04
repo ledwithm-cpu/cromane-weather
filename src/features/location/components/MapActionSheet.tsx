@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Location } from '@/features/location/data/locations';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
-import { useAuth } from '@/hooks/use-auth';
 import { openExternal, buildDirectionsUrls } from '@/lib/open-external';
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 
 const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
   const { has, add, remove } = useBucketList();
-  const { requireAuth } = useAuth();
   const saved = has(location.id);
   const { google: googleMapsUrl, apple: appleMapsUrl } = buildDirectionsUrls(location.lat, location.lon);
 
@@ -85,15 +83,9 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
                 if (saved) {
                   remove(location.id);
                 } else {
-                  requireAuth({
-                    intent: 'save',
-                    message: 'Create a free account to save saunas to your bucket list.',
-                    onSuccess: () => {
-                      add(location.id);
-                      onAddedToBucketList?.();
-                      onClose();
-                    },
-                  });
+                  add(location.id);
+                  onAddedToBucketList?.();
+                  onClose();
                 }
               }}
               className={`flex items-center gap-3 w-full rounded-2xl border px-4 py-3.5 text-left active:scale-[0.98] transition-all ${
