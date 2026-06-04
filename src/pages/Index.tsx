@@ -117,18 +117,18 @@ const Index = () => {
               <ThemeToggle />
             </div>
 
-            <p className="text-xs text-muted-foreground/50 mb-2 tracking-wide">
-              Check conditions before your sauna. Pick your spot below.
+            <p className="text-xs text-muted-foreground/50 mb-3 tracking-wide leading-relaxed">
+              Check conditions before your sauna. Tap the location to change sauna.
             </p>
 
             <Select value={location.id} onValueChange={handleLocationChange}>
-              <SelectTrigger className="inline-flex w-auto gap-1.5 border border-border/50 bg-card/60 shadow-sm rounded-full h-auto px-4 py-2 mx-auto focus:ring-1 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/80 hover:border-border/70 active:scale-[0.97] transition-all">
+              <SelectTrigger className="inline-flex w-auto gap-2 border border-border/60 bg-card/70 shadow-md rounded-full h-auto px-6 py-3 mx-auto focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/90 hover:border-border/80 active:scale-[0.97] transition-all">
                 <SelectValue>
-                  <span className="text-xl font-normal tracking-wide text-foreground">
+                  <span className="text-2xl font-normal tracking-wide text-foreground">
                     {location.name}
                   </span>
                 </SelectValue>
-                <span className="text-muted-foreground/50 text-xs ml-0.5">▾</span>
+                <span className="text-muted-foreground/50 text-sm ml-1">▾</span>
               </SelectTrigger>
               <SelectContent className="max-h-80">
                 {Object.entries(grouped).map(([county, locs]) => (
@@ -145,21 +145,6 @@ const Index = () => {
                 ))}
               </SelectContent>
             </Select>
-
-            <p className="text-[11px] text-muted-foreground/50 tracking-[0.08em] mt-1.5">
-              Tap the location to change sauna
-            </p>
-            {location.saunaName && location.saunaUrl && (
-              <button
-                type="button"
-                onClick={handleBookingClick}
-                className="group mt-1 inline-flex min-h-8 items-center px-2 text-sm font-medium text-primary/90 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                <span className="border-b border-primary/25 pb-0.5 transition-colors group-hover:border-primary/60">
-                  Book {location.saunaName}
-                </span>
-              </button>
-            )}
             {isLoading ? (
               <p className="text-[10px] text-muted-foreground/50 mt-1 tracking-wider uppercase animate-pulse">
                 Fetching live data…
@@ -171,6 +156,24 @@ const Index = () => {
           <div className="space-y-3">
             {wind && tides && (
               <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
+            )}
+            {location.saunaName && location.saunaUrl && (
+              <m.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="text-center pt-1"
+              >
+                <button
+                  type="button"
+                  onClick={handleBookingClick}
+                  className="group inline-flex min-h-8 items-center px-3 py-1.5 text-sm font-medium text-primary/90 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  <span className="border-b border-primary/25 pb-0.5 transition-colors group-hover:border-primary/60">
+                    Book {location.saunaName}
+                  </span>
+                </button>
+              </m.div>
             )}
             {isToday && lightning && <LightningCard data={lightning} />}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
