@@ -75,13 +75,25 @@ export function buildTideSparkline({
   height = 40,
   now = new Date(),
 }: BuildSparklineArgs): Sparkline | null {
-  const samples = points
+  let samples = points
     .map(point => {
       const x = toDublinMinutes(point);
       return x == null ? null : { x, y: point.height_m };
     })
     .filter((p): p is { x: number; y: number } => p !== null && p.x >= 0 && p.x <= 1440)
     .sort((a, b) => a.x - b.x);
+
+  // Fallback: synthesise samples from high/low events when the backend
+  // doesn't return prediction points (events alone give us the wave shape).
+  if (samples.length < 2 && events.length >= 2) {
+    samples = events
+      .map(e => {
+        const x = toDublinMinutes(e);
+        return x == null ? null : { x, y: e.height_m };
+      })
+      .filter((p): p is { x: number; y: number } => p !== null && p.x >= 0 && p.x <= 1440)
+      .sort((a, b) => a.x - b.x);
+  }
 
   if (samples.length < 2) return null;
 
@@ -98,9 +110,15 @@ export function buildTideSparkline({
     padY + (1 - (yMeters - minH) / rangeH) * usableH;
   const projectX = (xMin: number) => (xMin / 1440) * W;
 
-  let d = `M${projectX(samples[0].x).toFixed(2)},${projectY(samples[0].y).toFixed(2)}`;
-  for (let i = 1; i < samples.length; i++) {
-    d += ` L${projectX(samples[i].x).toFixed(2)},${projectY(samples[i].y).toFixed(2)}`;
+  // Smooth curve via cubic bezier with horizontal control handles —
+  // approximates the sinusoidal tide shape between high/low extrema.
+  const pts = samples.map(s => ({ x: projectX(s.x), y: projectY(s.y) }));
+  let d = `M${pts[0].x.toFixed(2)},${pts[0].y.toFixed(2)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1];
+    const curr = pts[i];
+    const cx = (prev.x + curr.x) / 2;
+    d += ` C${cx.toFixed(2)},${prev.y.toFixed(2)} ${cx.toFixed(2)},${curr.y.toFixed(2)} ${curr.x.toFixed(2)},${curr.y.toFixed(2)}`;
   }
 
   const baselineY = H - 2;
