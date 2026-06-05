@@ -23,7 +23,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   // Direction the user is currently swiping: -1 = back, 0 = idle, 1 = forward
   const [swipeDir, setSwipeDir] = useState<-1 | 0 | 1>(0);
-  const [activeView, setActiveView] = useState<'weather' | 'tides'>('weather');
+  const [activeView, setActiveView] = useState<'weather' | 'tides'>('tides');
 
   // Notify parent whenever the active day changes
   useEffect(() => {
