@@ -175,8 +175,8 @@
    project's sage palette using a hue-rotate + saturate filter on the tile
    pane only — UI overlays, markers, and popups are unaffected. */
 .sage-map .leaflet-tile-pane {
-  filter: hue-rotate(55deg) saturate(0.55) brightness(1.02);
+  filter: hue-rotate(60deg) saturate(1.4) brightness(0.92);
 }
 .dark .sage-map .leaflet-tile-pane {
-  filter: hue-rotate(55deg) saturate(0.45) brightness(0.55) invert(0.88);
+  filter: hue-rotate(60deg) saturate(1.1) brightness(0.5) invert(0.88);
 }
