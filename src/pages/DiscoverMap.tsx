@@ -144,7 +144,7 @@ const DiscoverMap = () => {
             )}
             {!isMobile && (
               <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
-                <div className="flex flex-col gap-2 px-1 py-0.5">
+                <div className="flex flex-col gap-1 px-0.5 py-0">
                   <p className="text-sm font-medium text-foreground leading-tight">
                     {loc.saunaName ?? loc.name}
                   </p>
@@ -160,7 +160,7 @@ const DiscoverMap = () => {
                         setBucketOpen(true);
                       }
                     }}
-                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
+                    className={`mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                       saved
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
                         : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -176,6 +176,15 @@ const DiscoverMap = () => {
                       </>
                     )}
                   </button>
+                  <button
+                    onClick={() => {
+                      setSelected(loc);
+                      setHasClosedDrawer(false);
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/40 bg-transparent px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    Check Tides
+                  </button>
                 </div>
               </Popup>
             )}
@@ -188,11 +197,11 @@ const DiscoverMap = () => {
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background flex flex-col">
       {/* Hero */}
-      <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-2 md:py-2.5 text-center">
-        <h1 className="text-xl md:text-2xl font-normal tracking-wide text-foreground">
+      <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-1 md:py-1.5 text-center">
+        <h1 className="text-lg md:text-xl font-normal tracking-wide text-foreground leading-tight">
           Find Ireland's coastal saunas
         </h1>
-        <p className="mt-1 text-xs md:text-sm text-foreground/80 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-0.5 text-xs md:text-sm text-foreground/80 max-w-3xl mx-auto leading-snug whitespace-nowrap overflow-hidden text-ellipsis">
           Discover sea-side saunas around the Irish coast — save your favourites and tick them off.
         </p>
       </section>
