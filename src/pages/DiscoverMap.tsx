@@ -219,14 +219,7 @@ const DiscoverMap = () => {
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-[1000] pointer-events-none">
-        <div className="flex items-center justify-between px-4 py-4 max-w-screen-xl mx-auto">
-          <Link
-            to="/"
-            className="pointer-events-auto inline-flex items-center gap-2 glass-card rounded-full px-4 py-2.5 text-sm font-normal text-foreground hover:bg-card/90 active:scale-[0.97] transition-all shadow-lg"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Link>
+        <div className="flex items-center justify-end px-4 py-4 max-w-screen-xl mx-auto">
           <div className="pointer-events-auto flex items-center gap-2">
             <button
               onClick={() => setBucketOpen((o) => !o)}
