@@ -188,7 +188,7 @@ const DiscoverMap = () => {
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background flex flex-col">
       {/* Hero */}
-      <section className="shrink-0 border-b border-border/40 bg-card/60 backdrop-blur-sm px-4 py-2 md:py-2.5 text-center">
+      <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-2 md:py-2.5 text-center">
         <h1 className="text-xl md:text-2xl font-normal tracking-wide text-foreground">
           Find Ireland's coastal saunas
         </h1>
