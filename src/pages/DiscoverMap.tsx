@@ -145,11 +145,11 @@ const DiscoverMap = () => {
             )}
             {!isMobile && (
               <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
-                <div className="flex flex-col gap-1.5 px-1 py-0.5">
-                  <p className="text-sm font-medium text-foreground">
+                <div className="flex flex-col gap-2 px-1 py-0.5">
+                  <p className="text-sm font-medium text-foreground leading-tight">
                     {loc.saunaName ?? loc.name}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-foreground/80 leading-tight">
                     {loc.name} · Co. {loc.county}
                   </p>
                   <button
@@ -161,10 +161,10 @@ const DiscoverMap = () => {
                         setBucketOpen(true);
                       }
                     }}
-                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
                       saved
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
-                        : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
                     }`}
                   >
                     {saved ? (
@@ -173,7 +173,7 @@ const DiscoverMap = () => {
                       </>
                     ) : (
                       <>
-                        <Bookmark className="w-3 h-3" /> Add to Bucket List
+                        <Bookmark className="w-3.5 h-3.5" /> Add to Bucket List
                       </>
                     )}
                   </button>
