@@ -283,6 +283,7 @@ const DiscoverMap = () => {
 
       {/* Bucket list panel — desktop right sidebar / mobile bottom sheet */}
       <BucketListPanel open={bucketOpen} onClose={() => setBucketOpen(false)} />
+      </div>
     </div>
   );
 };
