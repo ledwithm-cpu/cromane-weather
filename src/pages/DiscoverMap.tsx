@@ -1,9 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Link } from 'react-router-dom';
 import { m, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
 import { LOCATIONS, Location } from '@/features/location/data/locations';
 import MapLocationDrawer from '@/features/location/components/MapLocationDrawer';
 import MapActionSheet from '@/features/location/components/MapActionSheet';
@@ -145,11 +144,11 @@ const DiscoverMap = () => {
             )}
             {!isMobile && (
               <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
-                <div className="flex flex-col gap-1.5 px-1 py-0.5">
-                  <p className="text-sm font-medium text-foreground">
+                <div className="flex flex-col gap-2 px-1 py-0.5">
+                  <p className="text-sm font-medium text-foreground leading-tight">
                     {loc.saunaName ?? loc.name}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-foreground/80 leading-tight">
                     {loc.name} · Co. {loc.county}
                   </p>
                   <button
@@ -161,10 +160,10 @@ const DiscoverMap = () => {
                         setBucketOpen(true);
                       }
                     }}
-                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`mt-1 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
                       saved
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
-                        : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
                     }`}
                   >
                     {saved ? (
@@ -173,7 +172,7 @@ const DiscoverMap = () => {
                       </>
                     ) : (
                       <>
-                        <Bookmark className="w-3 h-3" /> Add to Bucket List
+                        <Bookmark className="w-3.5 h-3.5" /> Add to Bucket List
                       </>
                     )}
                   </button>
@@ -189,12 +188,12 @@ const DiscoverMap = () => {
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background flex flex-col">
       {/* Hero */}
-      <section className="shrink-0 border-b border-border/40 bg-card/60 backdrop-blur-sm px-4 py-4 md:py-5 text-center">
+      <section className="shrink-0 border-b border-border/40 bg-card/60 backdrop-blur-sm px-4 py-2 md:py-2.5 text-center">
         <h1 className="text-xl md:text-2xl font-normal tracking-wide text-foreground">
           Find Ireland's coastal saunas
         </h1>
-        <p className="mt-1.5 text-xs md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Discover sea-side saunas around the Irish coast — save your favourites and tick them off. All for free!
+        <p className="mt-1 text-xs md:text-sm text-foreground/80 max-w-xl mx-auto leading-relaxed">
+          Discover sea-side saunas around the Irish coast — save your favourites and tick them off.
         </p>
       </section>
 
@@ -219,14 +218,7 @@ const DiscoverMap = () => {
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-[1000] pointer-events-none">
-        <div className="flex items-center justify-between px-4 py-4 max-w-screen-xl mx-auto">
-          <Link
-            to="/"
-            className="pointer-events-auto inline-flex items-center gap-2 glass-card rounded-full px-4 py-2.5 text-sm font-normal text-foreground hover:bg-card/90 active:scale-[0.97] transition-all shadow-lg"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Link>
+        <div className="flex items-center justify-end px-4 py-4 max-w-screen-xl mx-auto">
           <div className="pointer-events-auto flex items-center gap-2">
             <button
               onClick={() => setBucketOpen((o) => !o)}
@@ -254,7 +246,7 @@ const DiscoverMap = () => {
 
       {/* Legend */}
       <div className="absolute bottom-6 left-4 z-[1000] glass-card rounded-2xl px-4 py-3 shadow-lg">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/80 font-semibold">
           {saunaLocations.length} saunas across Ireland
         </p>
       </div>
