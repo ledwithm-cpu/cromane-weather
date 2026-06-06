@@ -189,12 +189,12 @@ const DiscoverMap = () => {
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background flex flex-col">
       {/* Hero */}
-      <section className="shrink-0 border-b border-border/40 bg-card/60 backdrop-blur-sm px-4 py-4 md:py-5 text-center">
+      <section className="shrink-0 border-b border-border/40 bg-card/60 backdrop-blur-sm px-4 py-2 md:py-2.5 text-center">
         <h1 className="text-xl md:text-2xl font-normal tracking-wide text-foreground">
           Find Ireland's coastal saunas
         </h1>
-        <p className="mt-1.5 text-xs md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Discover sea-side saunas around the Irish coast — save your favourites and tick them off. All for free!
+        <p className="mt-1 text-xs md:text-sm text-foreground/80 max-w-xl mx-auto leading-relaxed">
+          Discover sea-side saunas around the Irish coast — save your favourites and tick them off.
         </p>
       </section>
 
