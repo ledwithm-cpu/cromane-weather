@@ -247,7 +247,7 @@ const DiscoverMap = () => {
 
       {/* Legend */}
       <div className="absolute bottom-6 left-4 z-[1000] glass-card rounded-2xl px-4 py-3 shadow-lg">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/80 font-semibold">
           {saunaLocations.length} saunas across Ireland
         </p>
       </div>
