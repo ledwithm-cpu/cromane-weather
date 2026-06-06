@@ -154,8 +154,8 @@
 .leaflet-popup.sauna-name-popup .leaflet-popup-content-wrapper {
   background: hsl(var(--background) / 0.96);
   color: hsl(var(--foreground));
-  border-radius: 9999px;
-  padding: 6px 12px;
+  border-radius: 14px;
+  padding: 10px 14px;
   box-shadow: 0 6px 20px -6px hsl(0 0% 0% / 0.25);
   border: 1px solid hsl(var(--border) / 0.6);
   backdrop-filter: blur(8px);
