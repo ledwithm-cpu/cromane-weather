@@ -58,9 +58,9 @@ const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
   });
 };
 
-// Center of Ireland
-const IRELAND_CENTER: [number, number] = [53.5, -8.0];
-const IRELAND_ZOOM = 7;
+// Center across Ireland & Britain so all saunas fit
+const IRELAND_CENTER: [number, number] = [53.0, -5.5];
+const IRELAND_ZOOM = 6;
 
 function FlyToLocation({ location, resetToOverview }: { location: Location | null; resetToOverview: boolean }) {
   const map = useMap();
@@ -201,10 +201,10 @@ const DiscoverMap = () => {
       {/* Hero */}
       <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-1 md:py-1.5 text-center">
         <h1 className="text-lg md:text-xl font-normal tracking-wide text-foreground leading-tight">
-          Find Ireland's coastal saunas
+          Find coastal saunas across Ireland, Wales & England
         </h1>
         <p className="mt-0.5 text-xs md:text-sm text-foreground/80 max-w-3xl mx-auto leading-snug whitespace-nowrap overflow-hidden text-ellipsis">
-          Discover sea-side saunas around the Irish coast — save your favourites and tick them off.
+          Discover sea-side saunas around the coast — save your favourites and tick them off.
         </p>
       </section>
 
@@ -260,7 +260,7 @@ const DiscoverMap = () => {
       {/* Legend */}
       <div className="absolute bottom-6 left-4 z-[1000] glass-card rounded-2xl px-4 py-3 shadow-lg">
         <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/80 font-semibold">
-          {saunaLocations.length} saunas across Ireland
+          {saunaLocations.length} coastal saunas
         </p>
       </div>
 
