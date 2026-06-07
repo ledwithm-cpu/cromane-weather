@@ -144,13 +144,15 @@ const DiscoverMap = () => {
             )}
             {!isMobile && (
               <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
-                <div className="flex flex-col gap-1 px-0.5 py-0">
-                  <p className="text-sm font-medium text-foreground leading-tight">
-                    {loc.saunaName ?? loc.name}
-                  </p>
-                  <p className="text-[11px] text-foreground/80 leading-tight">
-                    {loc.name} · Co. {loc.county}
-                  </p>
+                <div className="flex flex-col gap-1.5 px-0.5 py-0.5">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-medium text-foreground leading-tight">
+                      {loc.saunaName ?? loc.name}
+                    </p>
+                    <p className="text-[11px] text-foreground/80 leading-tight">
+                      {loc.name} · Co. {loc.county}
+                    </p>
+                  </div>
                   <button
                     onClick={() => {
                       if (saved) {
@@ -160,7 +162,7 @@ const DiscoverMap = () => {
                         setBucketOpen(true);
                       }
                     }}
-                    className={`mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                       saved
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
                         : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -218,8 +220,10 @@ const DiscoverMap = () => {
         style={{ background: 'hsl(85, 16%, 88%)' }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+          subdomains={['a', 'b', 'c']}
+          maxZoom={17}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>, <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
         />
         {markers}
         <FlyToLocation location={selected} resetToOverview={hasClosedDrawer} />
