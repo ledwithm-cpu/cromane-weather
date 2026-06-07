@@ -220,8 +220,10 @@ const DiscoverMap = () => {
         style={{ background: 'hsl(85, 16%, 88%)' }}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+          subdomains={['a', 'b', 'c']}
+          maxZoom={17}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>, <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
         />
         {markers}
         <FlyToLocation location={selected} resetToOverview={hasClosedDrawer} />
