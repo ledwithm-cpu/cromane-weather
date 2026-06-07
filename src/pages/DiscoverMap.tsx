@@ -58,9 +58,9 @@ const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
   });
 };
 
-// Center of Ireland
-const IRELAND_CENTER: [number, number] = [53.5, -8.0];
-const IRELAND_ZOOM = 7;
+// Center across Ireland & Britain so all saunas fit
+const IRELAND_CENTER: [number, number] = [53.0, -5.5];
+const IRELAND_ZOOM = 6;
 
 function FlyToLocation({ location, resetToOverview }: { location: Location | null; resetToOverview: boolean }) {
   const map = useMap();
