@@ -174,12 +174,12 @@
 }
 
 /* ── Sage-toned map (Discover) ───────────────────────────────────────────────
-   OpenTopoMap tiles already provide terrain shading & contour detail.
-   We apply a light sage tint via hue-rotate so it harmonises with the palette
-   without washing out the mountain relief. */
+   CARTO light_nolabels tiles are greyscale-leaning. We apply a light sage tint
+   via hue-rotate so the base map harmonises with the palette instead of
+   competing with the green sauna pins. */
 .sage-map .leaflet-tile-pane {
-  filter: hue-rotate(20deg) saturate(0.85) brightness(1.02);
+  filter: hue-rotate(60deg) saturate(0.55) brightness(1.02);
 }
 .dark .sage-map .leaflet-tile-pane {
-  filter: hue-rotate(20deg) saturate(0.7) brightness(0.55) invert(0.88);
+  filter: hue-rotate(60deg) saturate(0.45) brightness(0.55);
 }
