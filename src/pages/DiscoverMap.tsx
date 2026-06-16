@@ -201,7 +201,7 @@ const DiscoverMap = () => {
       {/* Hero */}
       <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-1 md:py-1.5 text-center">
         <h1 className="text-lg md:text-xl font-normal tracking-wide text-foreground leading-tight">
-          Find coastal saunas across Ireland, Wales & England
+          Find coastal saunas across Ireland, Scotland, Wales & England
         </h1>
         <p className="mt-0.5 text-xs md:text-sm text-foreground/80 max-w-3xl mx-auto leading-snug whitespace-nowrap overflow-hidden text-ellipsis">
           Discover sea-side saunas around the coast — save your favourites and tick them off.
