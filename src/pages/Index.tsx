@@ -177,7 +177,6 @@ const Index = () => {
                 </button>
               </m.div>
             )}
-            {isToday && lightning && <LightningCard data={lightning} />}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             {isToday && <MarineCard marine={marine} />}
           </div>
