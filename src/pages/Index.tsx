@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { m } from 'framer-motion';
+import AppNav from '@/components/AppNav';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
 import WarningsCard from '@/features/weather/components/WarningsCard';
