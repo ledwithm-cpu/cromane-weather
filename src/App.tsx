@@ -39,6 +39,7 @@ const AnalyticsRoutes = () => {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/discover" element={<DiscoverMap />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/tides" element={<Index />} />
         <Route path="/:locationId" element={<Index />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
