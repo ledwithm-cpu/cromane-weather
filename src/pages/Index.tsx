@@ -7,7 +7,6 @@ import AppFooter from '@/components/AppFooter';
 import WarningsCard from '@/features/weather/components/WarningsCard';
 import MarineCard from '@/features/weather/components/MarineCard';
 import ForecastSwiper from '@/features/weather/components/ForecastSwiper';
-import LightningCard from '@/features/lightning/components/LightningCard';
 import PullToRefresh from '@/components/PullToRefresh';
 import InstallPrompt from '@/components/InstallPrompt';
 import DebugModeIndicator from '@/components/DebugModeIndicator';
