@@ -198,8 +198,9 @@ const DiscoverMap = () => {
 
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background flex flex-col">
+      <AppNav />
       {/* Hero */}
-      <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-1 md:py-1.5 text-center">
+      <section className="shrink-0 border-b border-border/40 bg-[hsl(110,28%,82%)]/70 dark:bg-[hsl(110,18%,22%)]/60 backdrop-blur-sm px-4 py-0.5 text-center">
         <h1 className="text-lg md:text-xl font-normal tracking-wide text-foreground leading-tight">
           Find coastal saunas across Ireland, Scotland, Wales & England
         </h1>
