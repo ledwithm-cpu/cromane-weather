@@ -16,26 +16,39 @@ import 'leaflet/dist/leaflet.css';
 // Fix default marker icon issue with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
-// Marker styles: blue (default sauna), grey (no sauna), gold + bookmark badge (saved).
+// Marker styles: fire emoji for saunas; grey dot for non-sauna locations.
 const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
+  if (!opts.hasSauna) {
+    return L.divIcon({
+      className: '',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      html: `<div style="
+        width: 18px; height: 18px;
+        background: hsl(95, 12%, 52%);
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      "></div>`,
+    });
+  }
+
   const baseColor = opts.saved
     ? 'hsl(42, 92%, 52%)' // gold (saved)
-    : opts.hasSauna
-    ? 'hsl(110, 32%, 48%)' // sage primary
-    : 'hsl(95, 12%, 52%)';  // muted sage-grey
+    : 'hsl(110, 32%, 48%)'; // sage primary
 
   // Tiny bookmark glyph for saved markers
   const badge = opts.saved
     ? `<div style="
-        position: absolute; top: -4px; right: -4px;
-        width: 14px; height: 14px;
+        position: absolute; top: -3px; right: -3px;
+        width: 12px; height: 12px;
         display: flex; align-items: center; justify-content: center;
         background: hsl(0, 0%, 100%);
         border: 1.5px solid hsl(42, 92%, 52%);
         border-radius: 50%;
         box-shadow: 0 1px 3px rgba(0,0,0,0.15);
       ">
-        <svg width="7" height="7" viewBox="0 0 24 24" fill="hsl(42, 92%, 52%)" stroke="hsl(42, 92%, 52%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="6" height="6" viewBox="0 0 24 24" fill="hsl(42, 92%, 52%)" stroke="hsl(42, 92%, 52%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
         </svg>
       </div>`
@@ -43,17 +56,19 @@ const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
 
   return L.divIcon({
     className: '',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    html: `<div style="position: relative; width: 28px; height: 28px;">
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    html: `<div style="position: relative; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
       <div style="
-        width: 28px; height: 28px;
+        width: 22px; height: 22px;
         background: ${baseColor};
-        border: 2.5px solid white;
+        border: 2px solid white;
         border-radius: 50%;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-        transition: background 0.2s ease;
-      "></div>
+        box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+        display: flex; align-items: center; justify-content: center;
+      ">
+        <span style="font-size: 13px; line-height: 1;">🔥</span>
+      </div>
       ${badge}
     </div>`,
   });
