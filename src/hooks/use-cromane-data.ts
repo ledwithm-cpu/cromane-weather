@@ -92,26 +92,51 @@ export function useWeather() {
   });
 }
 
+const EMPTY_TIDES: TideData = {
+  events: [],
+  current_height_m: 0,
+  state: 'rising',
+  forecast: [],
+};
+
+const EMPTY_WARNINGS = {
+  warnings: [] as Warning[],
+  marine: { type: 'Unavailable', area: '', description: '', active: false } as MarineWarning,
+};
+
+function isIrish(loc: Location) {
+  // Default unknown country to Ireland to preserve existing behaviour for legacy entries.
+  return !loc.country || loc.country === 'Ireland';
+}
+
 export function useTides() {
   const { location } = useLocation();
+  const irish = isIrish(location);
   return useQuery({
-    queryKey: ['tides', location.id],
-    queryFn: () => fetchTides(location),
-    refetchInterval: 60 * 60 * 1000,
+    queryKey: ['tides', location.id, irish ? 'ie' : 'uk'],
+    queryFn: () => (irish ? fetchTides(location) : Promise.resolve(EMPTY_TIDES)),
+    enabled: irish,
+    refetchInterval: irish ? 60 * 60 * 1000 : false,
     staleTime: 30 * 60 * 1000,
-    placeholderData: () => cacheGet<TideData>(`tides-${location.id}`) ?? mockTides,
+    placeholderData: () =>
+      irish ? (cacheGet<TideData>(`tides-${location.id}`) ?? mockTides) : EMPTY_TIDES,
     retry: 2,
   });
 }
 
 export function useWarnings() {
   const { location } = useLocation();
+  const irish = isIrish(location);
   return useQuery({
-    queryKey: ['warnings', location.id],
-    queryFn: () => fetchWarnings(location),
-    refetchInterval: 5 * 60 * 1000,
+    queryKey: ['warnings', location.id, irish ? 'ie' : 'uk'],
+    queryFn: () => (irish ? fetchWarnings(location) : Promise.resolve(EMPTY_WARNINGS)),
+    enabled: irish,
+    refetchInterval: irish ? 5 * 60 * 1000 : false,
     staleTime: 2 * 60 * 1000,
-    placeholderData: () => cacheGet<{ warnings: Warning[]; marine: MarineWarning }>(`warnings-${location.id}`) ?? { warnings: mockWarnings, marine: mockMarine },
+    placeholderData: () =>
+      irish
+        ? (cacheGet<{ warnings: Warning[]; marine: MarineWarning }>(`warnings-${location.id}`) ?? { warnings: mockWarnings, marine: mockMarine })
+        : EMPTY_WARNINGS,
     retry: 2,
   });
 }
