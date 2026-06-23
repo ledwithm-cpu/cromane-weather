@@ -4,6 +4,7 @@ import { m } from 'framer-motion';
 import AppNav from '@/components/AppNav';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
+import HomeSaunaToggle from '@/components/HomeSaunaToggle';
 import WarningsCard from '@/features/weather/components/WarningsCard';
 import MarineCard from '@/features/weather/components/MarineCard';
 import ForecastSwiper from '@/features/weather/components/ForecastSwiper';
@@ -152,6 +153,12 @@ const Index = () => {
               </p>
             ) : null}
           </m.header>
+
+          {hasRouteParam && (
+            <div className="flex justify-center">
+              <HomeSaunaToggle slug={location.id} label={location.name} />
+            </div>
+          )}
 
           {/* Card Stack */}
           <div className="space-y-3">
