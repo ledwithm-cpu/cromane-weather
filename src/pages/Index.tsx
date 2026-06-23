@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
 import { m } from 'framer-motion';
 import AppNav from '@/components/AppNav';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -155,8 +155,14 @@ const Index = () => {
           </m.header>
 
           {hasRouteParam && (
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-2">
               <HomeSaunaToggle slug={location.id} label={location.name} />
+              <Link
+                to="/discover"
+                className="text-xs text-muted-foreground/70 hover:text-foreground underline-offset-4 hover:underline"
+              >
+                Browse all saunas · Change home sauna
+              </Link>
             </div>
           )}
 
