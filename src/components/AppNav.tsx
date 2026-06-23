@@ -3,13 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 const AppNav = () => {
   const { pathname } = useLocation();
 
+  const isExplore =
+    pathname === '/' || pathname === '/discover' || pathname === '/explore';
   const isTides =
-    pathname === '/tides' ||
-    (pathname !== '/' &&
-      pathname !== '/discover' &&
-      pathname !== '/how-it-works' &&
-      pathname !== '/contact');
-  const isExplore = pathname === '/' || pathname === '/discover';
+    !isExplore &&
+    pathname !== '/how-it-works' &&
+    pathname !== '/contact';
 
   const navItems = [
     { to: '/tides', label: 'Tides', isActive: isTides },
