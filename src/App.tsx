@@ -11,6 +11,7 @@ import { LocationContext, useLocationState } from "@/features/location/hooks/use
 import { AuthProvider } from "@/hooks/use-auth";
 import AuthModal from "@/components/auth/AuthModal";
 import Index from "./pages/Index";
+import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -35,11 +36,13 @@ const AnalyticsRoutes = () => {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<DiscoverMap />} />
+        <Route path="/" element={<Home />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/discover" element={<DiscoverMap />} />
+        <Route path="/explore" element={<DiscoverMap />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/tides" element={<Index />} />
+        <Route path="/sauna/:locationId" element={<Index />} />
         <Route path="/:locationId" element={<Index />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
