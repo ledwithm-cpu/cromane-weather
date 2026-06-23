@@ -18,6 +18,7 @@ const TideDayCard = ({
   day, currentHeight, currentState, isToday, globalMinH, globalMaxH, sunrise, sunset,
 }: Props) => {
   const { location } = useLocation();
+  const isIrish = !location.country || location.country === 'Ireland';
   const events = day?.events ?? [];
   const predictionPoints = day?.points ?? [];
   const highs = events.filter(e => e.type === 'high');
@@ -34,6 +35,20 @@ const TideDayCard = ({
     }),
     [predictionPoints, events, globalMinH, globalMaxH, isToday, currentHeight],
   );
+
+  if (!isIrish) {
+    return (
+      <div className="px-5 py-6 space-y-2 text-center">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+          Tides · {location.name}
+        </p>
+        <p className="text-sm font-normal text-foreground">UK tides coming soon</p>
+        <p className="text-xs text-muted-foreground/60 leading-relaxed">
+          Live tide times for UK saunas aren't wired up yet. Check the UK Hydrographic Office in the meantime.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="px-5 py-4 space-y-2.5">

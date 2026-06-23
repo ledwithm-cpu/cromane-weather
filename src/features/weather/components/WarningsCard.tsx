@@ -17,8 +17,10 @@ const levelColor: Record<string, string> = {
 
 const WarningsCard = ({ warnings, weatherCode }: Props) => {
   const { location } = useLocation();
-  const thunderActive = (weatherCode ?? 0) >= 95;
-  const active = warnings.length > 0 || thunderActive;
+  const isIrish = !location.country || location.country === 'Ireland';
+  const sourceLabel = isIrish ? 'Met Éireann' : 'Met Office';
+  const thunderActive = isIrish && (weatherCode ?? 0) >= 95;
+  const active = isIrish && (warnings.length > 0 || thunderActive);
 
   return (
     <m.div
@@ -30,7 +32,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
       {/* Header */}
       <div className="flex items-center justify-between relative z-10">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-          Met Éireann Warnings
+          {sourceLabel} Warnings
         </p>
         <div className="flex items-center gap-2">
           <div
@@ -48,7 +50,16 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
 
       {/* Body */}
       <div className="relative z-10">
-        {!active && (
+        {!isIrish && (
+          <>
+            <p className="text-sm font-normal text-foreground">Met Office warnings coming soon</p>
+            <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
+              Live UK severe weather warnings for {location.name} aren't wired up yet. Check the Met Office in the meantime.
+            </p>
+          </>
+        )}
+
+        {isIrish && !active && (
           <>
             <p className="text-sm font-normal text-foreground">No active warnings</p>
             <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
