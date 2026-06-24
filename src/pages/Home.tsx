@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { useHomeSauna } from '@/hooks/use-home-sauna';
 
-const DiscoverMap = lazy(() => import('./DiscoverMap'));
+const Landing = lazy(() => import('./Landing'));
 
 const LoadingScreen = () => (
   <div
@@ -25,9 +25,10 @@ const Home = () => {
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <DiscoverMap />
+      <Landing />
     </Suspense>
   );
 };
 
 export default Home;
+
