@@ -6,100 +6,100 @@
 
 @layer base {
   :root {
-    /* Bright coastal — warm sand, vibrant sage, sunlit sea */
-    --background: 85 18% 94%;
-    --foreground: 100 15% 16%;
+    /* Warm, natural, restorative — oatmeal, sage, terracotta */
+    --background: 36 30% 94%;
+    --foreground: 25 18% 18%;
 
-    --card: 85 18% 96%;
-    --card-foreground: 100 15% 16%;
+    --card: 36 32% 96%;
+    --card-foreground: 25 18% 18%;
 
-    --popover: 85 20% 98%;
-    --popover-foreground: 100 15% 16%;
+    --popover: 36 35% 97%;
+    --popover-foreground: 25 18% 18%;
 
-    --primary: 110 32% 48%;
-    --primary-foreground: 90 25% 97%;
+    --primary: 110 18% 48%;
+    --primary-foreground: 36 35% 97%;
 
-    --secondary: 85 14% 92%;
-    --secondary-foreground: 100 12% 25%;
+    --secondary: 36 22% 90%;
+    --secondary-foreground: 25 18% 22%;
 
-    --muted: 85 12% 93%;
-    --muted-foreground: 95 10% 42%;
+    --muted: 36 20% 91%;
+    --muted-foreground: 25 12% 40%;
 
-    --accent: 45 65% 58%;
-    --accent-foreground: 45 40% 18%;
+    --accent: 16 55% 55%;
+    --accent-foreground: 36 35% 97%;
 
-    --destructive: 0 55% 52%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 6 60% 50%;
+    --destructive-foreground: 36 35% 97%;
 
-    --border: 85 14% 88%;
-    --input: 85 14% 88%;
-    --ring: 110 32% 48%;
+    --border: 33 22% 84%;
+    --input: 33 22% 84%;
+    --ring: 110 18% 48%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
-    /* Sage glass tokens — more opaque for brighter feel */
-    --glass-bg: 85 20% 98% / 0.72;
-    --glass-border: 90 18% 86% / 0.50;
+    /* Glass tokens — warm oatmeal */
+    --glass-bg: 36 35% 97% / 0.72;
+    --glass-border: 33 22% 82% / 0.55;
     --glass-blur: 20px;
 
-    --warning-yellow: 48 80% 53%;
-    --warning-orange: 25 80% 55%;
-    --warning-red: 0 65% 50%;
+    --warning-yellow: 42 78% 55%;
+    --warning-orange: 22 78% 55%;
+    --warning-red: 6 62% 50%;
 
-    --marine-teal: 165 32% 45%;
-    --tide-blue: 110 28% 52%;
+    --marine-teal: 175 25% 42%;
+    --tide-blue: 200 28% 52%;
 
-    --sidebar-background: 85 18% 97%;
-    --sidebar-foreground: 100 12% 25%;
-    --sidebar-primary: 110 32% 48%;
-    --sidebar-primary-foreground: 90 25% 97%;
-    --sidebar-accent: 85 14% 93%;
-    --sidebar-accent-foreground: 100 15% 16%;
-    --sidebar-border: 85 14% 88%;
-    --sidebar-ring: 110 28% 52%;
+    --sidebar-background: 36 30% 96%;
+    --sidebar-foreground: 25 18% 22%;
+    --sidebar-primary: 110 18% 48%;
+    --sidebar-primary-foreground: 36 35% 97%;
+    --sidebar-accent: 36 22% 91%;
+    --sidebar-accent-foreground: 25 18% 18%;
+    --sidebar-border: 33 22% 84%;
+    --sidebar-ring: 110 18% 48%;
   }
 
   .dark {
-    /* Deep forest night — brighter charcoal, mossy */
-    --background: 110 14% 12%;
-    --foreground: 90 15% 90%;
+    /* Warm dark — soft charcoal-brown with sage + terracotta accents */
+    --background: 28 10% 11%;
+    --foreground: 36 20% 90%;
 
-    --card: 110 12% 15%;
-    --card-foreground: 90 15% 90%;
+    --card: 28 9% 14%;
+    --card-foreground: 36 20% 90%;
 
-    --popover: 110 12% 15%;
-    --popover-foreground: 90 15% 90%;
+    --popover: 28 9% 14%;
+    --popover-foreground: 36 20% 90%;
 
-    --primary: 110 32% 58%;
-    --primary-foreground: 110 14% 12%;
+    --primary: 110 22% 60%;
+    --primary-foreground: 28 10% 11%;
 
-    --secondary: 110 10% 19%;
-    --secondary-foreground: 90 12% 82%;
+    --secondary: 28 8% 18%;
+    --secondary-foreground: 36 18% 84%;
 
-    --muted: 110 10% 17%;
-    --muted-foreground: 95 10% 55%;
+    --muted: 28 8% 17%;
+    --muted-foreground: 30 12% 60%;
 
-    --accent: 45 55% 52%;
-    --accent-foreground: 45 35% 92%;
+    --accent: 16 55% 58%;
+    --accent-foreground: 28 10% 11%;
 
-    --destructive: 0 55% 48%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 6 55% 50%;
+    --destructive-foreground: 36 20% 95%;
 
-    --border: 110 10% 21%;
-    --input: 110 10% 21%;
-    --ring: 110 32% 58%;
+    --border: 28 8% 22%;
+    --input: 28 8% 22%;
+    --ring: 110 22% 60%;
 
-    --glass-bg: 110 12% 15% / 0.78;
-    --glass-border: 110 10% 24% / 0.55;
+    --glass-bg: 28 9% 14% / 0.78;
+    --glass-border: 28 8% 26% / 0.55;
 
-    --sidebar-background: 110 14% 12%;
-    --sidebar-foreground: 90 15% 90%;
-    --sidebar-primary: 110 32% 58%;
-    --sidebar-primary-foreground: 110 14% 12%;
-    --sidebar-accent: 110 10% 17%;
-    --sidebar-accent-foreground: 90 15% 90%;
-    --sidebar-border: 110 10% 21%;
-    --sidebar-ring: 110 32% 58%;
+    --sidebar-background: 28 10% 11%;
+    --sidebar-foreground: 36 20% 90%;
+    --sidebar-primary: 110 22% 60%;
+    --sidebar-primary-foreground: 28 10% 11%;
+    --sidebar-accent: 28 8% 17%;
+    --sidebar-accent-foreground: 36 20% 90%;
+    --sidebar-border: 28 8% 22%;
+    --sidebar-ring: 110 22% 60%;
   }
 
   /* Warning state — deep charcoal with amber tint */
@@ -125,11 +125,27 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
-    font-weight: 300;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: 0.005em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  /* Softer, lower shadows site-wide */
+  .shadow-sm { box-shadow: 0 1px 2px hsl(25 20% 20% / 0.04) !important; }
+  .shadow { box-shadow: 0 2px 8px -2px hsl(25 20% 20% / 0.06) !important; }
+  .shadow-md { box-shadow: 0 4px 14px -4px hsl(25 20% 20% / 0.08) !important; }
+  .shadow-lg { box-shadow: 0 8px 24px -8px hsl(25 20% 20% / 0.10) !important; }
+  .shadow-xl { box-shadow: 0 14px 36px -12px hsl(25 20% 20% / 0.12) !important; }
 }
 
 @layer utilities {
