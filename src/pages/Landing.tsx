@@ -100,6 +100,7 @@ const Landing = () => {
       <SEOHead
         title="Coastal saunas, gently catalogued | Irish & UK Beach Saunas"
         description="Find sea-side saunas around Ireland, Scotland, Wales and England. Soft, calm, and made for slow afternoons by the water."
+        canonicalPath="/"
       />
       <AppNav />
 
