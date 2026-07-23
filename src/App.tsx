@@ -18,6 +18,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const DiscoverMap = lazy(() => import("./pages/DiscoverMap"));
 const Contact = lazy(() => import("./pages/Contact"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const AnalyticsRoutes = () => {
         <Route path="/discover" element={<DiscoverMap />} />
         <Route path="/explore" element={<DiscoverMap />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
         <Route path="/tides" element={<Index />} />
         <Route path="/sauna/:locationId" element={<Index />} />
         <Route path="/:locationId" element={<Index />} />
