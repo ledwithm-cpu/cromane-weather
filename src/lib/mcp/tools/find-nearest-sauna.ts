@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { LOCATIONS } from "../../features/location/data/locations";
+import { LOCATIONS } from "../../../features/location/data/locations";
 
 function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371;
