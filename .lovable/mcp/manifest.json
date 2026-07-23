@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://zvzgjfhbkicoswjvnwoi.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "saunas-in-ireland-mcp",
+      "version": "0.1.0",
+      "title": "Saunas in Ireland"
+    },
+    "tools": [
+      {
+        "name": "list_saunas",
+        "title": "List saunas",
+        "description": "List coastal saunas tracked by Saunas in Ireland. Optionally filter by country (Ireland, Wales, England, Scotland) or county. Returns id, name, county, country, coordinates, and booking URL.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "Filter by country name, e.g. Ireland."
+            },
+            "county": {
+              "type": "string",
+              "description": "Filter by county, e.g. Kerry."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "description": "Max results (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_sauna",
+        "title": "Get sauna",
+        "description": "Get full details for a single sauna by its slug id (e.g. 'cromane'). Includes coordinates, tide station, and booking URL.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The sauna slug id, e.g. 'cromane'."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "find_nearest_sauna",
+        "title": "Find nearest sauna",
+        "description": "Given a latitude and longitude, return the nearest coastal saunas ordered by distance in kilometres.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "description": "Latitude in decimal degrees."
+            },
+            "lon": {
+              "type": "number",
+              "description": "Longitude in decimal degrees."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "description": "Number of results (default 5)."
+            }
+          },
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_home_sauna",
+        "title": "Get my home sauna",
+        "description": "Get the signed-in user's chosen home sauna, if set. Returns the sauna slug and details.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "set_home_sauna",
+        "title": "Set my home sauna",
+        "description": "Set the signed-in user's home sauna to the given slug id. Pass null or empty string to clear.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Sauna slug id (e.g. 'cromane'). Pass an empty string to clear."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
