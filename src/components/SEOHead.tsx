@@ -6,12 +6,15 @@ interface SEOHeadProps {
   canonicalPath: string;
   ogImage?: string;
   ogUrl?: string;
+  /** Optional JSON-LD object injected as a managed <script> tag. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const BASE_URL = 'https://saunasinireland.com';
 const DEFAULT_OG_IMAGE = 'https://images.unsplash.com/photo-1588869715773-c66526732f6f?w=1200&h=630&fit=crop';
+const JSONLD_ID = 'seo-head-jsonld';
 
-const SEOHead = ({ title, description, canonicalPath, ogImage, ogUrl }: SEOHeadProps) => {
+const SEOHead = ({ title, description, canonicalPath, ogImage, ogUrl, jsonLd }: SEOHeadProps) => {
   useEffect(() => {
     document.title = title;
 
@@ -57,11 +60,20 @@ const SEOHead = ({ title, description, canonicalPath, ogImage, ogUrl }: SEOHeadP
     }
     canonical.setAttribute('href', url);
 
+    // JSON-LD structured data (managed: replaced per route, removed on unmount)
+    document.getElementById(JSONLD_ID)?.remove();
+    if (jsonLd) {
+      const script = document.createElement('script');
+      script.id = JSONLD_ID;
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    }
+
     return () => {
-      // Reset to defaults on unmount
-      document.title = 'Irish Beach Saunas | Find Coastal Saunas, Tide Times & Weather';
+      document.getElementById(JSONLD_ID)?.remove();
     };
-  }, [title, description, canonicalPath, ogImage, ogUrl]);
+  }, [title, description, canonicalPath, ogImage, ogUrl, jsonLd]);
 
   return null;
 };
