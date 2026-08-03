@@ -19,6 +19,8 @@ const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const DiscoverMap = lazy(() => import("./pages/DiscoverMap"));
 const Contact = lazy(() => import("./pages/Contact"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
+const RegionHub = lazy(() => import("./pages/RegionHub"));
+const CountyHub = lazy(() => import("./pages/CountyHub"));
 
 const queryClient = new QueryClient();
 
