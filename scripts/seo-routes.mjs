@@ -59,25 +59,47 @@ const escapeHtml = (s = '') =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
+const slugify = (s) =>
+  s
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const countyLabel = (c = '') => c.replace(/\s*\([^)]*\)\s*/g, '').trim();
+
+const REGIONS = [
+  { slug: 'ireland', name: 'Ireland', country: 'Ireland' },
+  { slug: 'scotland', name: 'Scotland', country: 'Scotland' },
+  { slug: 'wales', name: 'Wales', country: 'Wales' },
+  { slug: 'england', name: 'England', country: 'England' },
+];
+
 /**
  * Build the list of routes that need pre-baked SEO HTML.
  * Returns: [{ path, title, description, canonical, image }]
  */
 export function getSeoRoutes() {
-  const locations = parseLocations();
+  const locations = parseLocations().filter((l) => l.saunaUrl);
+  const total = locations.length;
 
   const staticRoutes = [
     {
       path: '/',
-      title: 'Irish Beach Saunas | Find Coastal Saunas, Tide Times & Weather',
-      description:
-        'The ultimate directory for beach saunas in Ireland. Find wood-fired saunas in Kerry, Galway, Cork, and more. Check live tide times, sea temperatures, and weather for your next sweat and swim.',
+      title: `Coastal Saunas Directory · ${total} Beach Saunas in Ireland, Scotland, Wales & England`,
+      description: `Find ${total} coastal saunas across Ireland, Scotland, Wales and England. Live tide times, sea conditions and direct booking links · 100% free, no signup needed.`,
     },
     {
       path: '/discover',
-      title: 'Discover Map | Irish Beach Saunas',
+      title: `Sauna Map · ${total} Coastal Saunas in Ireland, Scotland, Wales & England`,
       description:
-        'Explore an interactive map of Ireland\'s coastal saunas, swimming spots, and tide stations. Find your next coastal adventure.',
+        'Interactive map of coastal saunas across Ireland, Scotland, Wales and England. Tap a pin for live tide times, sea conditions and booking links.',
+    },
+    {
+      path: '/tides',
+      title: 'Live Tide Times & Sea Conditions for Coastal Saunas',
+      description:
+        'Live tide times, tide heights, sea temperature, wind and weather warnings for coastal sauna and sea swimming spots.',
     },
     {
       path: '/how-it-works',
@@ -93,13 +115,43 @@ export function getSeoRoutes() {
     },
   ];
 
+  const regionRoutes = REGIONS.map((r) => {
+    const count = locations.filter((l) => (l.country || 'Ireland') === r.country).length;
+    return {
+      path: `/${r.slug}`,
+      title: `Coastal Saunas in ${r.name} · ${count} Beach Saunas, Tides & Weather`,
+      description: `Browse ${count} coastal and beach saunas in ${r.name}. Live tide times, sea conditions and direct booking links for every sauna · free, no signup.`,
+    };
+  }).filter((r) => !r.title.includes(' 0 Beach'));
+
+  // County/area hubs with 2+ saunas.
+  const byCounty = new Map();
+  for (const loc of locations) {
+    const name = countyLabel(loc.county);
+    const slug = slugify(name);
+    const entry = byCounty.get(slug) || { slug, name, country: loc.country || 'Ireland', saunas: [] };
+    entry.saunas.push(loc);
+    byCounty.set(slug, entry);
+  }
+  const countyRoutes = [...byCounty.values()]
+    .filter((c) => c.saunas.length >= 2)
+    .map((c) => ({
+      path: `/county/${c.slug}`,
+      title: `${c.name} Saunas · ${c.saunas.length} Coastal Beach Saunas, Tides & Weather`,
+      description: `Every coastal sauna in ${c.name}, ${c.country}: ${c.saunas
+        .map((s) => s.saunaName || s.name)
+        .slice(0, 4)
+        .join(', ')} and more. Live tide times, sea conditions and direct booking links.`,
+    }));
+
   const locationRoutes = locations.map((loc) => {
+    const county = countyLabel(loc.county);
     const title = loc.saunaName
-      ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, Co. ${loc.county}`
-      : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, Co. ${loc.county}`;
+      ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, ${county}`
+      : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, ${county}`;
     const description = loc.saunaName
-      ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
-      : `${loc.name} beach sauna and sea swimming guide for Co. ${loc.county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
+      ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, ${county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
+      : `${loc.name} beach sauna and sea swimming guide for ${county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
     return {
       path: `/${loc.id}`,
       title,
@@ -107,7 +159,7 @@ export function getSeoRoutes() {
     };
   });
 
-  return [...staticRoutes, ...locationRoutes].map((r) => ({
+  return [...staticRoutes, ...regionRoutes, ...countyRoutes, ...locationRoutes].map((r) => ({
     ...r,
     canonical: `${SITE_URL}${r.path === '/' ? '/' : r.path}`,
     image: DEFAULT_OG_IMAGE,
