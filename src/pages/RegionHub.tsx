@@ -14,7 +14,8 @@ import {
 } from '@/features/location/lib/directory';
 
 const RegionHub = () => {
-  const { regionSlug } = useParams<{ regionSlug: string }>();
+  const { pathname } = useLocation();
+  const regionSlug = pathname.split('/').filter(Boolean)[0];
   const region = regionSlug ? getRegion(regionSlug) : undefined;
 
   const saunas = useMemo(
