@@ -132,6 +132,14 @@ const Index = () => {
 
   const seo = hasRouteParam ? buildLocationSEO(location) : null;
   const h1Text = seo?.h1 ?? `${location.name} Beach Sauna & Sea Swimming · Live Irish Coastal Conditions`;
+  const county = countyLabel(location.county);
+  const countyHub = useMemo(() => getCountyHubForLocation(location), [location]);
+  const region = useMemo(() => getRegionForLocation(location), [location]);
+  const nearby = useMemo(() => getNearbySaunas(location, 3), [location]);
+  const jsonLd = useMemo(
+    () => (hasRouteParam ? buildSaunaJsonLd(location) : undefined),
+    [hasRouteParam, location]
+  );
 
   // Invalid /:locationId → bounce home declaratively (no render-time side effects).
   if (isInvalidRoute) {
@@ -144,6 +152,7 @@ const Index = () => {
         title={seo?.title ?? DEFAULT_SEO.title}
         description={seo?.description ?? DEFAULT_SEO.description}
         canonicalPath={seo?.canonicalPath ?? DEFAULT_SEO.canonicalPath}
+        jsonLd={jsonLd}
       />
       <h1 className="sr-only">{h1Text}</h1>
       <div className="bg-background min-h-dvh">
