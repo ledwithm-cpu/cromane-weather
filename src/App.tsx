@@ -46,6 +46,11 @@ const AnalyticsRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
         <Route path="/tides" element={<Index />} />
+        <Route path="/ireland" element={<RegionHub />} />
+        <Route path="/scotland" element={<RegionHub />} />
+        <Route path="/wales" element={<RegionHub />} />
+        <Route path="/england" element={<RegionHub />} />
+        <Route path="/county/:countySlug" element={<CountyHub />} />
         <Route path="/sauna/:locationId" element={<Index />} />
         <Route path="/:locationId" element={<Index />} />
         <Route path="*" element={<NotFound />} />
