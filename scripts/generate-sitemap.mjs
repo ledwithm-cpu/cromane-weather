@@ -26,7 +26,9 @@ const routes = getSeoRoutes();
 
 const urls = routes
   .map((r) => {
-    const meta = META[r.path] ?? LOCATION_META;
+    const meta =
+      META[r.path] ??
+      (REGION_PATHS.has(r.path) || r.path.startsWith('/county/') ? HUB_META : LOCATION_META);
     return [
       '  <url>',
       `    <loc>${BASE_URL}${r.path}</loc>`,
