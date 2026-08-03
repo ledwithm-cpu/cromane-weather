@@ -59,7 +59,7 @@ function buildSaunaJsonLd(loc: Location) {
     name: loc.saunaName ?? `${loc.name} beach sauna`,
     description: `Coastal sauna at ${loc.name}, ${county}, with live tide times, sea conditions and weather.`,
     url: `https://saunasinireland.com/${loc.id}`,
-    ...(loc.saunaUrl ? { sameAs: loc.saunaUrl, hasOfferCatalog: undefined } : {}),
+    ...(loc.saunaUrl ? { sameAs: loc.saunaUrl } : {}),
     address: {
       '@type': 'PostalAddress',
       addressLocality: loc.name,
