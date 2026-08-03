@@ -15,7 +15,13 @@ import SEOHead from '@/components/SEOHead';
 import { hasActiveWarnings } from '@/features/weather/lib/conditions';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocationFromRoute } from '@/features/location/hooks/use-location-from-route';
-import { LOCATIONS } from '@/features/location/data/locations';
+import { LOCATIONS, Location } from '@/features/location/data/locations';
+import {
+  countyLabel,
+  getCountyHubForLocation,
+  getNearbySaunas,
+  getRegionForLocation,
+} from '@/features/location/lib/directory';
 import {
   Select,
   SelectContent,
@@ -31,17 +37,52 @@ const DEFAULT_SEO = {
   canonicalPath: '/',
 };
 
-function buildLocationSEO(loc: ReturnType<typeof useLocationFromRoute>['location']) {
+function buildLocationSEO(loc: Location) {
+  const county = countyLabel(loc.county);
   const title = loc.saunaName
-    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, Co. ${loc.county}`
-    : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, Co. ${loc.county}`;
+    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, ${county}`
+    : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, ${county}`;
   const description = loc.saunaName
-    ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
-    : `${loc.name} beach sauna and sea swimming guide for Co. ${loc.county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
+    ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, ${county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
+    : `${loc.name} beach sauna and sea swimming guide for ${county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
   const h1 = loc.saunaName
-    ? `${loc.name} Sauna · ${loc.saunaName} Beach Sauna & Sea Swimming in ${loc.name}, Co. ${loc.county}`
-    : `${loc.name} Beach Sauna & Sea Swimming · ${loc.name}, Co. ${loc.county}`;
+    ? `${loc.saunaName} · beach sauna in ${loc.name}, ${county}`
+    : `${loc.name} beach sauna & sea swimming · ${county}`;
   return { title, description, canonicalPath: `/${loc.id}`, h1 };
+}
+
+function buildSaunaJsonLd(loc: Location) {
+  const county = countyLabel(loc.county);
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'HealthClub'],
+    name: loc.saunaName ?? `${loc.name} beach sauna`,
+    description: `Coastal sauna at ${loc.name}, ${county}, with live tide times, sea conditions and weather.`,
+    url: `https://saunasinireland.com/${loc.id}`,
+    ...(loc.saunaUrl ? { sameAs: loc.saunaUrl } : {}),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: loc.name,
+      addressRegion: county,
+      addressCountry: loc.country ?? 'Ireland',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: loc.lat,
+      longitude: loc.lon,
+    },
+    ...(loc.saunaUrl
+      ? {
+          potentialAction: {
+            '@type': 'ReserveAction',
+            target: {
+              '@type': 'EntryPoint',
+              urlTemplate: loc.saunaUrl,
+            },
+          },
+        }
+      : {}),
+  } as Record<string, unknown>;
 }
 
 const Index = () => {
@@ -91,6 +132,14 @@ const Index = () => {
 
   const seo = hasRouteParam ? buildLocationSEO(location) : null;
   const h1Text = seo?.h1 ?? `${location.name} Beach Sauna & Sea Swimming · Live Irish Coastal Conditions`;
+  const county = countyLabel(location.county);
+  const countyHub = useMemo(() => getCountyHubForLocation(location), [location]);
+  const region = useMemo(() => getRegionForLocation(location), [location]);
+  const nearby = useMemo(() => getNearbySaunas(location, 3), [location]);
+  const jsonLd = useMemo(
+    () => (hasRouteParam ? buildSaunaJsonLd(location) : undefined),
+    [hasRouteParam, location]
+  );
 
   // Invalid /:locationId → bounce home declaratively (no render-time side effects).
   if (isInvalidRoute) {
@@ -103,12 +152,41 @@ const Index = () => {
         title={seo?.title ?? DEFAULT_SEO.title}
         description={seo?.description ?? DEFAULT_SEO.description}
         canonicalPath={seo?.canonicalPath ?? DEFAULT_SEO.canonicalPath}
+        jsonLd={jsonLd}
       />
       <h1 className="sr-only">{h1Text}</h1>
       <div className="bg-background min-h-dvh">
         <AppNav />
         <PullToRefresh onRefresh={refreshAll}>
         <main className="max-w-md mx-auto px-4 py-8 space-y-4">
+          {hasRouteParam && (
+            <nav aria-label="Breadcrumb" className="text-[11px] text-muted-foreground">
+              <Link to="/" className="hover:text-foreground hover:underline">
+                Home
+              </Link>
+              {region && (
+                <>
+                  <span className="mx-1">·</span>
+                  <Link to={`/${region.slug}`} className="hover:text-foreground hover:underline">
+                    {region.name}
+                  </Link>
+                </>
+              )}
+              {countyHub && (
+                <>
+                  <span className="mx-1">·</span>
+                  <Link
+                    to={`/county/${countyHub.slug}`}
+                    className="hover:text-foreground hover:underline"
+                  >
+                    {countyHub.name}
+                  </Link>
+                </>
+              )}
+              <span className="mx-1">·</span>
+              <span className="text-foreground">{location.saunaName ?? location.name}</span>
+            </nav>
+          )}
           {/* Header */}
           <m.header
             initial={{ opacity: 0 }}
@@ -194,6 +272,52 @@ const Index = () => {
             {isToday && <MarineCard marine={marine} />}
           </div>
 
+          {hasRouteParam && (
+            <section className="pt-6 space-y-4">
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
+                {location.saunaName ? `${location.saunaName} is a coastal sauna at ` : 'A coastal sauna spot at '}
+                {location.name}, {county}
+                {location.country && location.country !== 'Ireland' ? `, ${location.country}` : ''}. This
+                page shows live tide times for the {location.tideStation} tide station, sea and air
+                temperature, wind and the week ahead — plus weather and marine warnings — so you can
+                pick a good window for a sauna and a cold-water swim.
+              </p>
+
+              {nearby.length > 0 && (
+                <div>
+                  <h2 className="font-serif text-base text-foreground">Nearby saunas</h2>
+                  <ul className="mt-2 space-y-1.5">
+                    {nearby.map((n) => (
+                      <li key={n.id}>
+                        <Link
+                          to={`/${n.id}`}
+                          className="text-[13px] text-primary hover:underline"
+                        >
+                          {n.saunaName ?? n.name} · {n.name}, {countyLabel(n.county)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <p className="text-[13px] text-muted-foreground">
+                {countyHub && (
+                  <>
+                    <Link to={`/county/${countyHub.slug}`} className="text-primary hover:underline">
+                      All saunas in {countyHub.name}
+                    </Link>
+                    <span className="mx-1.5">·</span>
+                  </>
+                )}
+                {region && (
+                  <Link to={`/${region.slug}`} className="text-primary hover:underline">
+                    All saunas in {region.name}
+                  </Link>
+                )}
+              </p>
+            </section>
+          )}
 
           {/* Footer */}
           <AppFooter delay={0.6} />

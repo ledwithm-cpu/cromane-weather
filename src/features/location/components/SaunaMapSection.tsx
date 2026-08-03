@@ -1,0 +1,298 @@
+import { useState, useCallback, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import { AnimatePresence } from 'framer-motion';
+import { ListChecks, Bookmark, BookmarkCheck } from 'lucide-react';
+import { LOCATIONS, Location } from '@/features/location/data/locations';
+import MapLocationDrawer from '@/features/location/components/MapLocationDrawer';
+import MapActionSheet from '@/features/location/components/MapActionSheet';
+import BucketListPanel from '@/features/bucket-list/components/BucketListPanel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
+import 'leaflet/dist/leaflet.css';
+
+// Fix default marker icon issue with bundlers
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+// Marker styles: fire emoji for saunas; grey dot for non-sauna locations.
+const createSaunaIcon = (opts: { hasSauna: boolean; saved: boolean }) => {
+  if (!opts.hasSauna) {
+    return L.divIcon({
+      className: '',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      html: `<div style="
+        width: 18px; height: 18px;
+        background: hsl(95, 12%, 52%);
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      "></div>`,
+    });
+  }
+
+  const baseColor = opts.saved
+    ? 'hsl(42, 92%, 52%)' // gold (saved)
+    : 'hsl(110, 32%, 48%)'; // sage primary
+
+  const badge = opts.saved
+    ? `<div style="
+        position: absolute; top: -3px; right: -3px;
+        width: 12px; height: 12px;
+        display: flex; align-items: center; justify-content: center;
+        background: hsl(0, 0%, 100%);
+        border: 1.5px solid hsl(42, 92%, 52%);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      ">
+        <svg width="6" height="6" viewBox="0 0 24 24" fill="hsl(42, 92%, 52%)" stroke="hsl(42, 92%, 52%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+        </svg>
+      </div>`
+    : '';
+
+  return L.divIcon({
+    className: '',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    html: `<div style="position: relative; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+      <div style="
+        width: 22px; height: 22px;
+        background: ${baseColor};
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+        display: flex; align-items: center; justify-content: center;
+      ">
+        <span style="font-size: 13px; line-height: 1;">🔥</span>
+      </div>
+      ${badge}
+    </div>`,
+  });
+};
+
+// Center across Ireland & Britain so all saunas fit
+const IRELAND_CENTER: [number, number] = [53.0, -5.5];
+const IRELAND_ZOOM = 6;
+
+function FlyToLocation({
+  location,
+  resetToOverview,
+}: {
+  location: Location | null;
+  resetToOverview: boolean;
+}) {
+  const map = useMap();
+  if (location) {
+    map.flyTo([location.lat, location.lon], 11, { duration: 0.8 });
+  } else if (resetToOverview) {
+    map.flyTo(IRELAND_CENTER, IRELAND_ZOOM, { duration: 0.8 });
+  }
+  return null;
+}
+
+interface SaunaMapSectionProps {
+  /** Height/utility classes for the map wrapper. */
+  className?: string;
+  /** Extra controls rendered in the top-right overlay (e.g. theme toggle). */
+  topRightSlot?: React.ReactNode;
+}
+
+/**
+ * The interactive sauna map with pins, popups, bucket list and detail drawer.
+ * Used full-screen on /discover and as a contained section on the homepage.
+ */
+const SaunaMapSection = ({ className = 'h-[65vh]', topRightSlot }: SaunaMapSectionProps) => {
+  const isMobile = useIsMobile();
+  const {
+    items: bucketItems,
+    add: addToBucket,
+    remove: removeFromBucket,
+  } = useBucketList();
+
+  const [preview, setPreview] = useState<Location | null>(null);
+  const [sheetLocation, setSheetLocation] = useState<Location | null>(null);
+  const [selected, setSelected] = useState<Location | null>(null);
+  const [hasClosedDrawer, setHasClosedDrawer] = useState(false);
+  const [bucketOpen, setBucketOpen] = useState(false);
+
+  const handleMarkerClick = useCallback(
+    (loc: Location) => {
+      if (isMobile) {
+        setPreview(loc);
+      } else {
+        setSelected(loc);
+        setHasClosedDrawer(false);
+      }
+    },
+    [isMobile]
+  );
+
+  const handleCloseDrawer = useCallback(() => {
+    setSelected(null);
+    setHasClosedDrawer(true);
+  }, []);
+
+  const handleOpenSheet = useCallback((loc: Location) => {
+    setSheetLocation(loc);
+    setPreview(null);
+  }, []);
+
+  const saunaLocations = useMemo(() => LOCATIONS.filter((loc) => loc.saunaUrl), []);
+  const savedIds = useMemo(() => new Set(bucketItems.map((i) => i.locationId)), [bucketItems]);
+
+  const markers = useMemo(
+    () =>
+      saunaLocations.map((loc) => {
+        const saved = savedIds.has(loc.id);
+        const icon = createSaunaIcon({ hasSauna: true, saved });
+        return (
+          <Marker
+            key={`${loc.id}-${saved ? 'saved' : 'unsaved'}`}
+            position={[loc.lat, loc.lon]}
+            icon={icon}
+            eventHandlers={{ click: () => handleMarkerClick(loc) }}
+          >
+            {isMobile && (
+              <Popup closeButton={false} autoPan offset={[0, -8]} className="sauna-name-popup">
+                <button
+                  onClick={() => handleOpenSheet(loc)}
+                  className="block px-1 py-0.5 text-sm font-medium text-foreground active:opacity-70 transition-opacity"
+                >
+                  {loc.saunaName ?? loc.name}
+                  <span className="ml-1.5 text-primary">→</span>
+                </button>
+              </Popup>
+            )}
+            {!isMobile && (
+              <Popup closeButton={false} offset={[0, -8]} className="sauna-name-popup">
+                <div className="flex flex-col gap-1.5 px-0.5 py-0.5">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-medium text-foreground leading-tight">
+                      {loc.saunaName ?? loc.name}
+                    </p>
+                    <p className="text-[11px] text-foreground/80 leading-tight">
+                      {loc.name} · Co. {loc.county}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (saved) {
+                        removeFromBucket(loc.id);
+                      } else {
+                        addToBucket(loc.id);
+                        setBucketOpen(true);
+                      }
+                    }}
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      saved
+                        ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 hover:bg-amber-500/25'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    }`}
+                  >
+                    {saved ? (
+                      <>
+                        <BookmarkCheck className="w-3 h-3" /> Saved
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark className="w-3.5 h-3.5" /> Add to Bucket List
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelected(loc);
+                      setHasClosedDrawer(false);
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-primary/40 bg-transparent px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    Check Tides
+                  </button>
+                </div>
+              </Popup>
+            )}
+          </Marker>
+        );
+      }),
+    [saunaLocations, handleMarkerClick, handleOpenSheet, isMobile, savedIds, addToBucket, removeFromBucket]
+  );
+
+  return (
+    <div className={`relative min-h-0 ${className}`}>
+      <MapContainer
+        center={IRELAND_CENTER}
+        zoom={IRELAND_ZOOM}
+        className="h-full w-full z-0 sage-map"
+        zoomControl={false}
+        attributionControl={false}
+        style={{ background: 'hsl(85, 16%, 88%)' }}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          subdomains="abcd"
+          maxZoom={19}
+        />
+        {markers}
+        <FlyToLocation location={selected} resetToOverview={hasClosedDrawer} />
+      </MapContainer>
+
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-[1000] pointer-events-none">
+        <div className="flex items-center justify-end px-4 py-4 max-w-screen-xl mx-auto">
+          <div className="pointer-events-auto flex items-center gap-2">
+            <button
+              onClick={() => setBucketOpen((o) => !o)}
+              aria-label="Toggle bucket list"
+              aria-expanded={bucketOpen}
+              className="relative glass-card rounded-full px-4 py-2.5 shadow-lg hover:bg-card/90 active:scale-[0.97] transition-all inline-flex items-center gap-2"
+            >
+              <ListChecks className="w-4 h-4 text-foreground" />
+              <span className="text-sm font-normal tracking-wide text-foreground">Bucket List</span>
+              {bucketItems.length > 0 && (
+                <span className="ml-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-amber-500 text-[10px] font-semibold text-white tabular-nums shadow">
+                  {bucketItems.length}
+                </span>
+              )}
+            </button>
+            {topRightSlot ? <div className="glass-card rounded-full shadow-lg">{topRightSlot}</div> : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-6 left-4 z-[1000] glass-card rounded-2xl px-4 py-3 shadow-lg">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/80 font-semibold">
+          {saunaLocations.length} coastal saunas
+        </p>
+      </div>
+
+      {/* Desktop drawer */}
+      <AnimatePresence>
+        {selected && !isMobile && (
+          <MapLocationDrawer
+            location={selected}
+            onClose={handleCloseDrawer}
+            onAddToBucketList={() => setBucketOpen(true)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile action sheet */}
+      <AnimatePresence>
+        {sheetLocation && (
+          <MapActionSheet
+            location={sheetLocation}
+            onClose={() => setSheetLocation(null)}
+            onAddedToBucketList={() => setBucketOpen(true)}
+          />
+        )}
+      </AnimatePresence>
+
+      <BucketListPanel open={bucketOpen} onClose={() => setBucketOpen(false)} />
+    </div>
+  );
+};
+
+export default SaunaMapSection;

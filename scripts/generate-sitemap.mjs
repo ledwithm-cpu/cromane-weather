@@ -13,17 +13,22 @@ const BASE_URL = 'https://saunasinireland.com';
 // Per-route metadata defaults. Location pages share the same shape.
 const META = {
   '/': { changefreq: 'daily', priority: '1.0' },
-  '/discover': { changefreq: 'weekly', priority: '0.8' },
+  '/discover': { changefreq: 'weekly', priority: '0.9' },
+  '/tides': { changefreq: 'daily', priority: '0.7' },
   '/how-it-works': { changefreq: 'monthly', priority: '0.6' },
   '/contact': { changefreq: 'monthly', priority: '0.5' },
 };
+const HUB_META = { changefreq: 'weekly', priority: '0.8' };
 const LOCATION_META = { changefreq: 'daily', priority: '0.7' };
+const REGION_PATHS = new Set(['/ireland', '/scotland', '/wales', '/england']);
 
 const routes = getSeoRoutes();
 
 const urls = routes
   .map((r) => {
-    const meta = META[r.path] ?? LOCATION_META;
+    const meta =
+      META[r.path] ??
+      (REGION_PATHS.has(r.path) || r.path.startsWith('/county/') ? HUB_META : LOCATION_META);
     return [
       '  <url>',
       `    <loc>${BASE_URL}${r.path}</loc>`,
