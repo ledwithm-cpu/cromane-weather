@@ -272,6 +272,52 @@ const Index = () => {
             {isToday && <MarineCard marine={marine} />}
           </div>
 
+          {hasRouteParam && (
+            <section className="pt-6 space-y-4">
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
+                {location.saunaName ? `${location.saunaName} is a coastal sauna at ` : 'A coastal sauna spot at '}
+                {location.name}, {county}
+                {location.country && location.country !== 'Ireland' ? `, ${location.country}` : ''}. This
+                page shows live tide times for the {location.tideStation} tide station, sea and air
+                temperature, wind and the week ahead — plus weather and marine warnings — so you can
+                pick a good window for a sauna and a cold-water swim.
+              </p>
+
+              {nearby.length > 0 && (
+                <div>
+                  <h2 className="font-serif text-base text-foreground">Nearby saunas</h2>
+                  <ul className="mt-2 space-y-1.5">
+                    {nearby.map((n) => (
+                      <li key={n.id}>
+                        <Link
+                          to={`/${n.id}`}
+                          className="text-[13px] text-primary hover:underline"
+                        >
+                          {n.saunaName ?? n.name} · {n.name}, {countyLabel(n.county)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <p className="text-[13px] text-muted-foreground">
+                {countyHub && (
+                  <>
+                    <Link to={`/county/${countyHub.slug}`} className="text-primary hover:underline">
+                      All saunas in {countyHub.name}
+                    </Link>
+                    <span className="mx-1.5">·</span>
+                  </>
+                )}
+                {region && (
+                  <Link to={`/${region.slug}`} className="text-primary hover:underline">
+                    All saunas in {region.name}
+                  </Link>
+                )}
+              </p>
+            </section>
+          )}
 
           {/* Footer */}
           <AppFooter delay={0.6} />
