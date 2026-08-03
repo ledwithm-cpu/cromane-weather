@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import AppNav from '@/components/AppNav';
 import AppFooter from '@/components/AppFooter';
 import SEOHead from '@/components/SEOHead';
