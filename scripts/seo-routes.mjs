@@ -26,15 +26,15 @@ function parseLocations() {
 
   const body = arrayMatch[1];
   const entries = [];
-  // Split on object boundaries: `{ ... },`
-  const blockRegex = /\{([\s\S]*?)\n\s*\},?/g;
+  // Each entry is a flat object literal: `{ id: '...', ... }` (no nested braces).
+  const blockRegex = /\{[^{}]*\}/g;
   let m;
   while ((m = blockRegex.exec(body)) !== null) {
-    const block = m[1];
+    const block = m[0];
     const get = (key) => {
       // Match a quoted value, allowing escaped quotes (e.g. "Samhradh\\'s Sauna").
       const re = new RegExp(
-        `${key}\\s*:\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|'((?:[^'\\\\]|\\\\.)*)'|\`((?:[^\`\\\\]|\\\\.)*)\`)`
+        `\\b${key}\\s*:\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|'((?:[^'\\\\]|\\\\.)*)'|\`((?:[^\`\\\\]|\\\\.)*)\`)`
       );
       const r = block.match(re);
       const raw = r ? (r[1] ?? r[2] ?? r[3]) : undefined;
@@ -47,6 +47,8 @@ function parseLocations() {
       name: get('name') || id,
       county: get('county') || '',
       saunaName: get('saunaName'),
+      saunaUrl: get('saunaUrl'),
+      country: get('country') || 'Ireland',
     });
   }
   return entries;
