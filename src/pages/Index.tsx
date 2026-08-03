@@ -15,7 +15,13 @@ import SEOHead from '@/components/SEOHead';
 import { hasActiveWarnings } from '@/features/weather/lib/conditions';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocationFromRoute } from '@/features/location/hooks/use-location-from-route';
-import { LOCATIONS } from '@/features/location/data/locations';
+import { LOCATIONS, Location } from '@/features/location/data/locations';
+import {
+  countyLabel,
+  getCountyHubForLocation,
+  getNearbySaunas,
+  getRegionForLocation,
+} from '@/features/location/lib/directory';
 import {
   Select,
   SelectContent,
@@ -31,17 +37,52 @@ const DEFAULT_SEO = {
   canonicalPath: '/',
 };
 
-function buildLocationSEO(loc: ReturnType<typeof useLocationFromRoute>['location']) {
+function buildLocationSEO(loc: Location) {
+  const county = countyLabel(loc.county);
   const title = loc.saunaName
-    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, Co. ${loc.county}`
-    : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, Co. ${loc.county}`;
+    ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, ${county}`
+    : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, ${county}`;
   const description = loc.saunaName
-    ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, Co. ${loc.county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
-    : `${loc.name} beach sauna and sea swimming guide for Co. ${loc.county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
+    ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, ${county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
+    : `${loc.name} beach sauna and sea swimming guide for ${county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
   const h1 = loc.saunaName
-    ? `${loc.name} Sauna · ${loc.saunaName} Beach Sauna & Sea Swimming in ${loc.name}, Co. ${loc.county}`
-    : `${loc.name} Beach Sauna & Sea Swimming · ${loc.name}, Co. ${loc.county}`;
+    ? `${loc.saunaName} · beach sauna in ${loc.name}, ${county}`
+    : `${loc.name} beach sauna & sea swimming · ${county}`;
   return { title, description, canonicalPath: `/${loc.id}`, h1 };
+}
+
+function buildSaunaJsonLd(loc: Location) {
+  const county = countyLabel(loc.county);
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'HealthClub'],
+    name: loc.saunaName ?? `${loc.name} beach sauna`,
+    description: `Coastal sauna at ${loc.name}, ${county}, with live tide times, sea conditions and weather.`,
+    url: `https://saunasinireland.com/${loc.id}`,
+    ...(loc.saunaUrl ? { sameAs: loc.saunaUrl, hasOfferCatalog: undefined } : {}),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: loc.name,
+      addressRegion: county,
+      addressCountry: loc.country ?? 'Ireland',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: loc.lat,
+      longitude: loc.lon,
+    },
+    ...(loc.saunaUrl
+      ? {
+          potentialAction: {
+            '@type': 'ReserveAction',
+            target: {
+              '@type': 'EntryPoint',
+              urlTemplate: loc.saunaUrl,
+            },
+          },
+        }
+      : {}),
+  } as Record<string, unknown>;
 }
 
 const Index = () => {
