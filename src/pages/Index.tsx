@@ -159,6 +159,34 @@ const Index = () => {
         <AppNav />
         <PullToRefresh onRefresh={refreshAll}>
         <main className="max-w-md mx-auto px-4 py-8 space-y-4">
+          {hasRouteParam && (
+            <nav aria-label="Breadcrumb" className="text-[11px] text-muted-foreground">
+              <Link to="/" className="hover:text-foreground hover:underline">
+                Home
+              </Link>
+              {region && (
+                <>
+                  <span className="mx-1">·</span>
+                  <Link to={`/${region.slug}`} className="hover:text-foreground hover:underline">
+                    {region.name}
+                  </Link>
+                </>
+              )}
+              {countyHub && (
+                <>
+                  <span className="mx-1">·</span>
+                  <Link
+                    to={`/county/${countyHub.slug}`}
+                    className="hover:text-foreground hover:underline"
+                  >
+                    {countyHub.name}
+                  </Link>
+                </>
+              )}
+              <span className="mx-1">·</span>
+              <span className="text-foreground">{location.saunaName ?? location.name}</span>
+            </nav>
+          )}
           {/* Header */}
           <m.header
             initial={{ opacity: 0 }}
