@@ -176,6 +176,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://saunasinireland.com/county/moray</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/county/argyll-and-bute</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://saunasinireland.com/county/isle-of-arran</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -366,11 +376,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://saunasinireland.com/sona-sauna-ventry</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://saunasinireland.com/rossbeigh-sauna-rossbeigh</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -512,6 +517,16 @@
   </url>
   <url>
     <loc>https://saunasinireland.com/scenic-sauna-ballygally-via-ballygally-castle</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/happy-place-fountainstown</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/the-sauna-society-multiple</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -721,6 +736,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://saunasinireland.com/saunassa-newquay</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://saunasinireland.com/soul-water-sauna-portobello-beach-promenade</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -791,6 +811,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://saunasinireland.com/cromarty-community-sauna-cromarty-ferry-slipway-black-isle</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://saunasinireland.com/wild-bathing-tralee-bay-coastal-park-nr-oban-2-locations</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -837,6 +862,26 @@
   </url>
   <url>
     <loc>https://saunasinireland.com/braan-sauna-the-taybank-dunkeld-riverside</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/cullen-beach-sauna-cullen-beach</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/hopeman-dunes-sauna-hopeman-dunes-moray-firth</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/lunderston-bay-sauna-lunderston-bay-inverkip</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://saunasinireland.com/loch-long-sauna-arrochar-loch-long-arrochar</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
