@@ -268,6 +268,11 @@ const Index = () => {
                 </button>
               </m.div>
             )}
+            {!location.saunaUrl && (
+              <p className="pt-1 text-center text-[13px] text-muted-foreground">
+                No online booking · contact the operator directly
+              </p>
+            )}
             {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
             {isToday && <MarineCard marine={marine} />}
           </div>
