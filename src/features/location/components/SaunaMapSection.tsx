@@ -138,7 +138,7 @@ const SaunaMapSection = ({ className = 'h-[65vh]', topRightSlot }: SaunaMapSecti
     setPreview(null);
   }, []);
 
-  const saunaLocations = useMemo(() => LOCATIONS.filter((loc) => loc.saunaUrl), []);
+  const saunaLocations = useMemo(() => LOCATIONS, []);
   const savedIds = useMemo(() => new Set(bucketItems.map((i) => i.locationId)), [bucketItems]);
 
   const markers = useMemo(
