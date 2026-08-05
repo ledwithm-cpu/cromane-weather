@@ -78,6 +78,14 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
               </button>
             )}
 
+            {!location.saunaUrl && (
+              <div className="w-full rounded-2xl bg-muted/30 border border-border/30 px-4 py-3.5">
+                <p className="text-sm text-muted-foreground">
+                  No online booking · contact the operator directly
+                </p>
+              </div>
+            )}
+
             <button
               onClick={() => {
                 if (saved) {

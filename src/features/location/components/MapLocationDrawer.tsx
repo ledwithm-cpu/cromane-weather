@@ -289,6 +289,16 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
               <ArrowRight className="w-4 h-4 text-primary shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" />
             </button>
           )}
+          {!location.saunaUrl && (
+            <div className="w-full rounded-2xl border border-border/40 bg-muted/30 px-5 py-4">
+              <p className="text-sm font-medium text-foreground truncate">
+                {location.saunaName ?? location.name}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                No online booking · contact the operator directly
+              </p>
+            </div>
+          )}
 
           {/* Action buttons — unified stack */}
           <div className="space-y-2 pt-1">

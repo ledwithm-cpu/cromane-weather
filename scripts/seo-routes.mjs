@@ -82,7 +82,7 @@ const REGIONS = [
  * Returns: [{ path, title, description, canonical, image }]
  */
 export function getSeoRoutes() {
-  const locations = parseLocations().filter((l) => l.saunaUrl);
+  const locations = parseLocations();
   const total = locations.length;
 
   const staticRoutes = [

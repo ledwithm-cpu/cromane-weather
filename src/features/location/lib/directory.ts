@@ -51,8 +51,8 @@ export const REGIONS: Region[] = [
   },
 ];
 
-/** Every location that has a bookable sauna. */
-export const SAUNAS: Location[] = LOCATIONS.filter((l) => !!l.saunaUrl);
+/** Every listing in the directory, with or without an online booking link. */
+export const SAUNAS: Location[] = LOCATIONS;
 
 export const getRegion = (slug: string) => REGIONS.find((r) => r.slug === slug);
 
