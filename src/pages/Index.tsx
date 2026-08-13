@@ -251,7 +251,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
-                className="pt-1"
+                className="-mt-1"
               >
                 <button
                   type="button"
