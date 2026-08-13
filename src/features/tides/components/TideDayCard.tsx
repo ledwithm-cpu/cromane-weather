@@ -201,17 +201,6 @@ const TideDayCard = ({
         </div>
       )}
 
-      {location.saunaUrl && (
-        <div className="pt-0.5">
-          <button
-            onClick={() => window.open(location.saunaUrl!, '_blank', 'noopener,noreferrer')}
-            className="flex items-center justify-center gap-2 w-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all rounded-md px-4 py-2 tracking-wide"
-          >
-            Book {location.saunaName ?? 'Sauna'}
-            <span className="text-primary/60">→</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 };
