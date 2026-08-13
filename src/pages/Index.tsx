@@ -199,7 +199,7 @@ const Index = () => {
 
 
             <Select value={location.id} onValueChange={handleLocationChange}>
-              <SelectTrigger className="inline-flex w-auto gap-2 border border-border/60 bg-card/70 shadow-md rounded-full h-auto px-6 py-3 mx-auto focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/90 hover:border-border/80 active:scale-[0.97] transition-all">
+              <SelectTrigger className="inline-flex w-auto gap-2 border border-border/60 bg-card/70 shadow-md rounded-full h-auto px-6 py-2 mx-auto focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/90 hover:border-border/80 active:scale-[0.97] transition-all">
                 <SelectValue>
                   <span className="text-2xl font-normal tracking-wide text-foreground">
                     {location.name}
