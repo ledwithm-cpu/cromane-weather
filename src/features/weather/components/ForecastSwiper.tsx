@@ -81,6 +81,30 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
     tideApi?.scrollTo(idx);
   }, [weatherApi, tideApi]);
 
+  // Collapse the carousel viewport to the active slide's height so shorter
+  // days (e.g. today) don't leave dead space under the card.
+  const [viewportH, setViewportH] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    const api = activeView === 'weather' ? weatherApi : tideApi;
+    if (!api) return;
+    const measure = () => {
+      const node = api.slideNodes()[api.selectedScrollSnap()];
+      if (node) setViewportH(node.offsetHeight);
+    };
+    measure();
+    api.on('select', measure);
+    api.on('reInit', measure);
+    const ro = new ResizeObserver(measure);
+    api.slideNodes().forEach(n => ro.observe(n));
+    window.addEventListener('resize', measure);
+    return () => {
+      api.off('select', measure);
+      api.off('reInit', measure);
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [activeView, weatherApi, tideApi]);
+
   const todayKey = days[0].key;
   const currentDay = days[currentDayIndex];
   const isToday = currentDayIndex === 0;
