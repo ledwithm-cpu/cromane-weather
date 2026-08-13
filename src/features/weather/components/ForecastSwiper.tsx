@@ -116,10 +116,10 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="space-y-3"
+      className="space-y-2"
     >
       {/* Static date label — does not move when swiping */}
-      <div className="text-center space-y-1.5">
+      <div className="text-center space-y-1">
         <p className="text-base font-medium text-foreground tracking-wide">
           {formatLongDate(currentDay.date, isToday, isTomorrow)}
         </p>
@@ -170,7 +170,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       {/* Stitched weather + tide card — single glass surface */}
       <div className="glass-card rounded-lg overflow-hidden">
         {/* WEATHER · TIDES toggle */}
-        <div className="flex items-center justify-center gap-0.5 py-3 border-b border-border/30">
+        <div className="flex items-center justify-center gap-0.5 py-2 border-b border-border/30">
           <button
             onClick={() => setActiveView('weather')}
             className={`px-4 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] font-medium transition-colors ${

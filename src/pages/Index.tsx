@@ -158,7 +158,7 @@ const Index = () => {
       <div className="bg-background min-h-dvh">
         <AppNav />
         <PullToRefresh onRefresh={refreshAll}>
-        <main className="max-w-md mx-auto px-4 py-8 space-y-4">
+        <main className="max-w-md mx-auto px-4 py-5 space-y-3">
           {hasRouteParam && (
             <nav aria-label="Breadcrumb" className="text-[11px] text-muted-foreground">
               <Link to="/" className="hover:text-foreground hover:underline">
@@ -191,7 +191,7 @@ const Index = () => {
           <m.header
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="pb-4 text-center relative"
+            className="pb-2 text-center relative"
           >
             <div className="absolute right-0 top-0 flex items-center gap-1">
               <ThemeToggle />
@@ -199,7 +199,7 @@ const Index = () => {
 
 
             <Select value={location.id} onValueChange={handleLocationChange}>
-              <SelectTrigger className="inline-flex w-auto gap-2 border border-border/60 bg-card/70 shadow-md rounded-full h-auto px-6 py-3 mx-auto focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/90 hover:border-border/80 active:scale-[0.97] transition-all">
+              <SelectTrigger className="inline-flex w-auto gap-2 border border-border/60 bg-card/70 shadow-md rounded-full h-auto px-6 py-2 mx-auto focus:ring-2 focus:ring-primary/30 focus:ring-offset-0 hover:bg-card/90 hover:border-border/80 active:scale-[0.97] transition-all">
                 <SelectValue>
                   <span className="text-2xl font-normal tracking-wide text-foreground">
                     {location.name}
@@ -242,7 +242,7 @@ const Index = () => {
           )}
 
           {/* Card Stack */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {wind && tides && (
               <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
             )}
@@ -251,12 +251,12 @@ const Index = () => {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
-                className="-mt-1"
+                className="-mt-2"
               >
                 <button
                   type="button"
                   onClick={handleBookingClick}
-                  className="group w-full h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-medium tracking-wide shadow-sm hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background flex items-center justify-center gap-2"
+                  className="group w-full h-11 rounded-2xl bg-primary text-primary-foreground text-sm font-medium tracking-wide shadow-sm hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background flex items-center justify-center gap-2"
                 >
                   <span>Book {location.saunaName}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:translate-x-0.5 transition-transform">
