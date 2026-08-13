@@ -236,7 +236,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
         )}
 
         {activeView === 'tides' && (
-          <div className="overflow-hidden" ref={tideRef}>
+          <div className="overflow-hidden transition-[height] duration-200" ref={tideRef} style={{ height: viewportH }}>
             <div className="flex items-start">
               {days.map((d) => {
                 const weatherDay = weatherByDate.get(d.key) ?? null;
