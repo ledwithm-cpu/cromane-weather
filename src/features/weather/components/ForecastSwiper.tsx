@@ -81,6 +81,30 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
     tideApi?.scrollTo(idx);
   }, [weatherApi, tideApi]);
 
+  // Collapse the carousel viewport to the active slide's height so shorter
+  // days (e.g. today) don't leave dead space under the card.
+  const [viewportH, setViewportH] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    const api = activeView === 'weather' ? weatherApi : tideApi;
+    if (!api) return;
+    const measure = () => {
+      const node = api.slideNodes()[api.selectedScrollSnap()];
+      if (node) setViewportH(node.offsetHeight);
+    };
+    measure();
+    api.on('select', measure);
+    api.on('reInit', measure);
+    const ro = new ResizeObserver(measure);
+    api.slideNodes().forEach(n => ro.observe(n));
+    window.addEventListener('resize', measure);
+    return () => {
+      api.off('select', measure);
+      api.off('reInit', measure);
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [activeView, weatherApi, tideApi]);
+
   const todayKey = days[0].key;
   const currentDay = days[currentDayIndex];
   const isToday = currentDayIndex === 0;
@@ -195,8 +219,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
         </div>
 
         {activeView === 'weather' && (
-          <div className="overflow-hidden" ref={weatherRef}>
-            <div className="flex">
+          <div className="overflow-hidden transition-[height] duration-200" ref={weatherRef} style={{ height: viewportH }}>
+            <div className="flex items-start">
               {days.map((d) => (
                 <div key={`w-${d.key}`} className="min-w-0 shrink-0 grow-0 basis-full">
                   <WeatherDayCard
@@ -212,8 +236,8 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
         )}
 
         {activeView === 'tides' && (
-          <div className="overflow-hidden" ref={tideRef}>
-            <div className="flex">
+          <div className="overflow-hidden transition-[height] duration-200" ref={tideRef} style={{ height: viewportH }}>
+            <div className="flex items-start">
               {days.map((d) => {
                 const weatherDay = weatherByDate.get(d.key) ?? null;
                 return (
