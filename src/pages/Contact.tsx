@@ -4,10 +4,10 @@ import { ArrowLeft, Mail } from 'lucide-react';
 import AppFooter from '@/components/AppFooter';
 
 
-// Static, low-cost map placeholder of Ireland (CARTO light, no labels).
+// Static, low-cost map placeholder of Ireland (OpenStreetMap tile).
 // Avoids loading react-leaflet on this route for faster mobile paint.
 const MAP_PLACEHOLDER_URL =
-  'https://a.basemaps.cartocdn.com/light_nolabels/7/61/40.png';
+  'https://tile.openstreetmap.org/7/61/40.png';
 
 const Contact = () => {
   return (
