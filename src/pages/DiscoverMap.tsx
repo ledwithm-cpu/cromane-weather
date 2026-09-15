@@ -18,7 +18,7 @@ const DiscoverMap = () => (
         Sauna map · Ireland, Scotland, Wales &amp; England
       </h1>
       <p className="mt-0.5 text-xs md:text-sm text-foreground/80 max-w-3xl mx-auto leading-snug overflow-hidden text-ellipsis whitespace-nowrap">
-        Discover sea-side saunas around the coast — save your favourites and tick them off.
+        Free tide times &amp; weather · set your home sauna · book direct, no fees.
       </p>
     </section>
 

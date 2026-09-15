@@ -43,6 +43,22 @@ const HowItWorks = () => {
         </m.section>
 
         <div className="space-y-8">
+          {/* What it costs */}
+          <m.section {...section(0.1)} className="space-y-3">
+            <div className="border-t border-border/30 pt-6">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+                What it costs
+              </p>
+            </div>
+            <h2 className="text-base font-normal text-foreground">
+              Free · for You and the Saunas
+            </h2>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">No fees, ever:</strong> The site is free to use, with no signup needed. Booking happens on each operator&apos;s own site · we never take a commission or add a booking fee.</p>
+              <p><strong className="text-foreground font-normal">Free for operators too:</strong> No sauna pays to be listed. Set your home sauna and its tides and weather are the first thing you see when you come back.</p>
+            </div>
+          </m.section>
+
           {/* Location Selector */}
           <m.section {...section(0.12)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">

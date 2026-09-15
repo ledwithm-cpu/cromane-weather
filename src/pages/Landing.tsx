@@ -91,6 +91,9 @@ function InlineEmailCapture() {
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Keep me posted'}
           </button>
         </form>
+        <p className="mt-3 text-[13px] text-muted-foreground">
+          Free, occasional notes only · unsubscribe anytime.
+        </p>
       </div>
     </section>
   );
@@ -195,8 +198,9 @@ const Landing = () => {
             Find coastal saunas across Ireland, Scotland, Wales &amp; England
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-[15px] sm:text-base leading-relaxed text-foreground/80">
-            {SAUNAS.length} coastal saunas · live tide times &amp; sea conditions ·
-            direct booking links · 100% free, no signup needed
+            Free tide times, sea conditions &amp; weather for {SAUNAS.length}{' '}
+            coastal saunas. Set your home sauna and it&apos;s the first thing
+            you see. Book direct with the operator · no fees for you or them.
           </p>
           <SaunaSearch />
           <div className="mt-5">
@@ -288,10 +292,12 @@ const Landing = () => {
             warning or an orange wind warning shows up before you plan a swim.
           </p>
           <p>
-            When you find a sauna you like, the booking link goes straight to the
-            operator · we take no commission and add no booking layer. Save spots
-            to a bucket list, set a home sauna so it opens by default, and use it
-            all free, forever, with no signup needed.
+            The site is free, forever, and you don&apos;t need to sign up. When
+            you find a sauna you like, the booking link goes straight to the
+            operator&apos;s own site · we never take a commission, add a booking
+            fee, or charge operators to be listed. Save spots to a bucket list
+            and set a home sauna so it&apos;s the first thing you see when you
+            come back.
           </p>
         </div>
         <p className="mt-4 text-[14px]">
