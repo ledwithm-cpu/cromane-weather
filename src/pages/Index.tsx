@@ -104,22 +104,24 @@ const Index = () => {
     }
   };
 
-  const { data: wind, isLoading: windLoading } = useWeather();
-  const { data: tides, isLoading: tidesLoading } = useTides();
-  const { data: warningData, isLoading: warningsLoading } = useWarnings();
+  const { data: wind, isLoading: windLoading, isError: windError } = useWeather();
+  const { data: tides, isLoading: tidesLoading, isError: tidesError } = useTides();
+  const { data: warningData, isLoading: warningsLoading, isError: warningsError } = useWarnings();
   const { data: lightning } = useLightning();
   const refreshAll = useRefreshAll();
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const isToday = selectedDayIndex === 0;
 
   const warnings = warningData?.warnings ?? [];
-  const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
+  const marine = warningData?.marine;
   const warningActive = hasActiveWarnings(warnings);
 
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
+  const conditionsUnavailable = (windError && !wind) || (tidesError && !tides);
+  const warningsUnavailable = warningsError && !warningData;
 
   const grouped = useMemo(
     () =>
