@@ -75,7 +75,6 @@ function InlineEmailCapture() {
           to hear from us.
         </p>
         <form onSubmit={handleSubmit} className="mt-5 flex flex-col sm:flex-row gap-2">
-          <p className="sr-only">Free, occasional emails · unsubscribe anytime.</p>
           <input
             type="email"
             required
