@@ -100,6 +100,11 @@ const Index = () => {
 
   const handleBookingClick = () => {
     if (location.saunaUrl) {
+      trackBookingClick({
+        locationId: location.id,
+        saunaName: location.saunaName ?? location.name,
+        source: 'detail-page',
+      });
       window.open(location.saunaUrl, '_blank', 'noopener,noreferrer');
     }
   };

@@ -4,6 +4,7 @@ import { X, Navigation, Wind, Thermometer, Droplets, ArrowLeft, Bookmark, Bookma
 import { Link } from 'react-router-dom';
 import { Location } from '@/features/location/data/locations';
 import { openExternal } from '@/lib/open-external';
+import { trackBookingClick } from '@/lib/track-booking-click';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -279,7 +280,14 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
           {/* Sauna Info — featured booking card stays distinct */}
           {location.saunaUrl && (
             <button
-              onClick={() => openExternal(location.saunaUrl!)}
+              onClick={() => {
+                trackBookingClick({
+                  locationId: location.id,
+                  saunaName: location.saunaName ?? location.name,
+                  source: 'map-drawer',
+                });
+                openExternal(location.saunaUrl!);
+              }}
               className="flex items-center justify-between w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/20 px-5 py-4 group active:scale-[0.98] transition-all text-left"
             >
               <div className="min-w-0">

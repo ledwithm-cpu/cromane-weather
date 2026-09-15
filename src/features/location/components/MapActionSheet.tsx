@@ -4,6 +4,7 @@ import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 
 import { Location } from '@/features/location/data/locations';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import { openExternal, buildDirectionsUrls } from '@/lib/open-external';
+import { trackBookingClick } from '@/lib/track-booking-click';
 
 interface Props {
   location: Location;
