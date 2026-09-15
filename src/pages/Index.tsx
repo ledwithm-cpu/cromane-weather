@@ -104,22 +104,24 @@ const Index = () => {
     }
   };
 
-  const { data: wind, isLoading: windLoading } = useWeather();
-  const { data: tides, isLoading: tidesLoading } = useTides();
-  const { data: warningData, isLoading: warningsLoading } = useWarnings();
+  const { data: wind, isLoading: windLoading, isError: windError } = useWeather();
+  const { data: tides, isLoading: tidesLoading, isError: tidesError } = useTides();
+  const { data: warningData, isLoading: warningsLoading, isError: warningsError } = useWarnings();
   const { data: lightning } = useLightning();
   const refreshAll = useRefreshAll();
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const isToday = selectedDayIndex === 0;
 
   const warnings = warningData?.warnings ?? [];
-  const marine = warningData?.marine ?? { type: 'Loading...', area: 'Southwest Coast', description: '', active: false };
+  const marine = warningData?.marine;
   const warningActive = hasActiveWarnings(warnings);
 
   const lightningDanger = (lightning?.alert_level ?? 0) >= 2;
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
+  const conditionsUnavailable = (windError && !wind) || (tidesError && !tides);
+  const warningsUnavailable = warningsError && !warningData;
 
   const grouped = useMemo(
     () =>
@@ -246,6 +248,11 @@ const Index = () => {
             {wind && tides && (
               <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
             )}
+            {conditionsUnavailable && (
+              <p className="py-6 text-center text-[13px] text-muted-foreground">
+                Live tide and weather data is unavailable right now · pull down to try again
+              </p>
+            )}
             {location.saunaName && location.saunaUrl && (
               <m.div
                 initial={{ opacity: 0, y: 12 }}
@@ -273,8 +280,15 @@ const Index = () => {
                 No online booking · contact the operator directly
               </p>
             )}
-            {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
-            {isToday && <MarineCard marine={marine} />}
+            {isToday && warningsUnavailable && (
+              <p className="text-center text-[13px] text-muted-foreground">
+                Weather and marine warnings are unavailable right now
+              </p>
+            )}
+            {isToday && !warningsUnavailable && warningData && (
+              <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
+            )}
+            {isToday && !warningsUnavailable && marine && <MarineCard marine={marine} />}
           </div>
 
           {hasRouteParam && (

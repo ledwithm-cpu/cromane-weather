@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { WindData, TideData, TideEvent, Warning, MarineWarning, LightningData, NowcastData } from '@/types/forecast';
-import { mockWind, mockTides, mockWarnings, mockMarine, mockLightning } from '@/tests/fixtures/forecast';
+
 import { cacheGet, cacheSet } from '@/lib/offline-cache';
 import { useCallback } from 'react';
 import { useLocation } from '@/features/location/hooks/use-location';
@@ -87,7 +87,7 @@ export function useWeather() {
     queryFn: () => fetchWeather(location),
     refetchInterval: 15 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
-    placeholderData: () => cacheGet<WindData>(`weather-${location.id}`) ?? mockWind,
+    placeholderData: () => cacheGet<WindData>(`weather-${location.id}`) ?? undefined,
     retry: 2,
   });
 }
@@ -119,7 +119,7 @@ export function useTides() {
     refetchInterval: irish ? 60 * 60 * 1000 : false,
     staleTime: 30 * 60 * 1000,
     placeholderData: () =>
-      irish ? (cacheGet<TideData>(`tides-${location.id}`) ?? mockTides) : EMPTY_TIDES,
+      irish ? (cacheGet<TideData>(`tides-${location.id}`) ?? undefined) : EMPTY_TIDES,
     retry: 2,
   });
 }
@@ -135,7 +135,7 @@ export function useWarnings() {
     staleTime: 2 * 60 * 1000,
     placeholderData: () =>
       irish
-        ? (cacheGet<{ warnings: Warning[]; marine: MarineWarning }>(`warnings-${location.id}`) ?? { warnings: mockWarnings, marine: mockMarine })
+        ? (cacheGet<{ warnings: Warning[]; marine: MarineWarning }>(`warnings-${location.id}`) ?? undefined)
         : EMPTY_WARNINGS,
     retry: 2,
   });
@@ -153,7 +153,7 @@ export function useLightning() {
     refetchInterval: isDebugMode ? false : 30 * 1000,
     staleTime: 15 * 1000,
     placeholderData: () =>
-      isDebugMode ? DEBUG_LIGHTNING : (cacheGet<LightningData>(`lightning-${location.id}`) ?? mockLightning),
+      isDebugMode ? DEBUG_LIGHTNING : (cacheGet<LightningData>(`lightning-${location.id}`) ?? undefined),
     retry: isDebugMode ? 0 : 2,
   });
 }
