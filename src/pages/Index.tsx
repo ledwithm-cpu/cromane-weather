@@ -263,6 +263,9 @@ const Index = () => {
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </button>
+                <p className="mt-1.5 text-center text-[12px] text-muted-foreground">
+                  Booking is on the operator&apos;s own site · no fees, no commission
+                </p>
               </m.div>
             )}
             {!location.saunaUrl && (

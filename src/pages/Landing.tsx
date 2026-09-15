@@ -92,6 +92,9 @@ function InlineEmailCapture() {
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Keep me posted'}
           </button>
         </form>
+        <p className="mt-3 text-[13px] text-muted-foreground">
+          Free, occasional notes only · unsubscribe anytime.
+        </p>
       </div>
     </section>
   );
