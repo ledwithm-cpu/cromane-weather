@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_clicks: {
+        Row: {
+          created_at: string
+          id: string
+          location_id: string
+          path: string | null
+          sauna_name: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location_id: string
+          path?: string | null
+          sauna_name?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location_id?: string
+          path?: string | null
+          sauna_name?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       bucket_list_items: {
         Row: {
           created_at: string
