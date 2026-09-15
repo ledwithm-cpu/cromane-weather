@@ -15,6 +15,7 @@ import SEOHead from '@/components/SEOHead';
 import { hasActiveWarnings } from '@/features/weather/lib/conditions';
 import { useWeather, useTides, useWarnings, useLightning, useRefreshAll } from '@/hooks/use-cromane-data';
 import { useLocationFromRoute } from '@/features/location/hooks/use-location-from-route';
+import { trackBookingClick } from '@/lib/track-booking-click';
 import { LOCATIONS, Location } from '@/features/location/data/locations';
 import {
   countyLabel,
@@ -100,6 +101,11 @@ const Index = () => {
 
   const handleBookingClick = () => {
     if (location.saunaUrl) {
+      trackBookingClick({
+        locationId: location.id,
+        saunaName: location.saunaName ?? location.name,
+        source: 'detail-page',
+      });
       window.open(location.saunaUrl, '_blank', 'noopener,noreferrer');
     }
   };

@@ -4,6 +4,7 @@ import { Navigation, MapPin, Ticket, ArrowRight, Bookmark, BookmarkCheck } from 
 import { Location } from '@/features/location/data/locations';
 import { useBucketList } from '@/features/bucket-list/hooks/use-bucket-list';
 import { openExternal, buildDirectionsUrls } from '@/lib/open-external';
+import { trackBookingClick } from '@/lib/track-booking-click';
 
 interface Props {
   location: Location;
@@ -67,7 +68,14 @@ const MapActionSheet = ({ location, onClose, onAddedToBucketList }: Props) => {
 
             {location.saunaUrl && (
               <button
-                onClick={() => open(location.saunaUrl!)}
+                onClick={() => {
+                  trackBookingClick({
+                    locationId: location.id,
+                    saunaName: location.saunaName ?? location.name,
+                    source: 'map-sheet',
+                  });
+                  open(location.saunaUrl!);
+                }}
                 className="flex items-center gap-3 w-full rounded-2xl bg-primary/10 border border-primary/20 px-4 py-3.5 text-left hover:bg-primary/15 active:scale-[0.98] transition-all"
               >
                 <Ticket className="w-5 h-5 text-primary" />
