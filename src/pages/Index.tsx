@@ -248,6 +248,11 @@ const Index = () => {
             {wind && tides && (
               <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
             )}
+            {conditionsUnavailable && (
+              <p className="py-6 text-center text-[13px] text-muted-foreground">
+                Live tide and weather data is unavailable right now · pull down to try again
+              </p>
+            )}
             {location.saunaName && location.saunaUrl && (
               <m.div
                 initial={{ opacity: 0, y: 12 }}
@@ -275,8 +280,15 @@ const Index = () => {
                 No online booking · contact the operator directly
               </p>
             )}
-            {isToday && <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />}
-            {isToday && <MarineCard marine={marine} />}
+            {isToday && warningsUnavailable && (
+              <p className="text-center text-[13px] text-muted-foreground">
+                Weather and marine warnings are unavailable right now
+              </p>
+            )}
+            {isToday && !warningsUnavailable && warningData && (
+              <WarningsCard warnings={warnings} weatherCode={wind?.weather_code} />
+            )}
+            {isToday && !warningsUnavailable && marine && <MarineCard marine={marine} />}
           </div>
 
           {hasRouteParam && (
