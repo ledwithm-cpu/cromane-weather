@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.saunasinireland.app",
+      "sha256_cert_fingerprints": [
+        "6E:CF:EE:BD:09:27:6D:A9:53:98:6C:47:8F:9F:67:30:2A:97:0E:B6:50:AD:4B:9D:A3:9B:81:71:0D:25:33:99"
+      ]
+    }
+  }
+]
