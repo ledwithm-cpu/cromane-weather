@@ -14,6 +14,175 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_eval_cases: {
+        Row: {
+          confirmed: boolean
+          created_at: string
+          expected_verdict: string
+          location_id: string
+          notes: string | null
+        }
+        Insert: {
+          confirmed?: boolean
+          created_at?: string
+          expected_verdict: string
+          location_id: string
+          notes?: string | null
+        }
+        Update: {
+          confirmed?: boolean
+          created_at?: string
+          expected_verdict?: string
+          location_id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_eval_cases_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: true
+            referencedRelation: "agent_listing_registry"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
+      agent_listing_registry: {
+        Row: {
+          active: boolean
+          country: string | null
+          county: string | null
+          last_checked_at: string | null
+          lat: number | null
+          location_id: string
+          lon: number | null
+          place_name: string
+          sauna_name: string
+          sauna_url: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          country?: string | null
+          county?: string | null
+          last_checked_at?: string | null
+          lat?: number | null
+          location_id: string
+          lon?: number | null
+          place_name: string
+          sauna_name: string
+          sauna_url: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          country?: string | null
+          county?: string | null
+          last_checked_at?: string | null
+          lat?: number | null
+          location_id?: string
+          lon?: number | null
+          place_name?: string
+          sauna_name?: string
+          sauna_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      agent_run_steps: {
+        Row: {
+          created_at: string
+          id: number
+          kind: string
+          location_id: string | null
+          name: string | null
+          payload: Json | null
+          run_id: string
+          step_no: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          kind: string
+          location_id?: string | null
+          name?: string | null
+          payload?: Json | null
+          run_id: string
+          step_no: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          kind?: string
+          location_id?: string | null
+          name?: string | null
+          payload?: Json | null
+          run_id?: string
+          step_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_run_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_runs: {
+        Row: {
+          agent: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          input_tokens: number
+          listings_checked: number
+          llm_calls: number
+          mode: string
+          model: string | null
+          output_tokens: number
+          prompt_version: string | null
+          started_at: string
+          status: string
+          summary: Json | null
+          web_searches: number
+        }
+        Insert: {
+          agent?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number
+          listings_checked?: number
+          llm_calls?: number
+          mode?: string
+          model?: string | null
+          output_tokens?: number
+          prompt_version?: string | null
+          started_at?: string
+          status?: string
+          summary?: Json | null
+          web_searches?: number
+        }
+        Update: {
+          agent?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number
+          listings_checked?: number
+          llm_calls?: number
+          mode?: string
+          model?: string | null
+          output_tokens?: number
+          prompt_version?: string | null
+          started_at?: string
+          status?: string
+          summary?: Json | null
+          web_searches?: number
+        }
+        Relationships: []
+      }
       booking_clicks: {
         Row: {
           created_at: string
@@ -146,6 +315,129 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_snapshots: {
+        Row: {
+          checked_at: string
+          confidence: number | null
+          evidence: Json | null
+          final_url: string | null
+          http_status: number | null
+          id: string
+          location_id: string
+          run_id: string | null
+          url_kind: string | null
+          used_llm: boolean
+          verdict: string
+        }
+        Insert: {
+          checked_at?: string
+          confidence?: number | null
+          evidence?: Json | null
+          final_url?: string | null
+          http_status?: number | null
+          id?: string
+          location_id: string
+          run_id?: string | null
+          url_kind?: string | null
+          used_llm?: boolean
+          verdict: string
+        }
+        Update: {
+          checked_at?: string
+          confidence?: number | null
+          evidence?: Json | null
+          final_url?: string | null
+          http_status?: number | null
+          id?: string
+          location_id?: string
+          run_id?: string | null
+          url_kind?: string | null
+          used_llm?: boolean
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_snapshots_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "agent_listing_registry"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "listing_snapshots_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_update_proposals: {
+        Row: {
+          confidence: number
+          created_at: string
+          current_value: string | null
+          evidence_urls: string[]
+          field: string
+          id: string
+          location_id: string
+          proposed_value: string | null
+          rationale: string
+          review_note: string | null
+          reviewed_at: string | null
+          run_id: string | null
+          status: string
+          verdict: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          current_value?: string | null
+          evidence_urls?: string[]
+          field: string
+          id?: string
+          location_id: string
+          proposed_value?: string | null
+          rationale: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          run_id?: string | null
+          status?: string
+          verdict: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          current_value?: string | null
+          evidence_urls?: string[]
+          field?: string
+          id?: string
+          location_id?: string
+          proposed_value?: string | null
+          rationale?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          run_id?: string | null
+          status?: string
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_update_proposals_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "agent_listing_registry"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "listing_update_proposals_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "agent_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketing_subscribers: {
         Row: {
           converted_to_full_account: boolean
@@ -232,7 +524,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      listing_review_queue: {
+        Row: {
+          clicks_90d: number | null
+          confidence: number | null
+          created_at: string | null
+          current_value: string | null
+          evidence_urls: string[] | null
+          field: string | null
+          id: string | null
+          location_id: string | null
+          place_name: string | null
+          proposed_value: string | null
+          rationale: string | null
+          sauna_name: string | null
+          verdict: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_update_proposals_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "agent_listing_registry"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
