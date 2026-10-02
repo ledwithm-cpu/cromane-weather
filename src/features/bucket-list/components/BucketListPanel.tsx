@@ -140,7 +140,7 @@ const BucketListPanel = ({ open, onClose }: Props) => {
             className={
               isMobile
                 ? 'fixed bottom-0 left-0 right-0 z-[2001] rounded-t-3xl bg-background border-t border-border/40 shadow-2xl pb-[env(safe-area-inset-bottom)] max-h-[80vh] flex flex-col'
-                : 'fixed top-0 right-0 bottom-0 z-[1500] w-[340px] bg-background border-l border-border/40 shadow-2xl flex flex-col'
+                : 'fixed top-0 right-0 bottom-0 z-[2001] w-[340px] bg-background border-l border-border/40 shadow-2xl flex flex-col'
             }
             role="dialog"
             aria-label="Bucket list"
