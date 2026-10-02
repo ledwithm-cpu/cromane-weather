@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { LOCATIONS } from '@/features/location/data/locations';
@@ -78,6 +77,13 @@ export default function Admin() {
   const [sort, setSort] = useState<SortKey>('clicks_total');
 
   useEffect(() => {
+    document.title = 'Owner dashboard · Saunas in Ireland';
+    const m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex,nofollow';
+    document.head.appendChild(m);
+    return () => { m.remove(); };
+  }, []);
+
+  useEffect(() => {
     if (!user) return;
     setError(null);
     const rpc = supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown; error: { message: string } | null }>;
@@ -132,7 +138,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-6">
-      <Helmet><title>Owner dashboard · Saunas in Ireland</title><meta name="robots" content="noindex,nofollow" /></Helmet>
       {loading ? null : !user ? <SignIn /> : (
         <div className="mx-auto max-w-7xl space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-3">

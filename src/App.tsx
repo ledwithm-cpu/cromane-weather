@@ -21,6 +21,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 const RegionHub = lazy(() => import("./pages/RegionHub"));
 const CountyHub = lazy(() => import("./pages/CountyHub"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const AnalyticsRoutes = () => {
         <Route path="/explore" element={<DiscoverMap />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/tides" element={<Index />} />
         <Route path="/ireland" element={<RegionHub />} />
         <Route path="/scotland" element={<RegionHub />} />
