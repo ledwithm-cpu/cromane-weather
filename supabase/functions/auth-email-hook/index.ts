@@ -15,7 +15,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SITE_NAME = "Beach Saunas"
+const SITE_NAME = "Coastal Saunas"
 const SENDER_DOMAIN = "notify.saunasinireland.com"
 const ROOT_DOMAIN = "saunasinireland.com"
 const FROM_DOMAIN = "notify.saunasinireland.com"
