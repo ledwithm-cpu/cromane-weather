@@ -14,5 +14,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://saunasinireland.com/sitemap.xml
-
-Disallow: /admin
