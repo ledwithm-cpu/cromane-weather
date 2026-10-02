@@ -65,7 +65,8 @@ export default SignupEmail
 const main = { backgroundColor: '#ffffff', fontFamily: "Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" }
 const container = { padding: '20px 25px' }
 const h1 = {
-  fontSize: '22px',
+  fontSize: '24px',
+  fontFamily: "Fraunces, Georgia, 'Times New Roman', serif",
   fontWeight: 'bold' as const,
   color: '#362d26',
   margin: '0 0 20px',
