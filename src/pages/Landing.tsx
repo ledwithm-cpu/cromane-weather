@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Loader2, MapPin, Search } from 'lucide-react';
+import { ArrowRight, Loader2, MapPin, Play, Search } from 'lucide-react';
 import { m } from 'framer-motion';
 import AppNav from '@/components/AppNav';
 import AppFooter from '@/components/AppFooter';
 import SEOHead from '@/components/SEOHead';
 import SaunaCard from '@/components/SaunaCard';
 import ThemeToggle from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
 import SaunaMapSection from '@/features/location/components/SaunaMapSection';
 import {
   COUNTY_HUBS,
@@ -147,6 +148,92 @@ function SaunaSearch() {
   );
 }
 
+function PromoVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const manuallyStarted = useRef(false);
+  const visible = useRef(false);
+  const [reducedMotion, setReducedMotion] = useState(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => {
+      manuallyStarted.current = false;
+      setReducedMotion(preference.matches);
+    };
+    preference.addEventListener('change', updatePreference);
+    return () => preference.removeEventListener('change', updatePreference);
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updatePlayback = () => {
+      if (visible.current && (!reducedMotion || manuallyStarted.current)) {
+        void video.play().catch(() => setPlaying(false));
+      } else {
+        video.pause();
+      }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible.current = entry?.isIntersecting ?? false;
+      updatePlayback();
+    });
+    observer.observe(video);
+    updatePlayback();
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [reducedMotion]);
+
+  return (
+    <section className="mx-auto max-w-5xl px-5 pt-12">
+      <h2 className="font-serif text-2xl text-foreground">See it in action</h2>
+      <p className="mt-1 text-[14px] text-muted-foreground">
+        Tides, weather and direct booking for every coastal sauna — in your pocket.
+      </p>
+      <div className="relative mt-4 aspect-video max-sm:max-h-[60vh] overflow-hidden rounded-3xl border border-border/60 bg-card/70">
+        <video
+          ref={videoRef}
+          autoPlay={!reducedMotion}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/media/sauna-hero-v2-poster.jpg"
+          aria-label="Short animation showing someone finding a coastal sauna on SaunasInIreland, checking tides at Cromane, and relaxing in a sauna at sunset"
+          className="absolute inset-0 h-full w-full object-cover"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        >
+          <source src="/media/sauna-hero-v2.webm" type="video/webm" />
+          <source src="/media/sauna-hero-v2.mp4" type="video/mp4" />
+        </video>
+        {!playing && (
+          <Button
+            size="icon"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm"
+            aria-label="Play promo video"
+            title="Play promo video"
+            onClick={() => {
+              const video = videoRef.current;
+              if (!video) return;
+              manuallyStarted.current = true;
+              void video.play().catch(() => setPlaying(false));
+            }}
+          >
+            <Play className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+}
+
 const Landing = () => {
   const featured = useMemo(
     () =>
@@ -213,6 +300,8 @@ const Landing = () => {
           </div>
         </div>
       </header>
+
+      <PromoVideo />
 
       {/* Browse by region */}
       <section className="mx-auto max-w-5xl px-5 py-12">
