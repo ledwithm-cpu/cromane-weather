@@ -1,140 +1,67 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Sends a push to devices subscribed to ONE sauna, via FCM HTTP v1.
+// Server-only: the caller must present the service role key.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { getAccessToken, readServiceAccount, sendToToken } from "../_shared/fcm.ts";
+import { isCoolingDown, PUSH_COOLDOWN_MS } from "../_shared/push-logic.ts";
 
+const json = (b: unknown, status = 200) =>
+  new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-// Cooldown: don't send same notification type within this window
-const COOLDOWN_MS = 15 * 60 * 1000; // 15 minutes
+const SLUG = /^[a-z0-9-]{1,120}$/;
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  if (req.headers.get("Authorization") !== `Bearer ${serviceKey}`) return json({ error: "Forbidden" }, 403);
 
   try {
-    const FCM_SERVER_KEY = Deno.env.get('FIREBASE_FCM_SERVER_KEY');
-    if (!FCM_SERVER_KEY) {
-      throw new Error('FCM Server Key not configured');
+    const { location_id, title, body, notification_type, alert_level, data, only_token } = await req.json();
+    if (typeof location_id !== "string" || !SLUG.test(location_id) || !title || !body || !notification_type) {
+      return json({ error: "location_id, title, body and notification_type are required" }, 400);
     }
 
-    const { title, body, notification_type, alert_level, data } = await req.json();
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceKey);
 
-    if (!title || !body || !notification_type) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // Cooldown per type per location (skipped for a single-token test send).
+    if (!only_token) {
+      const { data: last } = await supabase.from("push_notification_log")
+        .select("sent_at").eq("location_id", location_id).eq("notification_type", notification_type)
+        .gte("sent_at", new Date(Date.now() - PUSH_COOLDOWN_MS).toISOString())
+        .order("sent_at", { ascending: false }).limit(1).maybeSingle();
+      if (isCoolingDown(last?.sent_at)) return json({ sent: 0, reason: "cooldown_active" });
+    }
+
+    let q = supabase.from("fcm_tokens").select("token").eq("location_id", location_id);
+    if (only_token) q = q.eq("token", only_token);
+    const { data: rows, error } = await q;
+    if (error) throw error;
+    if (!rows?.length) return json({ sent: 0, reason: "no_subscribers" });
+
+    const sa = readServiceAccount();
+    const accessToken = await getAccessToken(sa);
+    const link = `https://saunasinireland.com/${location_id}`;
+    const payloadData: Record<string, string> = { location_id, notification_type, ...(data ?? {}) };
+
+    let sent = 0;
+    const stale: string[] = [];
+    for (const { token } of rows) {
+      const r = await sendToToken(sa, accessToken, token, { title, body, link, data: payloadData });
+      if (r === "sent") sent++;
+      else if (r === "stale") stale.push(token);
+    }
+    if (stale.length) await supabase.from("fcm_tokens").delete().in("token", stale);
+
+    if (!only_token) {
+      await supabase.from("push_notification_log").insert({
+        location_id, notification_type, alert_level: alert_level ?? 0,
+        details: { title, body, sent, total: rows.length, stale: stale.length },
       });
     }
-
-    // Init Supabase with service role
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Check cooldown — don't spam
-    const cutoff = new Date(Date.now() - COOLDOWN_MS).toISOString();
-    const { data: recentNotifs } = await supabase
-      .from('push_notification_log')
-      .select('id')
-      .eq('notification_type', notification_type)
-      .gte('sent_at', cutoff)
-      .limit(1);
-
-    if (recentNotifs && recentNotifs.length > 0) {
-      return new Response(JSON.stringify({ 
-        sent: 0, 
-        reason: 'cooldown_active',
-        message: `Notification type "${notification_type}" sent recently. Cooling down.`
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Get all registered tokens
-    const { data: tokens, error: tokenError } = await supabase
-      .from('fcm_tokens')
-      .select('token');
-
-    if (tokenError) throw tokenError;
-    if (!tokens || tokens.length === 0) {
-      return new Response(JSON.stringify({ sent: 0, reason: 'no_tokens' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Send to each token via FCM Legacy HTTP API
-    let successCount = 0;
-    const staleTokens: string[] = [];
-
-    for (const { token } of tokens) {
-      try {
-        const fcmRes = await fetch('https://fcm.googleapis.com/fcm/send', {
-          method: 'POST',
-          headers: {
-            'Authorization': `key=${FCM_SERVER_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: token,
-            notification: {
-              title,
-              body,
-              icon: '/favicon.ico',
-              click_action: supabaseUrl.replace('.supabase.co', '.lovable.app'),
-            },
-            data: data || {},
-          }),
-        });
-
-        const result = await fcmRes.json();
-        
-        if (result.success === 1) {
-          successCount++;
-        } else if (result.results?.[0]?.error === 'NotRegistered' || 
-                   result.results?.[0]?.error === 'InvalidRegistration') {
-          staleTokens.push(token);
-        }
-      } catch (e) {
-        console.error(`FCM send error for token ${token.substring(0, 10)}...`, e);
-      }
-    }
-
-    // Clean up stale tokens
-    if (staleTokens.length > 0) {
-      await supabase.from('fcm_tokens').delete().in('token', staleTokens);
-      console.log(`Cleaned ${staleTokens.length} stale FCM tokens`);
-    }
-
-    // Log the notification
-    await supabase.from('push_notification_log').insert({
-      notification_type,
-      alert_level: alert_level || 0,
-      details: { title, body, sent: successCount, total_tokens: tokens.length },
-    });
-
-    // Update last_used_at for active tokens
-    const activeTokens = tokens
-      .map(t => t.token)
-      .filter(t => !staleTokens.includes(t));
-    if (activeTokens.length > 0) {
-      await supabase
-        .from('fcm_tokens')
-        .update({ last_used_at: new Date().toISOString() })
-        .in('token', activeTokens);
-    }
-
-    return new Response(JSON.stringify({ 
-      sent: successCount, 
-      total_tokens: tokens.length,
-      stale_cleaned: staleTokens.length,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Push notification error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to send notification' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ sent, total: rows.length, stale_cleaned: stale.length });
+  } catch (e) {
+    console.error("Push notification error:", e);
+    return json({ error: e instanceof Error ? e.message : "Failed to send notification" }, 500);
   }
 });
