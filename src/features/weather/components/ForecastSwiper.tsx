@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { WindData, TideData } from '@/types/forecast';
 import WeatherDayCard from './WeatherDayCard';
 import TideDayCard from '@/features/tides/components/TideDayCard';
+import { TidesStaleNote, TidesUnavailable, isTideUnavailable } from '@/features/tides/components/TideStatusNotice';
 import { build7Days, formatLongDate } from '@/features/weather/lib/forecast-days';
 import { useSyncedEmbla } from '@/features/weather/hooks/use-synced-embla';
 import { useDailyRollover } from '@/features/weather/hooks/use-daily-rollover';
@@ -12,10 +13,12 @@ import { useDailyRollover } from '@/features/weather/hooks/use-daily-rollover';
 interface Props {
   wind: WindData;
   tideData: TideData;
+  /** False for saunas with no tide station (UK) · weather only, no toggle. */
+  hasTideSource?: boolean;
   onDayChange?: (dayIndex: number) => void;
 }
 
-const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
+const ForecastSwiper = ({ wind, tideData, hasTideSource = true, onDayChange }: Props) => {
   // Rebuild the 7-day window whenever the Dublin calendar date rolls over,
   // so a backgrounded app silently re-anchors to "today" on resume.
   const dateKey = useDailyRollover();
@@ -23,7 +26,12 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   // Direction the user is currently swiping: -1 = back, 0 = idle, 1 = forward
   const [swipeDir, setSwipeDir] = useState<-1 | 0 | 1>(0);
-  const [activeView, setActiveView] = useState<'weather' | 'tides'>('tides');
+  const [activeView, setActiveView] = useState<'weather' | 'tides'>(hasTideSource ? 'tides' : 'weather');
+  // Reset the view if the tide source changes (e.g. Irish → UK sauna).
+  useEffect(() => {
+    setActiveView(hasTideSource ? 'tides' : 'weather');
+  }, [hasTideSource]);
+  const tidesUnavailable = isTideUnavailable(tideData);
 
   // Notify parent whenever the active day changes
   useEffect(() => {
@@ -194,6 +202,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
       {/* Stitched weather + tide card — single glass surface */}
       <div className="glass-card rounded-lg overflow-hidden">
         {/* WEATHER · TIDES toggle */}
+        {hasTideSource && (
         <div className="flex items-center justify-center gap-0.5 py-2 border-b border-border/30">
           <button
             onClick={() => setActiveView('weather')}
@@ -217,6 +226,7 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
             Tides
           </button>
         </div>
+        )}
 
         {activeView === 'weather' && (
           <div className="overflow-hidden transition-[height] duration-200" ref={weatherRef} style={{ height: viewportH }}>
@@ -235,7 +245,13 @@ const ForecastSwiper = ({ wind, tideData, onDayChange }: Props) => {
           </div>
         )}
 
-        {activeView === 'tides' && (
+        {activeView === 'tides' && tidesUnavailable && <TidesUnavailable />}
+
+        {activeView === 'tides' && !tidesUnavailable && tideData.stale && (
+          <div className="pt-2"><TidesStaleNote fetchedAt={tideData.fetched_at} /></div>
+        )}
+
+        {activeView === 'tides' && !tidesUnavailable && (
           <div className="overflow-hidden transition-[height] duration-200" ref={tideRef} style={{ height: viewportH }}>
             <div className="flex items-start">
               {days.map((d) => {

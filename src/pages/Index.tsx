@@ -126,7 +126,7 @@ const Index = () => {
   const stormApproaching = (lightning?.nowcast?.nowcast_level ?? 0) >= 1;
 
   const isLoading = windLoading || tidesLoading || warningsLoading;
-  const conditionsUnavailable = (windError && !wind) || (tidesError && !tides);
+  const conditionsUnavailable = windError && !wind;
   const warningsUnavailable = warningsError && !warningData;
 
   const grouped = useMemo(
@@ -251,12 +251,18 @@ const Index = () => {
 
           {/* Card Stack */}
           <div className="space-y-2">
-            {wind && tides && (
-              <ForecastSwiper wind={wind} tideData={tides} onDayChange={setSelectedDayIndex} />
+            {wind && (
+              <ForecastSwiper
+                key={location.id}
+                wind={wind}
+                tideData={tides ?? { unavailable: true, events: [], current_height_m: null, state: null, forecast: [] }}
+                hasTideSource={Boolean(location.tideStation)}
+                onDayChange={setSelectedDayIndex}
+              />
             )}
             {conditionsUnavailable && (
               <p className="py-6 text-center text-[13px] text-muted-foreground">
-                Live tide and weather data is unavailable right now · pull down to try again
+                Live weather data is unavailable right now · pull down to try again
               </p>
             )}
             {location.saunaName && location.saunaUrl && (
