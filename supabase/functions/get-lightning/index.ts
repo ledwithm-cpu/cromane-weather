@@ -144,13 +144,16 @@ async function runScan(): Promise<Record<string, unknown>> {
   if (error) throw error;
   if (!subs?.length) return { cells: 0, reason: 'no_subscribers' };
 
+  const ids = [...new Set(subs.map(s => s.location_id as string))];
+  const { data: reg } = await admin.from('agent_listing_registry').select('location_id, place_name').in('location_id', ids);
+  const names = new Map((reg ?? []).map(r => [r.location_id as string, String(r.place_name).split(/[(,]/)[0].trim()]));
   const groups = [...groupByCell(subs as Subscription[]).values()];
   const pushes: Record<string, unknown>[] = [];
   for (let i = 0; i < groups.length; i += 4) {
     await Promise.all(groups.slice(i, i + 4).map(async (g) => {
       const { nowcast, maxAlertLevel, closestStrike } = await runCheck(g.lat, g.lon, false);
       for (const locationId of g.locationIds) {
-        const name = locationId.split('-').slice(0, 3).map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+        const name = names.get(locationId) ?? 'your sauna';
         const decision = decideAlert(maxAlertLevel, closestStrike, nowcast, name);
         if (!decision) continue;
         const res = await fetch(`${url}/functions/v1/send-push-notification`, {
