@@ -59,7 +59,7 @@ describe('WarningsCard — empty state', () => {
 
     expect(screen.getByText('Met Éireann Warnings')).toBeInTheDocument();
     expect(
-      screen.getByText(`No active warnings for ${mockLocation.county}`),
+      screen.getByText(`No Met Éireann warnings in effect for ${mockLocation.county}.`),
     ).toBeInTheDocument();
 
     // No specific warning content should render

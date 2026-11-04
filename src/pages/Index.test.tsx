@@ -81,7 +81,7 @@ describe('<Index /> dashboard', () => {
   it('renders the current location name in the header', () => {
     renderPage();
     expect(screen.getByText(mockLocation.name)).toBeInTheDocument();
-    expect(screen.getByText('Tap the location to change sauna')).toBeInTheDocument();
+    expect(screen.getByText('Browse all saunas · Change home sauna')).toBeInTheDocument();
     if (mockLocation.saunaName) {
       expect(screen.getByText(`Book ${mockLocation.saunaName}`)).toBeInTheDocument();
     }
@@ -98,10 +98,11 @@ describe('<Index /> dashboard', () => {
     expect(screen.queryByText(/Fetching live data/i)).not.toBeInTheDocument();
   });
 
-  it('renders warnings and the lightning card when data is present', () => {
+  it('renders warnings (and no lightning card) when data is present', () => {
     renderPage();
 
-    expect(screen.getByTestId('lightning-card')).toBeInTheDocument();
+    // The lightning card is intentionally not rendered any more.
+    expect(screen.queryByTestId('lightning-card')).not.toBeInTheDocument();
 
     // WarningsCard renders inline (not stubbed) so we assert on its visible content
     expect(screen.getByText('Met Éireann Warnings')).toBeInTheDocument();
