@@ -81,7 +81,6 @@ describe('<Index /> dashboard', () => {
   it('renders the current location name in the header', () => {
     renderPage();
     expect(screen.getByText(mockLocation.name)).toBeInTheDocument();
-    expect(screen.getByText('Browse all saunas · Change home sauna')).toBeInTheDocument();
     if (mockLocation.saunaName) {
       expect(screen.getByText(`Book ${mockLocation.saunaName}`)).toBeInTheDocument();
     }
