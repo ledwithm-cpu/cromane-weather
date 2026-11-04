@@ -54,9 +54,15 @@ export interface TideForecastDay {
 
 export interface TideData {
   events: TideEvent[];
-  current_height_m: number;
-  state: 'rising' | 'falling';
+  current_height_m: number | null;
+  state: 'rising' | 'falling' | null;
   forecast?: TideForecastDay[];
+  /** True when no real tide data is available · never paired with made-up values. */
+  unavailable?: boolean;
+  /** True when served from the last good copy because the live fetch failed. */
+  stale?: boolean;
+  /** ISO time the stale copy was fetched from the Marine Institute. */
+  fetched_at?: string;
 }
 
 export interface Warning {

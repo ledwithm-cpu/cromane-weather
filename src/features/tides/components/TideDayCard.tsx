@@ -5,8 +5,8 @@ import { buildTideSparkline } from '@/features/tides/lib/tide-sparkline';
 
 interface Props {
   day: TideForecastDay | null;
-  currentHeight: number;
-  currentState: 'rising' | 'falling';
+  currentHeight: number | null;
+  currentState: 'rising' | 'falling' | null;
   isToday: boolean;
   globalMinH: number;
   globalMaxH: number;

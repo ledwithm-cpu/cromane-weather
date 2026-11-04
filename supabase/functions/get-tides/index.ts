@@ -29,8 +29,35 @@ const DEFAULT_OD_MALIN_TO_LAT_OFFSET = 2.55;
 // In-memory cache keyed by station
 const cacheMap = new Map<string, { data: any; fetchedAt: number }>();
 const CACHE_TTL_MS = 30 * 60 * 1000;
+// "Last good" copy per station · used only when ERDDAP fails. Never older than 24h.
+const lastGoodMap = new Map<string, { data: any; fetchedAt: number }>();
+const LAST_GOOD_MAX_AGE_MS = 24 * 3600 * 1000;
 
-serve(async (req) => {
+export const UNAVAILABLE_RESPONSE = {
+  unavailable: true,
+  events: [],
+  current_height_m: null,
+  state: null,
+  forecast: [],
+};
+
+/** Test hook: clear both caches. */
+export function _resetTideCaches() {
+  cacheMap.clear();
+  lastGoodMap.clear();
+}
+
+/** Test hook: seed a last-good copy. */
+export function _seedLastGood(station: string, data: any, fetchedAt: number) {
+  lastGoodMap.set(station, { data, fetchedAt });
+}
+
+const json = (body: unknown) =>
+  new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+
+export async function handleTides(req: Request, fetchFn: typeof fetch = fetch): Promise<Response> {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -42,17 +69,18 @@ serve(async (req) => {
     });
   }
 
-  try {
-    let station = DEFAULT_STATION;
-    let offsetMs = DEFAULT_OFFSET_MS;
-    let chartDatumOffset = DEFAULT_OD_MALIN_TO_LAT_OFFSET;
+  let station = DEFAULT_STATION;
+  let offsetMs = DEFAULT_OFFSET_MS;
+  let chartDatumOffset = DEFAULT_OD_MALIN_TO_LAT_OFFSET;
 
-    try {
-      const body = await req.json();
-      if (body.station) station = body.station;
-      if (typeof body.offsetMinutes === 'number') offsetMs = body.offsetMinutes * 60 * 1000;
-      if (typeof body.chartDatumOffset === 'number') chartDatumOffset = body.chartDatumOffset;
-    } catch {}
+  try {
+    const body = await req.json();
+    if (typeof body.station === 'string' && body.station.length > 0 && body.station.length < 64) station = body.station;
+    if (typeof body.offsetMinutes === 'number' && Number.isFinite(body.offsetMinutes)) offsetMs = body.offsetMinutes * 60 * 1000;
+    if (typeof body.chartDatumOffset === 'number' && Number.isFinite(body.chartDatumOffset)) chartDatumOffset = body.chartDatumOffset;
+  } catch {}
+
+  try {
 
     const now = new Date();
     const cacheKey = station;
@@ -60,10 +88,7 @@ serve(async (req) => {
     // Return cached data if fresh
     const cache = cacheMap.get(cacheKey);
     if (cache && (Date.now() - cache.fetchedAt) < CACHE_TTL_MS) {
-      const result = buildResponse(cache.data, now, offsetMs, chartDatumOffset);
-      return new Response(JSON.stringify(result), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return json(buildResponse(cache.data, now, offsetMs, chartDatumOffset));
     }
 
     const fromTime = new Date(now.getTime() - 2 * 3600 * 1000).toISOString();
@@ -72,8 +97,8 @@ serve(async (req) => {
     const contTo = new Date(now.getTime() + 8 * 24 * 3600 * 1000).toISOString();
 
     const [hlRes, contRes] = await Promise.all([
-      fetch(`${ERDDAP_BASE}/IMI_TidePrediction_HighLow.json?time,tide_time_category,Water_Level_ODMalin&stationID=%22${encodeURIComponent(station)}%22&time>=${fromTime}&time<=${toTime}&orderBy(%22time%22)`),
-      fetch(`${ERDDAP_BASE}/imiTidePrediction.json?time,Water_Level&stationID=%22${encodeURIComponent(station)}%22&time>=${contFrom}&time<=${contTo}&orderBy(%22time%22)`),
+      fetchFn(`${ERDDAP_BASE}/IMI_TidePrediction_HighLow.json?time,tide_time_category,Water_Level_ODMalin&stationID=%22${encodeURIComponent(station)}%22&time>=${fromTime}&time<=${toTime}&orderBy(%22time%22)`),
+      fetchFn(`${ERDDAP_BASE}/imiTidePrediction.json?time,Water_Level&stationID=%22${encodeURIComponent(station)}%22&time>=${contFrom}&time<=${contTo}&orderBy(%22time%22)`),
     ]);
 
     if (!hlRes.ok || !contRes.ok) {
@@ -84,7 +109,12 @@ serve(async (req) => {
     const contJson = await contRes.json();
 
     const data = { hl: hlJson, cont: contJson };
-    cacheMap.set(cacheKey, { data, fetchedAt: Date.now() });
+    if (!(data.hl?.table?.rows?.length) || !(data.cont?.table?.rows?.length)) {
+      throw new Error('ERDDAP returned no rows');
+    }
+    const fetchedAt = Date.now();
+    cacheMap.set(cacheKey, { data, fetchedAt });
+    lastGoodMap.set(cacheKey, { data, fetchedAt });
 
     const result = buildResponse(data, now, offsetMs, chartDatumOffset);
     return new Response(JSON.stringify(result), {
@@ -92,13 +122,16 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Tide error:', error);
-    const now = new Date();
-    const fallback = generateFallbackTides(now);
-    return new Response(JSON.stringify(fallback), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    const lastGood = lastGoodMap.get(station);
+    if (lastGood && Date.now() - lastGood.fetchedAt < LAST_GOOD_MAX_AGE_MS) {
+      const result = buildResponse(lastGood.data, new Date(), offsetMs, chartDatumOffset);
+      return json({ ...result, stale: true, fetched_at: new Date(lastGood.fetchedAt).toISOString() });
+    }
+    return json(UNAVAILABLE_RESPONSE);
   }
-});
+}
+
+serve((req) => handleTides(req));
 
 export function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
@@ -211,39 +244,4 @@ function build7DayForecast(events: any[], now: Date, points: any[] = []) {
 
 function formatTime(date: Date): string {
   return TIME_FORMATTER.format(date);
-}
-
-function generateFallbackTides(now: Date) {
-  const TIDAL_PERIOD_MS = 12 * 3600 * 1000 + 25 * 60 * 1000;
-  const MEAN_HIGH = 4.1;
-  const MEAN_LOW = 0.9;
-  const refHigh = new Date('2025-01-01T03:30:00Z').getTime();
-  const elapsed = now.getTime() - refHigh;
-  const cycles = Math.floor(elapsed / TIDAL_PERIOD_MS);
-  const nearestHigh = new Date(refHigh + cycles * TIDAL_PERIOD_MS);
-
-  const events = [];
-  // Generate ~16 days of events to safely cover 7-day forecast window
-  for (let i = -2; i <= 14; i++) {
-    const highTime = new Date(nearestHigh.getTime() + i * TIDAL_PERIOD_MS);
-    const lowTime = new Date(highTime.getTime() + TIDAL_PERIOD_MS / 2);
-    const springFactor = 1 + 0.15 * Math.cos((highTime.getDate() / 14.76) * Math.PI * 2);
-    events.push({ type: 'high', time: formatTime(highTime), height_m: parseFloat((MEAN_HIGH * springFactor).toFixed(1)), timestamp: highTime.toISOString() });
-    events.push({ type: 'low', time: formatTime(lowTime), height_m: parseFloat((MEAN_LOW / springFactor).toFixed(1)), timestamp: lowTime.toISOString() });
-  }
-
-  events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-  const filtered = events.filter(e => new Date(e.timestamp).getTime() > now.getTime() - 3600000).slice(0, 4);
-
-  const phase = (elapsed % TIDAL_PERIOD_MS) / TIDAL_PERIOD_MS;
-  const springFactor = 1 + 0.15 * Math.cos((now.getDate() / 14.76) * Math.PI * 2);
-  const high = MEAN_HIGH * springFactor;
-  const low = MEAN_LOW / springFactor;
-  const mid = (high + low) / 2;
-  const amp = (high - low) / 2;
-  const currentHeight = parseFloat((mid + amp * Math.cos(phase * 2 * Math.PI)).toFixed(1));
-  const state = phase < 0.5 ? 'falling' : 'rising';
-
-  const forecast = build7DayForecast(events, now);
-  return { events: filtered, current_height_m: currentHeight, state, forecast };
 }

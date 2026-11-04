@@ -36,7 +36,7 @@ export interface BuildSparklineArgs {
   globalMinH: number;
   globalMaxH: number;
   isToday: boolean;
-  currentHeight: number;
+  currentHeight: number | null;
   width?: number;
   height?: number;
   now?: Date;
@@ -134,7 +134,7 @@ export function buildTideSparkline({
     .filter((m): m is SparklineMarker => m !== null);
 
   let nowMarker: { x: number; y: number } | null = null;
-  if (isToday) {
+  if (isToday && currentHeight != null) {
     const parts = new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Europe/Dublin',
       hour: '2-digit',

@@ -2,6 +2,7 @@ import { m } from 'framer-motion';
 // Waves icon removed – using text labels instead
 import { TideData, WindData, Warning } from '@/types/forecast';
 import { useLocation } from '@/features/location/hooks/use-location';
+import { TidesStaleNote, TidesUnavailable, isTideUnavailable } from './TideStatusNotice';
 
 interface Props {
   tideData: TideData;
@@ -16,7 +17,16 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
   const current_height_m = Array.isArray(tideData) ? 0 : tideData?.current_height_m ?? 0;
   const state = Array.isArray(tideData) ? 'falling' as const : tideData?.state ?? 'falling';
   const next = tides[0];
-  if (!next) return null;
+  const unavailable = !Array.isArray(tideData) && isTideUnavailable(tideData);
+  if (unavailable || !next) {
+    return (
+      <div className="glass-card rounded-lg p-2" data-testid="tides-unavailable">
+        <TidesUnavailable />
+      </div>
+    );
+  }
+  const stale = !Array.isArray(tideData) && tideData.stale;
+  const current_height_m_safe = current_height_m ?? 0;
   const calm = wind.speed_knots < 20 && !warnings.some(w => w.level === 'orange' || w.level === 'red');
   const stateArrow = state === 'rising' ? '↑' : '↓';
   const stateLabel = state === 'rising' ? 'Rising' : 'Falling';
@@ -47,6 +57,8 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
         Next: {next.type === 'high' ? '▲' : '▼'} {next.type} tide at {next.time} ({next.height_m}m)
       </p>
 
+      {stale && <TidesStaleNote fetchedAt={tideData.fetched_at} />}
+
       {/* Tide timeline */}
       <div className="relative pt-4 pb-2">
         {(() => {
@@ -73,7 +85,7 @@ const TideCard = ({ tideData, wind, warnings }: Props) => {
           const minH = Math.min(...heights);
           const maxH = Math.max(...heights);
           const rangeH = maxH - minH || 1;
-          const clampedHeight = Math.max(minH, Math.min(maxH, current_height_m));
+          const clampedHeight = Math.max(minH, Math.min(maxH, current_height_m_safe));
           // y=6 is high tide (top), y=34 is low tide (bottom)
           const nowY = 34 - ((clampedHeight - minH) / rangeH) * 28;
 

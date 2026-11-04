@@ -10,7 +10,7 @@ import {
   assertEquals,
   assertAlmostEquals,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { buildResponse } from "./index.ts";
+import { buildResponse, handleTides, _resetTideCaches, _seedLastGood } from "./index.ts";
 
 // ---------------------------------------------------------------------------
 // Fixture: a real Fenit response shape, trimmed.
@@ -182,4 +182,46 @@ Deno.test("tide datum: chartDatumOffset only shifts HighLow events", () => {
 
   // current_height_m must NOT change with the offset either.
   assertEquals(a.current_height_m, b.current_height_m);
+});
+
+// ---------------------------------------------------------------------------
+// Failure paths · never return made-up tides.
+// ---------------------------------------------------------------------------
+const failingFetch = (() => Promise.resolve(new Response("down", { status: 503 }))) as typeof fetch;
+const req = (station: string) =>
+  new Request("http://localhost/get-tides", {
+    method: "POST",
+    body: JSON.stringify({ station, offsetMinutes: 0, chartDatumOffset: 2.67 }),
+  });
+
+Deno.test("tides: ERDDAP failure with no last-good copy returns unavailable, no events", async () => {
+  _resetTideCaches();
+  const res = await handleTides(req("TestStationA"), failingFetch);
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.unavailable, true);
+  assertEquals(body.events, []);
+  assertEquals(body.forecast, []);
+  assertEquals(body.current_height_m, null);
+  assertEquals(body.state, null);
+});
+
+Deno.test("tides: ERDDAP failure with recent last-good copy returns stale real data", async () => {
+  _resetTideCaches();
+  const now = new Date();
+  const fetchedAt = Date.now() - 3 * 3600_000;
+  _seedLastGood("TestStationB", makeFenitFixture(now), fetchedAt);
+  const body = await (await handleTides(req("TestStationB"), failingFetch)).json();
+  assertEquals(body.stale, true);
+  assertEquals(body.fetched_at, new Date(fetchedAt).toISOString());
+  assert(body.events.length > 0);
+  assertEquals(body.unavailable, undefined);
+});
+
+Deno.test("tides: last-good copy older than 24h is not used", async () => {
+  _resetTideCaches();
+  _seedLastGood("TestStationC", makeFenitFixture(new Date()), Date.now() - 25 * 3600_000);
+  const body = await (await handleTides(req("TestStationC"), failingFetch)).json();
+  assertEquals(body.unavailable, true);
+  assertEquals(body.events, []);
 });

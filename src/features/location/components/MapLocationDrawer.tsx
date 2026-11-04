@@ -28,8 +28,8 @@ interface TideEvent {
 
 interface TideData {
   events: TideEvent[];
-  current_height_m: number;
-  state: 'rising' | 'falling';
+  current_height_m: number | null;
+  state: 'rising' | 'falling' | null;
 }
 
 interface Props {
