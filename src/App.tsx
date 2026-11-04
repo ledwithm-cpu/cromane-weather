@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { toast } from "sonner";
-import { registerForPushNotifications, onForegroundMessage } from "@/lib/firebase-messaging";
+import { onForegroundMessage } from "@/lib/firebase-messaging";
 import { LocationContext, useLocationState } from "@/features/location/hooks/use-location";
 import { AuthProvider } from "@/hooks/use-auth";
 import AuthModal from "@/components/auth/AuthModal";
@@ -67,12 +67,6 @@ const App = () => {
 
   useEffect(() => {
     let unsubscribeForeground: (() => void) | undefined;
-
-    registerForPushNotifications().then(token => {
-      if (token) {
-        console.log('Push notifications enabled');
-      }
-    });
 
     onForegroundMessage(({ title, body }) => {
       toast(title, { description: body, duration: 8000 });

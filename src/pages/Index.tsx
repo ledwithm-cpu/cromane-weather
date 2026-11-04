@@ -5,6 +5,7 @@ import AppNav from '@/components/AppNav';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
 import HomeSaunaToggle from '@/components/HomeSaunaToggle';
+import LightningAlertToggle from '@/components/LightningAlertToggle';
 import WarningsCard from '@/features/weather/components/WarningsCard';
 import MarineCard from '@/features/weather/components/MarineCard';
 import ForecastSwiper from '@/features/weather/components/ForecastSwiper';
@@ -240,6 +241,7 @@ const Index = () => {
           {hasRouteParam && (
             <div className="flex flex-col items-center gap-2">
               <HomeSaunaToggle slug={location.id} label={location.name} />
+              <LightningAlertToggle location={location} />
               <Link
                 to="/discover"
                 className="text-xs text-muted-foreground/70 hover:text-foreground underline-offset-4 hover:underline"
