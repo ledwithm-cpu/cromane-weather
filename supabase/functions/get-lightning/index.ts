@@ -16,7 +16,9 @@ import {
   pruneCache,
   type Strike,
 } from "./cache.ts";
-import { fetchNowcast, type NowcastResult } from "./nowcast.ts";
+import { fetchNowcast } from "./nowcast.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { decideAlert, groupByCell, type Subscription } from "../_shared/push-logic.ts";
 
 const DEFAULT_LAT = 52.1008;
 const DEFAULT_LON = -9.8856;
@@ -109,88 +111,76 @@ function injectTestStrike(homeLat: number, homeLon: number, cache: Strike[]) {
   console.log('🧪 Test strike injected');
 }
 
-// ─── Push Notification Trigger ───
-let lastPushLevel = 0;
-let lastPushTime = 0;
-const PUSH_COOLDOWN_MS = 15 * 60 * 1000;
+// ─── Core check (shared by page requests and the 5-minute scan) ───
+async function runCheck(homeLat: number, homeLon: number, testMode: boolean) {
+  const cacheKey = getCacheKey(homeLat, homeLon);
+  const strikeCache = getStrikeCache(cacheKey);
+  const [, nowcast] = await Promise.all([
+    testMode
+      ? Promise.resolve(injectTestStrike(homeLat, homeLon, strikeCache))
+          .then(() => persistNewStrikes(cacheKey, strikeCache.slice(-1)))
+      : fetchStrikesViaWebSocket(homeLat, homeLon, cacheKey, strikeCache),
+    fetchNowcast(homeLat, homeLon, cacheKey),
+  ]);
+  pruneCache(strikeCache);
+  const sorted = [...strikeCache].sort((a, b) => b.time_ns - a.time_ns);
+  const maxAlertLevel = sorted.length > 0 ? Math.max(...sorted.map(s => s.alert_level)) : 0;
+  const closestStrike = sorted.length > 0
+    ? sorted.reduce((prev, curr) => curr.distance_km < prev.distance_km ? curr : prev)
+    : null;
+  return { nowcast, sorted, maxAlertLevel, closestStrike };
+}
 
-async function triggerPushIfNeeded(
-  alertLevel: number,
-  nowcast: NowcastResult,
-  closestStrike: { distance_km: number; bearing_compass: string } | null,
-  locationName: string,
-) {
-  const now = Date.now();
-  if (now - lastPushTime < PUSH_COOLDOWN_MS && alertLevel <= lastPushLevel) return;
+// ─── Scheduled scan: check every subscribed sauna, push per location ───
+let lastScanAt = 0;
+async function runScan(): Promise<Record<string, unknown>> {
+  if (Date.now() - lastScanAt < 4 * 60 * 1000) return { skipped: 'recent_scan' };
+  lastScanAt = Date.now();
+  const url = Deno.env.get('SUPABASE_URL')!;
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const admin = createClient(url, key, { auth: { persistSession: false } });
+  const { data: subs, error } = await admin.from('fcm_tokens')
+    .select('location_id, lat, lon').not('location_id', 'is', null);
+  if (error) throw error;
+  if (!subs?.length) return { cells: 0, reason: 'no_subscribers' };
 
-  let title = '';
-  let body = '';
-  let notificationType = '';
-
-  if (alertLevel >= 3 && closestStrike) {
-    title = '⚡ Lightning Alert — Take Cover';
-    body = `Lightning detected ${closestStrike.distance_km}km ${closestStrike.bearing_compass}. Seek shelter immediately.`;
-    notificationType = 'immediate_danger';
-  } else if (alertLevel >= 2 && closestStrike) {
-    title = '⚡ Lightning Warning';
-    body = `Lightning detected ${closestStrike.distance_km}km ${closestStrike.bearing_compass}. Stay alert.`;
-    notificationType = 'lightning_warning';
-  } else if (alertLevel >= 1 || nowcast.nowcast_level >= 1) {
-    if (nowcast.eta_minutes !== null && nowcast.eta_minutes <= 60) {
-      title = `🌩️ Storm Approaching ${locationName}`;
-      body = `Storm cell detected ${nowcast.nearest_cell?.direction ?? ''} — ETA ${nowcast.eta_minutes} minutes.`;
-      notificationType = 'storm_approaching';
-    } else if (alertLevel >= 1) {
-      title = '⚡ Lightning Awareness';
-      body = `Lightning activity detected within 20km of ${locationName}.`;
-      notificationType = 'lightning_awareness';
-    } else {
-      return;
-    }
-  } else if (nowcast.atmospheric_alert && nowcast.lpi > 0.5) {
-    title = '🌩️ Heads Up — Atmosphere Charging';
-    body = `Conditions favorable for thunderstorms near ${locationName}.`;
-    notificationType = 'atmosphere_charging';
-  } else {
-    return;
+  const groups = [...groupByCell(subs as Subscription[]).values()];
+  const pushes: Record<string, unknown>[] = [];
+  for (let i = 0; i < groups.length; i += 4) {
+    await Promise.all(groups.slice(i, i + 4).map(async (g) => {
+      const { nowcast, maxAlertLevel, closestStrike } = await runCheck(g.lat, g.lon, false);
+      for (const locationId of g.locationIds) {
+        const name = locationId.split('-').slice(0, 3).map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+        const decision = decideAlert(maxAlertLevel, closestStrike, nowcast, name);
+        if (!decision) continue;
+        const res = await fetch(`${url}/functions/v1/send-push-notification`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ location_id: locationId, alert_level: maxAlertLevel, ...decision }),
+        });
+        pushes.push({ locationId, type: decision.notification_type, result: await res.json().catch(() => null) });
+      }
+    }));
   }
-
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const res = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabaseServiceKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title,
-        body,
-        notification_type: notificationType,
-        alert_level: alertLevel,
-        data: {
-          alert_level: String(alertLevel),
-          nowcast_level: String(nowcast.nowcast_level),
-        },
-      }),
-    });
-
-    const result = await res.json();
-    console.log(`📲 Push sent: ${notificationType}, delivered to ${result.sent ?? 0} devices`);
-
-    lastPushLevel = alertLevel;
-    lastPushTime = now;
-  } catch (e) {
-    console.error('Failed to trigger push notification:', e);
-  }
+  return { cells: groups.length, pushes };
 }
 
 // ─── Main Handler ───
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  let body: Record<string, unknown> = {};
+  try { body = await req.json(); } catch { /* empty body */ }
+
+  if (body.mode === 'scan') {
+    try {
+      return new Response(JSON.stringify(await runScan()), { headers: jsonCorsHeaders });
+    } catch (e) {
+      console.error('Scan error:', e);
+      return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: jsonCorsHeaders });
+    }
   }
 
   if (limiter.isRateLimited(getClientIp(req))) {
@@ -202,41 +192,16 @@ serve(async (req) => {
 
   let homeLat = DEFAULT_LAT;
   let homeLon = DEFAULT_LON;
-  let locationName = 'Cromane';
-
-  try {
-    const body = await req.json();
-    if (body.lat && body.lon) { homeLat = body.lat; homeLon = body.lon; }
-    if (body.name) locationName = body.name;
-  } catch {}
+  if (typeof body.lat === 'number' && typeof body.lon === 'number') { homeLat = body.lat; homeLon = body.lon; }
 
   const url = new URL(req.url);
   const testMode = url.searchParams.get('test') === '1';
-  const cacheKey = getCacheKey(homeLat, homeLon);
-  const strikeCache = getStrikeCache(cacheKey);
 
   try {
-    const [, nowcast] = await Promise.all([
-      testMode
-        ? Promise.resolve(injectTestStrike(homeLat, homeLon, strikeCache))
-            .then(() => persistNewStrikes(cacheKey, strikeCache.slice(-1)))
-        : fetchStrikesViaWebSocket(homeLat, homeLon, cacheKey, strikeCache),
-      fetchNowcast(homeLat, homeLon, cacheKey),
-    ]);
-
-    pruneCache(strikeCache);
-
-    const sorted = [...strikeCache].sort((a, b) => b.time_ns - a.time_ns);
-    const maxAlertLevel = sorted.length > 0
-      ? Math.max(...sorted.map(s => s.alert_level))
-      : 0;
-    const closestStrike = sorted.length > 0
-      ? sorted.reduce((prev, curr) => curr.distance_km < prev.distance_km ? curr : prev)
-      : null;
+    const { nowcast, sorted, maxAlertLevel, closestStrike } = await runCheck(homeLat, homeLon, testMode);
     const lastStrikeTime = sorted.length > 0
       ? Math.floor(sorted[0].time_ns / 1_000_000)
       : null;
-
     let effectiveAlertLevel = maxAlertLevel;
     if (nowcast.nowcast_level >= 1 && effectiveAlertLevel < 1) {
       effectiveAlertLevel = 1;
@@ -271,10 +236,6 @@ serve(async (req) => {
       source: 'blitzortung-websocket',
       geofence_km: GEOFENCE_KM,
     };
-
-    triggerPushIfNeeded(effectiveAlertLevel, nowcast, closestStrike, locationName).catch(e =>
-      console.error('Push trigger error:', e)
-    );
 
     return new Response(JSON.stringify(result), { headers: jsonCorsHeaders });
   } catch (error) {
