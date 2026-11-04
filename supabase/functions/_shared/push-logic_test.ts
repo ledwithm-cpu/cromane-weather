@@ -29,7 +29,7 @@ Deno.test("subscriptions are deduped per ~1km cell but keep every location id", 
   const groups = groupByCell([
     { location_id: "cromane", lat: 52.1008, lon: -9.8856 },
     { location_id: "cromane", lat: 52.1008, lon: -9.8856 },
-    { location_id: "cromane-other", lat: 52.1031, lon: -9.8849 },
+    { location_id: "cromane-other", lat: 52.1031, lon: -9.8862 },
     { location_id: "shetland", lat: 60.15, lon: -1.15 },
   ]);
   assertEquals(groups.size, 2);
