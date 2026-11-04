@@ -87,13 +87,16 @@ Deno.test("No marine warnings → marine.active false", () => {
 
 // Sync guard: keep COUNTY_PROVINCES aligned with src/data/locations.ts.
 Deno.test("County/province coverage matches src/data/locations.ts", async () => {
-  const url = new URL("../../../src/data/locations.ts", import.meta.url);
+  const url = new URL("../../../src/features/location/data/locations.ts", import.meta.url);
   const src = await Deno.readTextFile(url);
   const re = /county:\s*'([^']+)',\s*province:\s*'([^']+)'/g;
   const found = new Set<string>();
   let m: RegExpExecArray | null;
-  while ((m = re.exec(src)) !== null) {
-    found.add(`${m[1]}|${m[2]}`);
+  // Only Met Éireann-routed (Republic of Ireland) saunas are parsed from met.ie.
+  for (const line of src.split("\n")) {
+    if (!line.includes("country: 'Ireland'") || line.includes("warningsSource")) continue;
+    re.lastIndex = 0;
+    if ((m = re.exec(line)) !== null) found.add(`${m[1]}|${m[2]}`);
   }
   const covered = new Set(COUNTY_PROVINCES.map((c) => `${c.county}|${c.province}`));
   const missing = [...found].filter((k) => !covered.has(k));
