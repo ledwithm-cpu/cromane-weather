@@ -94,3 +94,13 @@ export function classifyFcmError(status: number, body: string): SendOutcome {
   if (status === 400 && /INVALID_ARGUMENT/.test(body)) return "stale";
   return "failed";
 }
+
+/** Dry-run a message to a topic with validate_only: proves FCM v1 accepts our auth + payload without delivering. */
+export async function validateOnlyTopic(sa: ServiceAccount, accessToken: string, topic: string): Promise<{ ok: boolean; status: number; body: string }> {
+  const res = await fetch(`https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ validate_only: true, message: { topic, notification: { title: "Self-test", body: "validate_only" } } }),
+  });
+  return { ok: res.ok, status: res.status, body: res.ok ? "" : await res.text() };
+}

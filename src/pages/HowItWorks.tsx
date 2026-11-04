@@ -133,6 +133,24 @@ const HowItWorks = () => {
             </div>
           </m.section>
 
+          {/* Lightning alerts (opt-in push) */}
+          <m.section {...section(0.33)} className="space-y-3">
+            <div className="border-t border-border/30 pt-6">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
+                Lightning Alerts
+              </p>
+            </div>
+            <h2 className="text-base font-normal text-foreground">
+              Opt In, Sauna by Sauna
+            </h2>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Your choice:</strong> Turn on &quot;Lightning alerts for this sauna&quot; on any sauna page. You only hear about the saunas you pick.</p>
+              <p><strong className="text-foreground font-normal">What triggers one:</strong> Lightning within 20km, 10km or 5km, or a storm cell approaching within about an hour.</p>
+              <p><strong className="text-foreground font-normal">Checked every 5 minutes:</strong> Even when the site is closed.</p>
+              <p><strong className="text-foreground font-normal">An aid, not a safety service:</strong> Alerts can be late or missed · always use your own judgement.</p>
+            </div>
+          </m.section>
+
           {/* Warnings & Marine */}
           <m.section {...section(0.35)} className="space-y-3">
             <div className="border-t border-border/30 pt-6">
