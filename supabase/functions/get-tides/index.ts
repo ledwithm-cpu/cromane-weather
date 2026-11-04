@@ -131,9 +131,7 @@ export async function handleTides(req: Request, fetchFn: typeof fetch = fetch): 
   }
 }
 
-if (import.meta.main) {
-  serve((req) => handleTides(req));
-}
+serve((req) => handleTides(req));
 
 export function buildResponse(data: { hl: any; cont: any }, now: Date, offsetMs: number, chartDatumOffset: number) {
   const nowMs = now.getTime();
