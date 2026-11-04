@@ -102,3 +102,31 @@ describe('TideCard — chart datum scale consistency', () => {
     expect(nowY).toBeGreaterThanOrEqual(highTideY);
   });
 });
+
+describe('TideCard — unavailable and stale data', () => {
+  it('shows the calm unavailable message and no chart when tides are unavailable', () => {
+    const { container, getByText } = render(
+      <TideCard
+        tideData={{ unavailable: true, events: [], current_height_m: null, state: null, forecast: [] }}
+        wind={mockWeatherResponse}
+        warnings={[]}
+      />,
+    );
+    expect(
+      getByText('Tide times are unavailable right now · check back shortly or see the Marine Institute.'),
+    ).toBeTruthy();
+    expect(container.querySelector('svg')).toBeNull();
+  });
+
+  it('shows the stale note with the fetch time and still draws the chart', () => {
+    const { container, getByText } = render(
+      <TideCard
+        tideData={{ ...mockTidesResponse, stale: true, fetched_at: '2024-01-01T09:30:00Z' }}
+        wind={mockWeatherResponse}
+        warnings={[]}
+      />,
+    );
+    expect(getByText('Showing tide predictions from 09:30 · live update failed.')).toBeTruthy();
+    expect(container.querySelector('svg')).not.toBeNull();
+  });
+});

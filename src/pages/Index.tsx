@@ -111,7 +111,7 @@ const Index = () => {
   };
 
   const { data: wind, isLoading: windLoading, isError: windError } = useWeather();
-  const { data: tides, isLoading: tidesLoading, isError: tidesError } = useTides();
+  const { data: tides, isLoading: tidesLoading } = useTides();
   const { data: warningData, isLoading: warningsLoading, isError: warningsError } = useWarnings();
   const { data: lightning } = useLightning();
   const refreshAll = useRefreshAll();
