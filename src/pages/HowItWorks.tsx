@@ -89,8 +89,8 @@ const HowItWorks = () => {
               Tide Times for Irish Saunas
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Ireland and Northern Ireland for now:</strong> Tide times come from Marine Institute predictions. Saunas in Scotland, Wales and England don&apos;t have tide data yet.</p>
-              <p><strong className="text-foreground font-normal">Actually local:</strong> The tide at Dingle isn&apos;t the same as Fenit. We use the nearest Marine Institute station and adjust the times for your stretch of coast.</p>
+              <p><strong className="text-foreground font-normal">Ireland and Northern Ireland:</strong> Tide times come from Marine Institute predictions, for saunas with a Marine Institute station within reach. A few Northern Ireland saunas are too far from one, and Scotland, Wales and England don&apos;t have tide data yet.</p>
+              <p><strong className="text-foreground font-normal">Actually local:</strong> The tide at Dingle isn&apos;t the same as Fenit. Each sauna uses its nearest Marine Institute station, with the times adjusted for your stretch of coast where we know the difference.</p>
               <p><strong className="text-foreground font-normal">Heights you can compare:</strong> Heights are shown above chart datum (Lowest Astronomical Tide) · the same reference used on charts and tide tables.</p>
               <p><strong className="text-foreground font-normal">Updates every hour:</strong> The chart refreshes regularly so you always know where you are between high and low water.</p>
             </div>
@@ -141,12 +141,12 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Straight from Met Éireann
+              From Met Éireann and the Met Office
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Only what matters to you:</strong> We show Met Éireann weather warnings filtered to your sauna&apos;s county, not a list of things happening 200km away.</p>
-              <p><strong className="text-foreground font-normal">Republic of Ireland only for now:</strong> Northern Ireland, Scotland, Wales and England don&apos;t get warnings yet.</p>
-              <p><strong className="text-foreground font-normal">Sea conditions too:</strong> Met Éireann marine warnings (gale and small craft) so you know what you&apos;re dealing with before you get in the water.</p>
+              <p><strong className="text-foreground font-normal">Only what matters to you:</strong> Saunas in the Republic get Met Éireann weather warnings, and Northern Ireland saunas get Met Office warnings · both filtered to your sauna&apos;s county where the warning names areas, not a list of things happening 200km away.</p>
+              <p><strong className="text-foreground font-normal">Not yet in Great Britain:</strong> Saunas in Scotland, Wales and England don&apos;t get warnings yet.</p>
+              <p><strong className="text-foreground font-normal">Sea conditions too:</strong> For the Republic, Met Éireann marine warnings (gale and small craft) so you know what you&apos;re dealing with before you get in the water.</p>
             </div>
           </m.section>
 

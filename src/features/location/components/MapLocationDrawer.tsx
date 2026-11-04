@@ -143,9 +143,18 @@ const MapLocationDrawer = ({ location, onClose, onAddToBucketList }: Props) => {
       .then(({ data }) => { if (data) setWeather(data); })
       .finally(() => setLoading(false));
 
+    if (!location.tideStation) {
+      setTideData(null);
+      setTideLoading(false);
+      return;
+    }
     supabase.functions
       .invoke('get-tides', {
-        body: { station: location.tideStation, offsetMinutes: location.tideOffsetMinutes },
+        body: {
+          station: location.tideStation,
+          offsetMinutes: location.tideOffsetMinutes,
+          chartDatumOffset: location.chartDatumOffset,
+        },
       })
       .then(({ data }) => { if (data) setTideData(data); })
       .finally(() => setTideLoading(false));

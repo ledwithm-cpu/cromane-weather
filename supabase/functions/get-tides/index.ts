@@ -26,6 +26,16 @@ const DEFAULT_OFFSET_MS = 25 * 60 * 1000;
 // Default ≈ 2.55m. Per-location overrides are passed in from the client (e.g. Fenit ≈ 2.67).
 const DEFAULT_OD_MALIN_TO_LAT_OFFSET = 2.55;
 
+// Stations whose continuous prediction series is published under "<name>_MODELLED"
+// in imiTidePrediction (the HighLow dataset uses the bare name).
+const MODELLED_CONTINUOUS = new Set([
+  'Achill_Island', 'Bray_Harbour', 'Carrigaholt', 'Clare_Island', 'Crosshaven', 'Dungarvan',
+  'Killary_Harbour', 'Kinsale', 'Lahinch', 'Letterfrack', 'Tory_Island', 'Wicklow',
+]);
+export function continuousStationId(station: string): string {
+  return MODELLED_CONTINUOUS.has(station) ? `${station}_MODELLED` : station;
+}
+
 // In-memory cache keyed by station
 const cacheMap = new Map<string, { data: any; fetchedAt: number }>();
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -98,7 +108,7 @@ export async function handleTides(req: Request, fetchFn: typeof fetch = fetch): 
 
     const [hlRes, contRes] = await Promise.all([
       fetchFn(`${ERDDAP_BASE}/IMI_TidePrediction_HighLow.json?time,tide_time_category,Water_Level_ODMalin&stationID=%22${encodeURIComponent(station)}%22&time>=${fromTime}&time<=${toTime}&orderBy(%22time%22)`),
-      fetchFn(`${ERDDAP_BASE}/imiTidePrediction.json?time,Water_Level&stationID=%22${encodeURIComponent(station)}%22&time>=${contFrom}&time<=${contTo}&orderBy(%22time%22)`),
+      fetchFn(`${ERDDAP_BASE}/imiTidePrediction.json?time,Water_Level&stationID=%22${encodeURIComponent(continuousStationId(station))}%22&time>=${contFrom}&time<=${contTo}&orderBy(%22time%22)`),
     ]);
 
     if (!hlRes.ok || !contRes.ok) {

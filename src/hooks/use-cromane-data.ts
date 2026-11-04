@@ -63,9 +63,9 @@ async function fetchTides(loc: Location): Promise<TideData> {
   return data;
 }
 
-async function fetchWarnings(loc: Location): Promise<{ warnings: Warning[]; marine: MarineWarning }> {
+async function fetchWarnings(loc: Location): Promise<{ warnings: Warning[]; marine: MarineWarning | null }> {
   const { data, error } = await supabase.functions.invoke('get-warnings', {
-    body: { county: loc.county, province: loc.province },
+    body: { county: loc.county, province: loc.province, source: loc.warningsSource ?? 'met-eireann' },
   });
   if (error) throw error;
   cacheSet(`warnings-${loc.id}`, data);
@@ -112,9 +112,10 @@ function isIrish(loc: Location) {
 
 export function useTides() {
   const { location } = useLocation();
-  const irish = isIrish(location);
+  // Tides only where a Marine Institute station is within reach.
+  const irish = isIrish(location) && Boolean(location.tideStation);
   return useQuery({
-    queryKey: ['tides', location.id, irish ? 'ie' : 'uk'],
+    queryKey: ['tides', location.id, irish ? 'ie' : 'none'],
     queryFn: () => (irish ? fetchTides(location) : Promise.resolve(EMPTY_TIDES)),
     enabled: irish,
     refetchInterval: irish ? 60 * 60 * 1000 : false,
@@ -136,7 +137,7 @@ export function useWarnings() {
     staleTime: 2 * 60 * 1000,
     placeholderData: () =>
       irish
-        ? (cacheGet<{ warnings: Warning[]; marine: MarineWarning }>(`warnings-${location.id}`) ?? undefined)
+        ? (cacheGet<{ warnings: Warning[]; marine: MarineWarning | null }>(`warnings-${location.id}`) ?? undefined)
         : EMPTY_WARNINGS,
     retry: 2,
   });

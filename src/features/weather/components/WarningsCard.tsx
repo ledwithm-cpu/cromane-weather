@@ -18,7 +18,8 @@ const levelColor: Record<string, string> = {
 const WarningsCard = ({ warnings, weatherCode }: Props) => {
   const { location } = useLocation();
   const isIrish = !location.country || location.country === 'Ireland';
-  const sourceLabel = isIrish ? 'Met Éireann' : 'Met Office';
+  const isNI = location.warningsSource === 'met-office-ni';
+  const sourceLabel = isIrish && !isNI ? 'Met Éireann' : 'Met Office';
   const thunderActive = isIrish && (weatherCode ?? 0) >= 95;
   const active = isIrish && (warnings.length > 0 || thunderActive);
 
@@ -63,7 +64,7 @@ const WarningsCard = ({ warnings, weatherCode }: Props) => {
           <>
             <p className="text-sm font-normal text-foreground">No active warnings</p>
             <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-              No Met Éireann warnings in effect for {location.county}.
+              No {sourceLabel} warnings in effect for {location.county.replace(' (NI)', '')}.
             </p>
           </>
         )}

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createRateLimiter, getClientIp } from "../_shared/rate-limit.ts";
+import { MET_OFFICE_NI_RSS, parseMetOfficeRss } from "./met-office.ts";
 
 const WARNINGS_PAGE_URL = 'https://www.met.ie/warnings';
 
@@ -117,12 +118,31 @@ serve(async (req) => {
   try {
     let county = 'Kerry';
     let province = 'Munster';
+    let source: 'met-eireann' | 'met-office-ni' = 'met-eireann';
 
     try {
       const body = await req.json();
-      if (body.county) county = body.county;
-      if (body.province) province = body.province;
+      if (typeof body.county === 'string' && body.county.length < 64) county = body.county;
+      if (typeof body.province === 'string' && body.province.length < 64) province = body.province;
+      if (body.source === 'met-office-ni') source = 'met-office-ni';
     } catch {}
+
+    if (source === 'met-office-ni') {
+      try {
+        const rss = await fetch(MET_OFFICE_NI_RSS, { headers: { 'User-Agent': 'IrishBeachSaunas/1.0 (weather monitoring)' } });
+        if (!rss.ok) throw new Error(`Met Office HTTP ${rss.status}`);
+        const warnings = parseMetOfficeRss(await rss.text(), county);
+        // No simple Met Office marine feed for NI · marine is null so the client shows no marine card.
+        return new Response(JSON.stringify({ warnings, marine: null, source: 'met-office' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        console.error('Met Office NI fetch error:', e);
+        return new Response(JSON.stringify({ warnings: [], marine: null, source: 'met-office', unavailable: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
 
     const res = await fetch(WARNINGS_PAGE_URL, {
       headers: { 'User-Agent': 'CromaneWatch/1.0 (weather monitoring)' },
