@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppFooter from '@/components/AppFooter';
+import { SAUNAS } from '@/features/location/lib/directory';
 
 
 const section = (delay: number) => ({
@@ -31,14 +32,14 @@ const HowItWorks = () => {
             How This Works
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            We built Irish Saunas because we love the coast but hate surprises. Whether you're checking the tides for a swim, finding a sauna to warm up after, or keeping an eye on the sky when the kids and dog are with you—this app is here to help.
+            We built Irish Beach Saunas because we love the coast but hate surprises. Whether you're checking the tide for a swim, the wind before you drive out, or finding a sauna to warm up in after · this site is here to help.
           </p>
         </m.header>
 
         {/* Philosophy */}
         <m.section {...section(0.1)} className="pb-8">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Every number you see comes straight from the source. No made-up data, no forecasts from yesterday. Here's what we track and where it comes from.
+            We pull from named public sources · the Marine Institute, Met Éireann, Open-Meteo and Blitzortung · and tell you where each number comes from. Always use your own judgement at the water&apos;s edge.
           </p>
         </m.section>
 
@@ -55,7 +56,7 @@ const HowItWorks = () => {
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
               <p><strong className="text-foreground font-normal">No fees, ever:</strong> The site is free to use, with no signup needed. Booking happens on each operator&apos;s own site · we never take a commission or add a booking fee.</p>
-              <p><strong className="text-foreground font-normal">Free for operators too:</strong> No sauna pays to be listed. Set your home sauna and its tides and weather are the first thing you see when you come back.</p>
+              <p><strong className="text-foreground font-normal">Free for operators too:</strong> No sauna pays to be listed.</p>
             </div>
           </m.section>
 
@@ -67,12 +68,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              40+ Spots Along the Coast
+              {SAUNAS.length} Saunas Around the Coast
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Pinpoint accuracy:</strong> We don't give you a generic "County Kerry" forecast. Every beach has its own exact coordinates, tide station, and local weather point.</p>
-              <p><strong className="text-foreground font-normal">Saunas nearby:</strong> From Samhradh's in Cromane to Salt & Ember in Bundoran, if there's a sauna close by, you'll see a booking button right there.</p>
-              <p><strong className="text-foreground font-normal">Remembers where you are:</strong> Pick your spot once and it'll be there waiting next time you open the app.</p>
+              <p><strong className="text-foreground font-normal">Five coastlines:</strong> We cover saunas in Ireland, Northern Ireland, Scotland, Wales and England.</p>
+              <p><strong className="text-foreground font-normal">Every sauna, its own spot:</strong> Every sauna has its own map pin and weather point, so you don&apos;t get a generic county forecast. Roving operators are shown at their main spot.</p>
+              <p><strong className="text-foreground font-normal">Booking right there:</strong> From Samhradh&apos;s in Cromane to Salt and Ember at Creevy Pier in Donegal, each sauna page has a button that goes straight to the operator&apos;s own booking site.</p>
+              <p><strong className="text-foreground font-normal">Your home sauna:</strong> Set a home sauna and it opens straight to it next time.</p>
             </div>
           </m.section>
 
@@ -84,11 +86,12 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Real Tide Data from the Marine Institute
+              Tide Times for Irish Saunas
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Actually local:</strong> The tide at Dingle isn't the same as Fenit. We calculate exactly how long the tidal wave takes to reach your specific beach.</p>
-              <p><strong className="text-foreground font-normal">Makes sense on the ground:</strong> We convert the raw numbers into depths you'd actually see at the shoreline, not some abstract measurement.</p>
+              <p><strong className="text-foreground font-normal">Ireland and Northern Ireland for now:</strong> Tide times come from Marine Institute predictions. Saunas in Scotland, Wales and England don&apos;t have tide data yet.</p>
+              <p><strong className="text-foreground font-normal">Actually local:</strong> The tide at Dingle isn&apos;t the same as Fenit. We use the nearest Marine Institute station and adjust the times for your stretch of coast.</p>
+              <p><strong className="text-foreground font-normal">Heights you can compare:</strong> Heights are shown above chart datum (Lowest Astronomical Tide) · the same reference used on charts and tide tables.</p>
               <p><strong className="text-foreground font-normal">Updates every hour:</strong> The chart refreshes regularly so you always know where you are between high and low water.</p>
             </div>
           </m.section>
@@ -101,28 +104,14 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Weather for Your Exact Spot
+              Weather for Every Sauna
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Not a county average:</strong> Wind and temperature readings are pinned to your specific stretch of coast via Open-Meteo.</p>
-              <p><strong className="text-foreground font-normal">Wind you can understand:</strong> We show speeds in knots on the Beaufort scale—so "Force 4" actually means something if you're heading out on the water.</p>
-              <p><strong className="text-foreground font-normal">How cold it really feels:</strong> The "feels like" temp factors in wind chill from the nearest Met Éireann station (Valentia, Roches Point, etc.).</p>
-            </div>
-          </m.section>
-
-          {/* Pollen */}
-          <m.section {...section(0.25)} className="space-y-3">
-            <div className="border-t border-border/30 pt-6">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Air Quality
-              </p>
-            </div>
-            <h2 className="text-base font-normal text-foreground">
-              Pollen Counts That Matter
-            </h2>
-            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">The main culprits:</strong> We track Grass and Birch pollen—the two that usually cause trouble for people on Irish coasts.</p>
-              <p><strong className="text-foreground font-normal">Plain English:</strong> Instead of throwing raw numbers at you, we translate them into simple warnings: Low, Moderate, High, or Very High.</p>
+              <p><strong className="text-foreground font-normal">Not a county average:</strong> Weather comes from Open-Meteo at each sauna&apos;s own coordinates · temperature, rain chance and a 7-day forecast.</p>
+              <p><strong className="text-foreground font-normal">Wind:</strong> Speed in km/h, with the direction it&apos;s blowing.</p>
+              <p><strong className="text-foreground font-normal">How cold it really feels:</strong> The &quot;feels like&quot; temperature is Open-Meteo&apos;s apparent temperature, which accounts for wind, humidity and sun.</p>
+              <p><strong className="text-foreground font-normal">Sea temperature:</strong> From Open-Meteo Marine, so you know what the plunge will feel like.</p>
+              <p>Refreshes every 15 minutes.</p>
             </div>
           </m.section>
 
@@ -134,15 +123,13 @@ const HowItWorks = () => {
               </p>
             </div>
             <h2 className="text-base font-normal text-foreground">
-              Lightning & Storm Tracking
+              Lightning Watch
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              When you've got the dog and kids on the beach, you need to know about storms before they arrive. Here's how we watch the sky for you:
-            </p>
-            <div className="text-sm text-muted-foreground leading-relaxed space-y-3 mt-2">
-              <p><strong className="text-foreground font-normal">Live lightning sensors:</strong> We're connected to the Blitzortung network, tracking real strikes within 20km of where you are.</p>
-              <p><strong className="text-foreground font-normal">Storm radar:</strong> Our system watches heavy rain cells across a 100km area, figures out how fast they're moving, and tells you roughly when they might hit.</p>
-              <p><strong className="text-foreground font-normal">Checks every 30 seconds:</strong> Because storms don't wait, this is the fastest-updating part of the app.</p>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
+              <p><strong className="text-foreground font-normal">Live lightning sensors:</strong> We watch the Blitzortung network for strikes within 20km of the sauna.</p>
+              <p><strong className="text-foreground font-normal">Storm cells:</strong> We also check Open-Meteo rain data on a grid up to 100km out for heavy storm cells.</p>
+              <p><strong className="text-foreground font-normal">Checks every 30 seconds:</strong> While the page is open. If lightning is within 10km, or there&apos;s an active Met Éireann warning, the sauna page switches to a warning colour scheme.</p>
+              <p><strong className="text-foreground font-normal">An aid, not a safety service:</strong> If you hear thunder, get out of the water.</p>
             </div>
           </m.section>
 
@@ -157,31 +144,12 @@ const HowItWorks = () => {
               Straight from Met Éireann
             </h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              <p><strong className="text-foreground font-normal">Only what matters to you:</strong> We pull the official warnings and filter them so you see alerts for your county—not a list of things happening 200km away.</p>
-              <p><strong className="text-foreground font-normal">Sea conditions too:</strong> Small craft warnings and offshore forecasts so you know what you're dealing with before you get in the water.</p>
+              <p><strong className="text-foreground font-normal">Only what matters to you:</strong> We show Met Éireann weather warnings filtered to your sauna&apos;s county, not a list of things happening 200km away.</p>
+              <p><strong className="text-foreground font-normal">Republic of Ireland only for now:</strong> Northern Ireland, Scotland, Wales and England don&apos;t get warnings yet.</p>
+              <p><strong className="text-foreground font-normal">Sea conditions too:</strong> Met Éireann marine warnings (gale and small craft) so you know what you&apos;re dealing with before you get in the water.</p>
             </div>
           </m.section>
 
-          {/* Push Notifications */}
-          <m.section {...section(0.37)} className="space-y-3">
-            <div className="border-t border-border/30 pt-6">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                Alerts
-              </p>
-            </div>
-            <h2 className="text-base font-normal text-foreground">
-              Phone Notifications When It Matters
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              If you allow notifications, we'll give you a heads-up when conditions change. Four levels, from a gentle reminder to get-the-kids-inside-now:
-            </p>
-            <div className="text-sm text-muted-foreground leading-relaxed space-y-3 mt-2">
-              <p><strong className="text-foreground font-normal">Atmosphere Charging:</strong> The air's getting unstable. Just a quiet nudge to keep an eye on the horizon.</p>
-              <p><strong className="text-foreground font-normal">Storm Approaching:</strong> Heavy rain is heading your way with an estimated arrival time.</p>
-              <p><strong className="text-foreground font-normal">Lightning Warning:</strong> Actual strikes detected within 10km. Time to pack up the towels.</p>
-              <p><strong className="text-foreground font-normal">Immediate Danger:</strong> Lightning within 5km. Get everyone to shelter now.</p>
-            </div>
-          </m.section>
         </div>
 
       </div>

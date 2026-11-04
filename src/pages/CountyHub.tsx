@@ -18,11 +18,12 @@ const CountyHub = () => {
 
   if (!hub) return <Navigate to="/" replace />;
 
+  const isIreland = hub.country === 'Ireland';
   const title = `${hub.name} Saunas · ${hub.saunas.length} Coastal Beach Saunas, Tides & Weather`;
   const description = `Every coastal sauna in ${hub.name}, ${hub.country}: ${hub.saunas
     .map((s) => s.saunaName ?? s.name)
     .slice(0, 4)
-    .join(', ')} and more. Live tide times, sea conditions and direct booking links.`;
+    .join(', ')} and more. ${isIreland ? 'Live tide times, sea conditions and direct booking links.' : 'Live weather, sea temperature, wind and a direct booking link.'}`;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -64,8 +65,11 @@ const CountyHub = () => {
         </h1>
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
           {hub.saunas.length} coastal sauna{hub.saunas.length === 1 ? '' : 's'} in{' '}
-          {hub.name}, {hub.country}. Each page shows live tide times, sea and air
-          temperature, wind, weather warnings and a direct booking link · so you
+          {hub.name}, {hub.country}. Each page shows{' '}
+          {isIreland
+            ? 'live tide times, sea and air temperature, wind, weather warnings and a direct booking link'
+            : 'live weather, sea temperature, wind and a direct booking link'}{' '}
+          · so you
           can pick your window before you drive to the beach. Free to use, no
           signup needed.
         </p>

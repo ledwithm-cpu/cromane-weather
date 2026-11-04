@@ -303,9 +303,11 @@ const Index = () => {
                 {location.saunaName ? `${location.saunaName} is a coastal sauna at ` : 'A coastal sauna spot at '}
                 {location.name}, {county}
                 {location.country && location.country !== 'Ireland' ? `, ${location.country}` : ''}. This
-                page shows live tide times for the {location.tideStation} tide station, sea and air
-                temperature, wind and the week ahead — plus weather and marine warnings — so you can
-                pick a good window for a sauna and a cold-water swim.
+                page shows{' '}
+                {location.tideStation
+                  ? `live tide times for the ${location.tideStation} tide station, sea and air temperature, wind and the week ahead — plus weather and marine warnings —`
+                  : 'live weather, sea and air temperature, wind and the week ahead,'}{' '}
+                so you can pick a good window for a sauna and a cold-water swim.
               </p>
 
               {nearby.length > 0 && (

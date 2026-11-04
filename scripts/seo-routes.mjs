@@ -89,7 +89,7 @@ export function getSeoRoutes() {
     {
       path: '/',
       title: `Coastal Saunas Directory · ${total} Beach Saunas in Ireland, Scotland, Wales & England`,
-      description: `Find ${total} coastal saunas across Ireland, Scotland, Wales and England. Live tide times, sea conditions and direct booking links · 100% free, no signup needed.`,
+      description: `Find ${total} coastal saunas across Ireland, Scotland, Wales and England. Live weather, sea conditions, Irish tide times and direct booking links · 100% free, no signup needed.`,
     },
     {
       path: '/discover',
@@ -107,7 +107,7 @@ export function getSeoRoutes() {
       path: '/how-it-works',
       title: 'How It Works | Irish Beach Saunas',
       description:
-        'Learn how Irish Saunas tracks live tides, weather, lightning, and Met Éireann warnings to keep you safe on the coast.',
+        'How Irish Beach Saunas gets its tide times, weather, lightning watch and Met Éireann warnings, and what it costs (nothing).',
     },
     {
       path: '/contact',
@@ -122,7 +122,9 @@ export function getSeoRoutes() {
     return {
       path: `/${r.slug}`,
       title: `Coastal Saunas in ${r.name} · ${count} Beach Saunas, Tides & Weather`,
-      description: `Browse ${count} coastal and beach saunas in ${r.name}. Live tide times, sea conditions and direct booking links for every sauna · free, no signup.`,
+      description: r.country === 'Ireland'
+        ? `Browse ${count} coastal and beach saunas in ${r.name}. Live tide times, sea conditions and direct booking links for every sauna · free, no signup.`
+        : `Browse ${count} coastal and beach saunas in ${r.name}. Live weather, sea temperature, wind and a direct booking link for every sauna · free, no signup.`,
     };
   }).filter((r) => !r.title.includes(' 0 Beach'));
 
@@ -143,17 +145,18 @@ export function getSeoRoutes() {
       description: `Every coastal sauna in ${c.name}, ${c.country}: ${c.saunas
         .map((s) => s.saunaName || s.name)
         .slice(0, 4)
-        .join(', ')} and more. Live tide times, sea conditions and direct booking links.`,
+        .join(', ')} and more. ${c.country === 'Ireland' ? 'Live tide times, sea conditions and direct booking links.' : 'Live weather, sea temperature, wind and a direct booking link.'}`,
     }));
 
   const locationRoutes = locations.map((loc) => {
     const county = countyLabel(loc.county);
+    const irish = (loc.country || 'Ireland') === 'Ireland';
     const title = loc.saunaName
       ? `${loc.name} Sauna – ${loc.saunaName} Beach Sauna & Sea Swimming, ${county}`
       : `${loc.name} Beach Sauna & Sea Swimming – Tides & Weather, ${county}`;
     const description = loc.saunaName
-      ? `${loc.name} sauna guide: book ${loc.saunaName}, a wood-fired beach sauna in ${loc.name}, ${county}. Live tide times, sea temperature, and weather for sea swimming and cold-water plunges in ${loc.name}.`
-      : `${loc.name} beach sauna and sea swimming guide for ${county}. Live tide times, sea temperature, and weather to plan a coastal sauna and cold-water swim in ${loc.name}.`;
+      ? `${loc.name} sauna guide: book ${loc.saunaName}, a beach sauna in ${loc.name}, ${county}. ${irish ? 'Live tide times, sea temperature, and weather' : 'Live weather, sea temperature and wind'} for sea swimming and cold-water plunges in ${loc.name}.`
+      : `${loc.name} beach sauna and sea swimming guide for ${county}. ${irish ? 'Live tide times, sea temperature, and weather' : 'Live weather, sea temperature and wind'} to plan a coastal sauna and cold-water swim in ${loc.name}.`;
     return {
       path: `/${loc.id}`,
       title,

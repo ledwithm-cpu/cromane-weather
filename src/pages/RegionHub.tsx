@@ -31,7 +31,10 @@ const RegionHub = () => {
   if (!region) return <Navigate to="/" replace />;
 
   const title = `Coastal Saunas in ${region.name} · ${saunas.length} Beach Saunas, Tides & Weather`;
-  const description = `Browse ${saunas.length} coastal and beach saunas in ${region.name}. Live tide times, sea conditions and direct booking links for every sauna · free, no signup.`;
+  const isIreland = region.country === 'Ireland';
+  const description = isIreland
+    ? `Browse ${saunas.length} coastal and beach saunas in ${region.name}. Live tide times, sea conditions and direct booking links for every sauna · free, no signup.`
+    : `Browse ${saunas.length} coastal and beach saunas in ${region.name}. Live weather, sea temperature, wind and a direct booking link for every sauna · free, no signup.`;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -66,8 +69,11 @@ const RegionHub = () => {
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
           {region.blurb} We track {saunas.length} sauna
           {saunas.length === 1 ? '' : 's'} on the {region.name} coast. Every
-          listing shows live tide times, sea and air conditions, weather
-          warnings and a direct link to book · free to use, no signup needed.
+          listing shows{' '}
+          {isIreland
+            ? 'live tide times, sea and air conditions, weather warnings and a direct link to book'
+            : 'live weather, sea temperature, wind and a direct booking link'}{' '}
+          · free to use, no signup needed.
         </p>
 
         {counties.length > 0 && (

@@ -194,7 +194,7 @@ function PromoVideo() {
     <section className="mx-auto max-w-5xl px-5 pt-12">
       <h2 className="font-serif text-2xl text-foreground">See it in action</h2>
       <p className="mt-1 text-[14px] text-muted-foreground">
-        Tides, weather and direct booking for every coastal sauna — in your pocket.
+        Weather, tides and direct booking for coastal saunas — in your pocket.
       </p>
       <div className="relative mt-4 aspect-video max-sm:max-h-[60vh] overflow-hidden rounded-3xl border border-border/60 bg-card/70">
         <video
@@ -250,7 +250,7 @@ const Landing = () => {
   );
 
   const title = `Coastal Saunas Directory · ${SAUNAS.length} Beach Saunas in Ireland, Scotland, Wales & England`;
-  const description = `Find ${SAUNAS.length} coastal saunas across Ireland, Scotland, Wales and England. Live tide times, sea conditions and direct booking links · 100% free, no signup needed.`;
+  const description = `Find ${SAUNAS.length} coastal saunas across Ireland, Scotland, Wales and England. Live weather, sea conditions, Irish tide times and direct booking links · 100% free, no signup needed.`;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -285,8 +285,8 @@ const Landing = () => {
             Find coastal saunas across Ireland, Scotland, Wales &amp; England
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-[15px] sm:text-base leading-relaxed text-foreground/80">
-            Free tide times, sea conditions &amp; weather for {SAUNAS.length}{' '}
-            coastal saunas. Set your home sauna and it&apos;s the first thing
+            Free weather and sea conditions for {SAUNAS.length}{' '}
+            coastal saunas, with live tide times across Ireland. Set your home sauna and it&apos;s the first thing
             you see. Book direct with the operator · no fees for you or them.
           </p>
           <SaunaSearch />
@@ -371,12 +371,13 @@ const Landing = () => {
         <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-muted-foreground">
           <p>
             Every sauna page pulls live coastal data so you can pick a good
-            window before you leave the house: tide times and tide height for the
-            nearest tide station, sea and air temperature, wind speed and
-            direction, and the day-by-day forecast for the week ahead.
+            window before you leave the house. Every sauna gets sea and air
+            temperature, wind speed and direction, and the day-by-day forecast
+            for the week ahead. Irish saunas also get tide times and tide height
+            from the nearest Marine Institute station.
           </p>
           <p>
-            For Irish saunas we also surface Met Éireann weather warnings and
+            For saunas in the Republic of Ireland we also surface Met Éireann weather warnings and
             marine warnings for the relevant coastal area, so a small-craft
             warning or an orange wind warning shows up before you plan a swim.
           </p>
