@@ -373,13 +373,15 @@ const Landing = () => {
             Every sauna page pulls live coastal data so you can pick a good
             window before you leave the house. Every sauna gets sea and air
             temperature, wind speed and direction, and the day-by-day forecast
-            for the week ahead. Irish saunas also get tide times and tide height
-            from the nearest Marine Institute station.
+            for the week ahead. Saunas in Ireland and Northern Ireland also get
+            tide times and tide height from the nearest Marine Institute station,
+            where one is within reach.
           </p>
           <p>
-            For saunas in the Republic of Ireland we also surface Met Éireann weather warnings and
-            marine warnings for the relevant coastal area, so a small-craft
-            warning or an orange wind warning shows up before you plan a swim.
+            For saunas in the Republic of Ireland we also surface Met Éireann
+            weather and marine warnings, and for Northern Ireland the Met Office
+            weather warnings, so a small-craft warning or an orange wind warning
+            shows up before you plan a swim.
           </p>
           <p>
             The site is free, forever, and you don&apos;t need to sign up. When
