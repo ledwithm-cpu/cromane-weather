@@ -58,7 +58,8 @@ async function fetchTides(loc: Location): Promise<TideData> {
     },
   });
   if (error) throw error;
-  cacheSet(`tides-${loc.id}`, data);
+  // Never overwrite a good offline copy with an "unavailable" marker.
+  if (!data?.unavailable) cacheSet(`tides-${loc.id}`, data);
   return data;
 }
 
