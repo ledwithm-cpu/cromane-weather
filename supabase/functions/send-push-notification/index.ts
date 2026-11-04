@@ -77,6 +77,9 @@ async function selfTest(req: Request, serviceKey: string): Promise<Response> {
   const { data: isAdmin } = await admin.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
   if (!isAdmin) return json({ error: "Forbidden" }, 403);
 
+  const reqBody = await req.json().catch(() => ({}));
+  if (reqBody?.send_test === true) return await sendOwnerTest(admin, reqBody);
+
   const out: Record<string, unknown> = {};
   const tag = `selftest-${crypto.randomUUID().slice(0, 8)}`;
   const tokA = `${tag}-tokenA-cromane-xxxxxxxx`, tokB = `${tag}-tokenB-other-xxxxxxxx`;
@@ -109,4 +112,33 @@ async function selfTest(req: Request, serviceKey: string): Promise<Response> {
     out.cleaned_up = true;
   }
   return json(out);
+}
+
+// Owner-triggered real test push to the single most recent token for one sauna (last 30 min).
+// deno-lint-ignore no-explicit-any
+async function sendOwnerTest(admin: any, b: { location_id?: string; title?: string; body?: string; link?: string }) {
+  if (typeof b.location_id !== "string" || !SLUG.test(b.location_id) || !b.title || !b.body) return json({ error: "bad input" }, 400);
+  const { data: rows } = await admin.from("fcm_tokens").select("token")
+    .eq("location_id", b.location_id).gte("created_at", new Date(Date.now() - 30 * 60 * 1000).toISOString())
+    .order("created_at", { ascending: false }).limit(1);
+  if (!rows?.length) return json({ sent: 0, reason: "no_recent_token" });
+  const sa = readServiceAccount();
+  const at = await getAccessToken(sa);
+  const link = b.link && b.link.startsWith("https://saunasinireland.com/") ? b.link : `https://saunasinireland.com/${b.location_id}`;
+  const res = await fetch(`https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${at}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ message: {
+      token: rows[0].token,
+      notification: { title: b.title, body: b.body },
+      data: { location_id: b.location_id, notification_type: "test" },
+      webpush: { fcm_options: { link }, notification: { icon: "/icon-192.png" } },
+    } }),
+  });
+  const text = await res.text();
+  let fcm: unknown = text; try { fcm = JSON.parse(text); } catch { /* keep text */ }
+  const ok = res.ok;
+  await admin.from("push_notification_log").insert({ location_id: b.location_id, notification_type: "test", alert_level: 0,
+    details: { title: b.title, body: b.body, sent: ok ? 1 : 0, total: 1, status: res.status } });
+  return json({ ok, status: res.status, fcm: ok ? { name_returned: !!(fcm as { name?: string })?.name } : fcm });
 }
