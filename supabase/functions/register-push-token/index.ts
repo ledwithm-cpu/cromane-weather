@@ -1,63 +1,45 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Subscribe / unsubscribe / check a device token for lightning alerts at one sauna.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
+const json = (b: unknown, status = 200) =>
+  new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+const TOKEN = /^[A-Za-z0-9_\-:]{20,500}$/;
+const SLUG = /^[a-z0-9-]{1,120}$/;
 
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
-    const { token } = await req.json();
+    const { token, location_id, lat, lon, action = "subscribe" } = await req.json();
+    if (typeof token !== "string" || !TOKEN.test(token)) return json({ error: "Invalid token" }, 400);
+    if (typeof location_id !== "string" || !SLUG.test(location_id)) return json({ error: "Invalid location_id" }, 400);
+    if (!["subscribe", "unsubscribe", "status"].includes(action)) return json({ error: "Invalid action" }, 400);
 
-    // Validate token exists and is a string
-    if (!token || typeof token !== 'string') {
-      return new Response(JSON.stringify({ error: 'Token required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    if (action === "status") {
+      const { data } = await supabase.from("fcm_tokens").select("id")
+        .eq("token", token).eq("location_id", location_id).maybeSingle();
+      return json({ subscribed: !!data });
+    }
+    if (action === "unsubscribe") {
+      const { error } = await supabase.from("fcm_tokens").delete().eq("token", token).eq("location_id", location_id);
+      if (error) throw error;
+      return json({ subscribed: false });
     }
 
-    // Validate token length (FCM tokens are typically 152-163 chars)
-    if (token.length < 20 || token.length > 500) {
-      return new Response(JSON.stringify({ error: 'Invalid token length' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (typeof lat !== "number" || typeof lon !== "number" || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+      return json({ error: "Invalid coordinates" }, 400);
     }
-
-    // Validate token format (alphanumeric, hyphens, underscores, colons)
-    const FCM_TOKEN_REGEX = /^[A-Za-z0-9_\-:]+$/;
-    if (!FCM_TOKEN_REGEX.test(token)) {
-      return new Response(JSON.stringify({ error: 'Invalid token format' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Upsert token (update last_used_at if already exists)
-    const { error } = await supabase
-      .from('fcm_tokens')
-      .upsert(
-        { token, last_used_at: new Date().toISOString() },
-        { onConflict: 'token' }
-      );
-
+    const { error } = await supabase.from("fcm_tokens").upsert(
+      { token, location_id, lat, lon, last_used_at: new Date().toISOString() },
+      { onConflict: "token,location_id" },
+    );
     if (error) throw error;
-
-    return new Response(JSON.stringify({ registered: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Token registration error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to register token' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ subscribed: true });
+  } catch (e) {
+    console.error("Token registration error:", e);
+    return json({ error: "Failed to update subscription" }, 500);
   }
 });

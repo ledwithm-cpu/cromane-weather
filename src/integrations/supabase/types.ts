@@ -260,18 +260,27 @@ export type Database = {
           created_at: string
           id: string
           last_used_at: string
+          lat: number | null
+          location_id: string | null
+          lon: number | null
           token: string
         }
         Insert: {
           created_at?: string
           id?: string
           last_used_at?: string
+          lat?: number | null
+          location_id?: string | null
+          lon?: number | null
           token: string
         }
         Update: {
           created_at?: string
           id?: string
           last_used_at?: string
+          lat?: number | null
+          location_id?: string | null
+          lon?: number | null
           token?: string
         }
         Relationships: []
@@ -503,6 +512,7 @@ export type Database = {
           alert_level: number
           details: Json | null
           id: string
+          location_id: string | null
           notification_type: string
           sent_at: string
         }
@@ -510,6 +520,7 @@ export type Database = {
           alert_level?: number
           details?: Json | null
           id?: string
+          location_id?: string | null
           notification_type: string
           sent_at?: string
         }
@@ -517,6 +528,7 @@ export type Database = {
           alert_level?: number
           details?: Json | null
           id?: string
+          location_id?: string | null
           notification_type?: string
           sent_at?: string
         }
