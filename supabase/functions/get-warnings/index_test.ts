@@ -15,6 +15,7 @@ const COUNTY_PROVINCES: Array<{ county: string; province: string }> = [
   { county: "Wicklow", province: "Leinster" },
   { county: "Wexford", province: "Leinster" },
   { county: "Louth", province: "Leinster" },
+  { county: "Limerick", province: "Munster" },
 ];
 
 // Synthetic fixture mirroring met.ie warnings page structure with a
