@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import TideCard from '@/features/tides/components/TideCard';
 import ForecastSwiper from './ForecastSwiper';
@@ -73,6 +73,8 @@ describe('Weather UI — temperature & feels-like mirror the API payload', () =>
         tideData={mockTidesResponse}
       />,
     );
+    // Irish saunas open on the Tides tab; switch to Weather.
+    fireEvent.click(screen.getByRole('button', { name: 'Weather' }));
     const today = mockWeatherResponse.forecast![0];
     // Both the high/low temps and the "Feels" value must come straight from
     // the forecast payload — they're rounded mirrors of Open-Meteo's daily
@@ -80,6 +82,18 @@ describe('Weather UI — temperature & feels-like mirror the API payload', () =>
     expect(screen.getByText(`${today.temp_max_c}°`)).toBeInTheDocument();
     expect(screen.getByText(`/ ${today.temp_min_c}°`)).toBeInTheDocument();
     expect(screen.getByText(`${today.feels_like_max_c}°`)).toBeInTheDocument();
+  });
+
+  it('saunas with no tide source open on weather with no Weather · Tides toggle', () => {
+    render(
+      <ForecastSwiper
+        wind={mockWeatherResponse}
+        tideData={{ unavailable: true, events: [], current_height_m: null, state: null, forecast: [] }}
+        hasTideSource={false}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Tides' })).not.toBeInTheDocument();
+    expect(screen.getByText(`${mockWeatherResponse.forecast![0].temp_max_c}°`)).toBeInTheDocument();
   });
 
   it('regression: feels_like_c never silently falls back to temperature_c when the API omits it', () => {
