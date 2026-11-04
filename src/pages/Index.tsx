@@ -311,8 +311,13 @@ const Index = () => {
                 {location.country && location.country !== 'Ireland' ? `, ${location.country}` : ''}. This
                 page shows{' '}
                 {location.tideStation
-                  ? `live tide times for the ${location.tideStation} tide station, sea and air temperature, wind and the week ahead — plus weather and marine warnings —`
-                  : 'live weather, sea and air temperature, wind and the week ahead,'}{' '}
+                  ? `live tide times for the ${location.tideStation.replace(/_/g, ' ')} tide station, sea and air temperature, wind and the week ahead`
+                  : 'live weather, sea and air temperature, wind and the week ahead'}
+                {location.warningsSource === 'met-office-ni'
+                  ? ' — plus Met Office weather warnings —'
+                  : location.tideStation && (!location.country || location.country === 'Ireland')
+                    ? ' — plus weather and marine warnings —'
+                    : ','}{' '}
                 so you can pick a good window for a sauna and a cold-water swim.
               </p>
 
