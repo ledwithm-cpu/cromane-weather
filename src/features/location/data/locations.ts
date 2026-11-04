@@ -13,7 +13,9 @@ export interface Location {
   metEireannStation?: string;
   saunaName?: string;
   saunaUrl?: string;
-  /** Country: 'Ireland', 'Wales', or 'England'. */
+  /** Where official weather warnings come from. Undefined = Met Éireann for Irish (Republic) saunas, none elsewhere. */
+  warningsSource?: 'met-eireann' | 'met-office-ni';
+  /** Country: 'Ireland', 'Scotland', 'Wales', or 'England'. */
   country?: string;
 }
 
